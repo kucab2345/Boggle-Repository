@@ -11,17 +11,36 @@ using BoggleClient;
 
 namespace BoggleClient
 {
-    public partial class Form1 : Form
+    public partial class Form1 : Form , GameInterface
     {
+        /// <summary>
+        /// Constructs the form
+        /// </summary>
         public Form1()
         {
             InitializeComponent();
         }
+        /// <summary>
+        /// Fires the CreateGameEvent
+        /// </summary>
+        public event Action<string, string, string> CreateGameEvent;
 
+        /// <summary>
+        /// Prompts user for nickname, timelimit, and server address they wish to connect to,
+        /// passes those three strings are parameters through CreateGameEvent, which calls CreateGameHandler
+        /// in the controller
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void createGameMenuButton_Click(object sender, EventArgs e)
         {
             string nickname, clock, address;
             Prompt.GameCreateDialogue(out nickname, out clock, out address);
+
+            if(CreateGameEvent != null)
+            {
+                CreateGameEvent(nickname, clock, address);
+            }
         }
     }
     public static class Prompt

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace BoggleClient
 {
-    class GameInterface
+    public interface GameInterface
     {
+        event Action<string, string, string> CreateGameEvent;
     }
 }

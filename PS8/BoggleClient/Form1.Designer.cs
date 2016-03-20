@@ -61,7 +61,7 @@
             this.wordInputBox = new System.Windows.Forms.TextBox();
             this.wordSubmissionLabel = new System.Windows.Forms.Label();
             this.enterButton = new System.Windows.Forms.Button();
-            this.backspaceButton = new System.Windows.Forms.Button();
+            this.clearButton = new System.Windows.Forms.Button();
             this.timeBox1 = new System.Windows.Forms.TextBox();
             this.timeLabel = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
@@ -91,20 +91,20 @@
             // createGameMenuButton
             // 
             this.createGameMenuButton.Name = "createGameMenuButton";
-            this.createGameMenuButton.Size = new System.Drawing.Size(152, 22);
+            this.createGameMenuButton.Size = new System.Drawing.Size(142, 22);
             this.createGameMenuButton.Text = "Create Game";
             this.createGameMenuButton.Click += new System.EventHandler(this.createGameMenuButton_Click);
             // 
             // findGameMenuButton
             // 
             this.findGameMenuButton.Name = "findGameMenuButton";
-            this.findGameMenuButton.Size = new System.Drawing.Size(152, 22);
+            this.findGameMenuButton.Size = new System.Drawing.Size(142, 22);
             this.findGameMenuButton.Text = "Find Game";
             // 
             // closeMenuButton
             // 
             this.closeMenuButton.Name = "closeMenuButton";
-            this.closeMenuButton.Size = new System.Drawing.Size(152, 22);
+            this.closeMenuButton.Size = new System.Drawing.Size(142, 22);
             this.closeMenuButton.Text = "Close";
             // 
             // helpMenuButton
@@ -362,15 +362,15 @@
             this.enterButton.Text = "Enter";
             this.enterButton.UseVisualStyleBackColor = true;
             // 
-            // backspaceButton
+            // clearButton
             // 
-            this.backspaceButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.backspaceButton.Location = new System.Drawing.Point(344, 258);
-            this.backspaceButton.Name = "backspaceButton";
-            this.backspaceButton.Size = new System.Drawing.Size(75, 33);
-            this.backspaceButton.TabIndex = 28;
-            this.backspaceButton.Text = "Backspace";
-            this.backspaceButton.UseVisualStyleBackColor = true;
+            this.clearButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.clearButton.Location = new System.Drawing.Point(344, 258);
+            this.clearButton.Name = "clearButton";
+            this.clearButton.Size = new System.Drawing.Size(75, 33);
+            this.clearButton.TabIndex = 28;
+            this.clearButton.Text = "Clear";
+            this.clearButton.UseVisualStyleBackColor = true;
             // 
             // timeBox1
             // 
@@ -398,7 +398,7 @@
             this.ClientSize = new System.Drawing.Size(478, 413);
             this.Controls.Add(this.timeLabel);
             this.Controls.Add(this.timeBox1);
-            this.Controls.Add(this.backspaceButton);
+            this.Controls.Add(this.clearButton);
             this.Controls.Add(this.enterButton);
             this.Controls.Add(this.wordSubmissionLabel);
             this.Controls.Add(this.wordInputBox);
@@ -472,7 +472,7 @@
         private System.Windows.Forms.TextBox wordInputBox;
         private System.Windows.Forms.Label wordSubmissionLabel;
         private System.Windows.Forms.Button enterButton;
-        private System.Windows.Forms.Button backspaceButton;
+        private System.Windows.Forms.Button clearButton;
         private System.Windows.Forms.TextBox timeBox1;
         private System.Windows.Forms.Label timeLabel;
     }

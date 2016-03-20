@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BoggleAPIClient
 {
-    class BoggleClient
+    public class BoggleClient
     {
         private string nickname;
 
@@ -23,10 +23,15 @@ namespace BoggleAPIClient
         {
             client = new HttpClient();
             client.BaseAddress = new Uri(serverDest);
+
+            // Tell the server that the client will accept this particular type of response data
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
-        private void createUser(string userName)
+        public void createUser(string userName)
         {
+            nickname = userName;
             using (client)
             {
                 dynamic data = new ExpandoObject();
@@ -35,7 +40,7 @@ namespace BoggleAPIClient
                 data.has_issues = false;
 
                 StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = client.PostAsync("/user", content).Result;
+                HttpResponseMessage response = client.PostAsync(new Uri(), content).Result;
 
                 if (response.IsSuccessStatusCode)
                 {

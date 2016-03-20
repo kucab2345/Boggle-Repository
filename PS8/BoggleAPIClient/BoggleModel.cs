@@ -58,6 +58,30 @@ namespace BoggleAPIClient
             }
         }
 
-       // public void createGame(int gameTime)
+        public void createGame(int gameTime)
+        {
+            using (client)
+            {
+                dynamic data = new ExpandoObject();
+                data.UserToken = userToken;
+                data.TimeLimit = gameTime;
+
+                StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = client.PostAsync("http://bogglecs3500s16.azurewebsites.net/BoggleService.svc/games", content).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // The deserialized response value is an object that describes the new repository.
+                    string result = response.Content.ReadAsStringAsync().Result;
+                    gameID = result;
+                    Console.WriteLine(gameID);
+                }
+                else
+                {
+                    Console.WriteLine("Error creating game: " + response.StatusCode);
+                    Console.WriteLine(response.ReasonPhrase);
+                }
+            }
+        }
     }
 }

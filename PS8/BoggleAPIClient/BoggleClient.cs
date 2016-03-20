@@ -11,9 +11,11 @@ namespace BoggleAPIClient
 {
     class BoggleClient
     {
-        private string Nickname;
+        private string nickname;
 
         private string gameID;
+
+        private string userToken;
 
         private HttpClient client;
 
@@ -38,14 +40,14 @@ namespace BoggleAPIClient
                 if (response.IsSuccessStatusCode)
                 {
                     // The deserialized response value is an object that describes the new repository.
-                    String result = response.Content.ReadAsStringAsync().Result;
-                    dynamic newRepo = JsonConvert.DeserializeObject(result);
-                    Console.WriteLine("New repository: ");
-                    Console.WriteLine(newRepo);
+                    string result = response.Content.ReadAsStringAsync().Result;
+                    dynamic userStringToken = JsonConvert.DeserializeObject(result);
+                    userToken = userStringToken;
+                    
                 }
                 else
                 {
-                    Console.WriteLine("Error creating repo: " + response.StatusCode);
+                    Console.WriteLine("Error creating user: " + response.StatusCode);
                     Console.WriteLine(response.ReasonPhrase);
                 }
             }

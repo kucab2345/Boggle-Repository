@@ -57,6 +57,12 @@
             this.boardButton11 = new System.Windows.Forms.Button();
             this.boardButton10 = new System.Windows.Forms.Button();
             this.boardButton9 = new System.Windows.Forms.Button();
+            this.createGameMenuButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wordInputBox = new System.Windows.Forms.TextBox();
+            this.wordSubmissionLabel = new System.Windows.Forms.Label();
+            this.enterButton = new System.Windows.Forms.Button();
+            this.backspaceButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -74,8 +80,10 @@
             // gameMenuButton
             // 
             this.gameMenuButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createGameMenuButton,
             this.findGameMenuButton,
-            this.createUserMenuButton});
+            this.createUserMenuButton,
+            this.closeToolStripMenuItem});
             this.gameMenuButton.Name = "gameMenuButton";
             this.gameMenuButton.Size = new System.Drawing.Size(50, 20);
             this.gameMenuButton.Text = "Game";
@@ -176,6 +184,7 @@
             // 
             // boardButton1
             // 
+            this.boardButton1.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton1.Location = new System.Drawing.Point(197, 130);
             this.boardButton1.Name = "boardButton1";
             this.boardButton1.Size = new System.Drawing.Size(39, 33);
@@ -184,6 +193,7 @@
             // 
             // boardButton2
             // 
+            this.boardButton2.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton2.Location = new System.Drawing.Point(242, 130);
             this.boardButton2.Name = "boardButton2";
             this.boardButton2.Size = new System.Drawing.Size(39, 33);
@@ -192,6 +202,7 @@
             // 
             // boardButton3
             // 
+            this.boardButton3.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton3.Location = new System.Drawing.Point(287, 130);
             this.boardButton3.Name = "boardButton3";
             this.boardButton3.Size = new System.Drawing.Size(39, 33);
@@ -200,6 +211,7 @@
             // 
             // boardButton0
             // 
+            this.boardButton0.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton0.Location = new System.Drawing.Point(152, 130);
             this.boardButton0.Name = "boardButton0";
             this.boardButton0.Size = new System.Drawing.Size(39, 33);
@@ -208,6 +220,7 @@
             // 
             // boardButton4
             // 
+            this.boardButton4.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton4.Location = new System.Drawing.Point(152, 169);
             this.boardButton4.Name = "boardButton4";
             this.boardButton4.Size = new System.Drawing.Size(39, 33);
@@ -216,6 +229,7 @@
             // 
             // boardButton7
             // 
+            this.boardButton7.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton7.Location = new System.Drawing.Point(287, 169);
             this.boardButton7.Name = "boardButton7";
             this.boardButton7.Size = new System.Drawing.Size(39, 33);
@@ -224,6 +238,7 @@
             // 
             // boardButton6
             // 
+            this.boardButton6.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton6.Location = new System.Drawing.Point(242, 169);
             this.boardButton6.Name = "boardButton6";
             this.boardButton6.Size = new System.Drawing.Size(39, 33);
@@ -232,6 +247,7 @@
             // 
             // boardButton5
             // 
+            this.boardButton5.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton5.Location = new System.Drawing.Point(197, 169);
             this.boardButton5.Name = "boardButton5";
             this.boardButton5.Size = new System.Drawing.Size(39, 33);
@@ -240,6 +256,7 @@
             // 
             // boardButton12
             // 
+            this.boardButton12.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton12.Location = new System.Drawing.Point(152, 247);
             this.boardButton12.Name = "boardButton12";
             this.boardButton12.Size = new System.Drawing.Size(39, 33);
@@ -248,6 +265,7 @@
             // 
             // boardButton15
             // 
+            this.boardButton15.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton15.Location = new System.Drawing.Point(287, 247);
             this.boardButton15.Name = "boardButton15";
             this.boardButton15.Size = new System.Drawing.Size(39, 33);
@@ -256,6 +274,7 @@
             // 
             // boardButton14
             // 
+            this.boardButton14.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton14.Location = new System.Drawing.Point(242, 247);
             this.boardButton14.Name = "boardButton14";
             this.boardButton14.Size = new System.Drawing.Size(39, 33);
@@ -264,6 +283,7 @@
             // 
             // boardButton13
             // 
+            this.boardButton13.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton13.Location = new System.Drawing.Point(197, 247);
             this.boardButton13.Name = "boardButton13";
             this.boardButton13.Size = new System.Drawing.Size(39, 33);
@@ -272,6 +292,7 @@
             // 
             // boardButton8
             // 
+            this.boardButton8.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton8.Location = new System.Drawing.Point(152, 208);
             this.boardButton8.Name = "boardButton8";
             this.boardButton8.Size = new System.Drawing.Size(39, 33);
@@ -280,6 +301,7 @@
             // 
             // boardButton11
             // 
+            this.boardButton11.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton11.Location = new System.Drawing.Point(287, 208);
             this.boardButton11.Name = "boardButton11";
             this.boardButton11.Size = new System.Drawing.Size(39, 33);
@@ -288,6 +310,7 @@
             // 
             // boardButton10
             // 
+            this.boardButton10.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton10.Location = new System.Drawing.Point(242, 208);
             this.boardButton10.Name = "boardButton10";
             this.boardButton10.Size = new System.Drawing.Size(39, 33);
@@ -296,17 +319,72 @@
             // 
             // boardButton9
             // 
+            this.boardButton9.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.boardButton9.Location = new System.Drawing.Point(197, 208);
             this.boardButton9.Name = "boardButton9";
             this.boardButton9.Size = new System.Drawing.Size(39, 33);
             this.boardButton9.TabIndex = 17;
             this.boardButton9.UseVisualStyleBackColor = true;
             // 
+            // createGameMenuButton
+            // 
+            this.createGameMenuButton.Name = "createGameMenuButton";
+            this.createGameMenuButton.Size = new System.Drawing.Size(152, 22);
+            this.createGameMenuButton.Text = "Create Game";
+            // 
+            // closeToolStripMenuItem
+            // 
+            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.closeToolStripMenuItem.Text = "Close";
+            // 
+            // wordInputBox
+            // 
+            this.wordInputBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.wordInputBox.Location = new System.Drawing.Point(152, 316);
+            this.wordInputBox.Name = "wordInputBox";
+            this.wordInputBox.Size = new System.Drawing.Size(174, 20);
+            this.wordInputBox.TabIndex = 25;
+            // 
+            // wordSubmissionLabel
+            // 
+            this.wordSubmissionLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.wordSubmissionLabel.AutoSize = true;
+            this.wordSubmissionLabel.Location = new System.Drawing.Point(57, 319);
+            this.wordSubmissionLabel.Name = "wordSubmissionLabel";
+            this.wordSubmissionLabel.Size = new System.Drawing.Size(89, 13);
+            this.wordSubmissionLabel.TabIndex = 26;
+            this.wordSubmissionLabel.Text = "Word Submission";
+            // 
+            // enterButton
+            // 
+            this.enterButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.enterButton.Location = new System.Drawing.Point(344, 312);
+            this.enterButton.Name = "enterButton";
+            this.enterButton.Size = new System.Drawing.Size(75, 23);
+            this.enterButton.TabIndex = 27;
+            this.enterButton.Text = "Enter";
+            this.enterButton.UseVisualStyleBackColor = true;
+            // 
+            // backspaceButton
+            // 
+            this.backspaceButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.backspaceButton.Location = new System.Drawing.Point(344, 247);
+            this.backspaceButton.Name = "backspaceButton";
+            this.backspaceButton.Size = new System.Drawing.Size(75, 33);
+            this.backspaceButton.TabIndex = 28;
+            this.backspaceButton.Text = "Backspace";
+            this.backspaceButton.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(478, 413);
+            this.Controls.Add(this.backspaceButton);
+            this.Controls.Add(this.enterButton);
+            this.Controls.Add(this.wordSubmissionLabel);
+            this.Controls.Add(this.wordInputBox);
             this.Controls.Add(this.boardButton12);
             this.Controls.Add(this.boardButton15);
             this.Controls.Add(this.boardButton14);
@@ -373,6 +451,12 @@
         private System.Windows.Forms.Button boardButton11;
         private System.Windows.Forms.Button boardButton10;
         private System.Windows.Forms.Button boardButton9;
+        private System.Windows.Forms.ToolStripMenuItem createGameMenuButton;
+        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+        private System.Windows.Forms.TextBox wordInputBox;
+        private System.Windows.Forms.Label wordSubmissionLabel;
+        private System.Windows.Forms.Button enterButton;
+        private System.Windows.Forms.Button backspaceButton;
     }
 }
 

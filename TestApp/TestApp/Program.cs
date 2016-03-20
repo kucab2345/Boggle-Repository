@@ -11,6 +11,7 @@ namespace TestApp
         static void Main(string[] args)
         {
             Console.WriteLine("Hello Ryan");
+            Console.WriteLine("BranchSync");
         }
     }
 }

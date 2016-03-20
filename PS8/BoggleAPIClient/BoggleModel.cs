@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BoggleAPIClient
 {
-    public class BoggleClient
+    public class BoggleModel
     {
         private string nickname;
 
@@ -19,7 +19,7 @@ namespace BoggleAPIClient
 
         private HttpClient client;
 
-        public BoggleClient(string serverDest)
+        public BoggleModel(string serverDest)
         {
             client = new HttpClient();
             client.BaseAddress = new Uri(serverDest);
@@ -57,5 +57,7 @@ namespace BoggleAPIClient
                 }
             }
         }
+
+        public void createGame(int gameTime)
     }
 }

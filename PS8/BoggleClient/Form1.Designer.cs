@@ -41,6 +41,22 @@
             this.player2ScoreBox = new System.Windows.Forms.TextBox();
             this.player1ScoreLabel = new System.Windows.Forms.Label();
             this.player2ScoreLabel = new System.Windows.Forms.Label();
+            this.boardButton1 = new System.Windows.Forms.Button();
+            this.boardButton2 = new System.Windows.Forms.Button();
+            this.boardButton3 = new System.Windows.Forms.Button();
+            this.boardButton0 = new System.Windows.Forms.Button();
+            this.boardButton4 = new System.Windows.Forms.Button();
+            this.boardButton7 = new System.Windows.Forms.Button();
+            this.boardButton6 = new System.Windows.Forms.Button();
+            this.boardButton5 = new System.Windows.Forms.Button();
+            this.boardButton12 = new System.Windows.Forms.Button();
+            this.boardButton15 = new System.Windows.Forms.Button();
+            this.boardButton14 = new System.Windows.Forms.Button();
+            this.boardButton13 = new System.Windows.Forms.Button();
+            this.boardButton8 = new System.Windows.Forms.Button();
+            this.boardButton11 = new System.Windows.Forms.Button();
+            this.boardButton10 = new System.Windows.Forms.Button();
+            this.boardButton9 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -51,7 +67,7 @@
             this.helpMenuButton});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(618, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(478, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -84,22 +100,27 @@
             // 
             // player1NameBox
             // 
-            this.player1NameBox.Location = new System.Drawing.Point(171, 45);
+            this.player1NameBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.player1NameBox.Location = new System.Drawing.Point(125, 41);
             this.player1NameBox.Name = "player1NameBox";
+            this.player1NameBox.ReadOnly = true;
             this.player1NameBox.Size = new System.Drawing.Size(100, 20);
             this.player1NameBox.TabIndex = 1;
             // 
             // player2NameBox
             // 
-            this.player2NameBox.Location = new System.Drawing.Point(296, 44);
+            this.player2NameBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.player2NameBox.Location = new System.Drawing.Point(250, 40);
             this.player2NameBox.Name = "player2NameBox";
+            this.player2NameBox.ReadOnly = true;
             this.player2NameBox.Size = new System.Drawing.Size(100, 20);
             this.player2NameBox.TabIndex = 2;
             // 
             // player1NameLabel
             // 
+            this.player1NameLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.player1NameLabel.AutoSize = true;
-            this.player1NameLabel.Location = new System.Drawing.Point(117, 47);
+            this.player1NameLabel.Location = new System.Drawing.Point(71, 43);
             this.player1NameLabel.Name = "player1NameLabel";
             this.player1NameLabel.Size = new System.Drawing.Size(48, 13);
             this.player1NameLabel.TabIndex = 3;
@@ -107,8 +128,9 @@
             // 
             // player2NameLabel
             // 
+            this.player2NameLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.player2NameLabel.AutoSize = true;
-            this.player2NameLabel.Location = new System.Drawing.Point(403, 45);
+            this.player2NameLabel.Location = new System.Drawing.Point(357, 41);
             this.player2NameLabel.Name = "player2NameLabel";
             this.player2NameLabel.Size = new System.Drawing.Size(45, 13);
             this.player2NameLabel.TabIndex = 4;
@@ -116,22 +138,27 @@
             // 
             // player1ScoreBox
             // 
-            this.player1ScoreBox.Location = new System.Drawing.Point(171, 72);
+            this.player1ScoreBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.player1ScoreBox.Location = new System.Drawing.Point(125, 68);
             this.player1ScoreBox.Name = "player1ScoreBox";
+            this.player1ScoreBox.ReadOnly = true;
             this.player1ScoreBox.Size = new System.Drawing.Size(100, 20);
             this.player1ScoreBox.TabIndex = 5;
             // 
             // player2ScoreBox
             // 
-            this.player2ScoreBox.Location = new System.Drawing.Point(296, 71);
+            this.player2ScoreBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.player2ScoreBox.Location = new System.Drawing.Point(250, 67);
             this.player2ScoreBox.Name = "player2ScoreBox";
+            this.player2ScoreBox.ReadOnly = true;
             this.player2ScoreBox.Size = new System.Drawing.Size(100, 20);
             this.player2ScoreBox.TabIndex = 6;
             // 
             // player1ScoreLabel
             // 
+            this.player1ScoreLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.player1ScoreLabel.AutoSize = true;
-            this.player1ScoreLabel.Location = new System.Drawing.Point(120, 78);
+            this.player1ScoreLabel.Location = new System.Drawing.Point(74, 74);
             this.player1ScoreLabel.Name = "player1ScoreLabel";
             this.player1ScoreLabel.Size = new System.Drawing.Size(35, 13);
             this.player1ScoreLabel.TabIndex = 7;
@@ -139,18 +166,163 @@
             // 
             // player2ScoreLabel
             // 
+            this.player2ScoreLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.player2ScoreLabel.AutoSize = true;
-            this.player2ScoreLabel.Location = new System.Drawing.Point(403, 74);
+            this.player2ScoreLabel.Location = new System.Drawing.Point(357, 70);
             this.player2ScoreLabel.Name = "player2ScoreLabel";
             this.player2ScoreLabel.Size = new System.Drawing.Size(35, 13);
             this.player2ScoreLabel.TabIndex = 8;
             this.player2ScoreLabel.Text = "Score";
             // 
+            // boardButton1
+            // 
+            this.boardButton1.Location = new System.Drawing.Point(197, 130);
+            this.boardButton1.Name = "boardButton1";
+            this.boardButton1.Size = new System.Drawing.Size(39, 33);
+            this.boardButton1.TabIndex = 9;
+            this.boardButton1.UseVisualStyleBackColor = true;
+            // 
+            // boardButton2
+            // 
+            this.boardButton2.Location = new System.Drawing.Point(242, 130);
+            this.boardButton2.Name = "boardButton2";
+            this.boardButton2.Size = new System.Drawing.Size(39, 33);
+            this.boardButton2.TabIndex = 10;
+            this.boardButton2.UseVisualStyleBackColor = true;
+            // 
+            // boardButton3
+            // 
+            this.boardButton3.Location = new System.Drawing.Point(287, 130);
+            this.boardButton3.Name = "boardButton3";
+            this.boardButton3.Size = new System.Drawing.Size(39, 33);
+            this.boardButton3.TabIndex = 11;
+            this.boardButton3.UseVisualStyleBackColor = true;
+            // 
+            // boardButton0
+            // 
+            this.boardButton0.Location = new System.Drawing.Point(152, 130);
+            this.boardButton0.Name = "boardButton0";
+            this.boardButton0.Size = new System.Drawing.Size(39, 33);
+            this.boardButton0.TabIndex = 12;
+            this.boardButton0.UseVisualStyleBackColor = true;
+            // 
+            // boardButton4
+            // 
+            this.boardButton4.Location = new System.Drawing.Point(152, 169);
+            this.boardButton4.Name = "boardButton4";
+            this.boardButton4.Size = new System.Drawing.Size(39, 33);
+            this.boardButton4.TabIndex = 16;
+            this.boardButton4.UseVisualStyleBackColor = true;
+            // 
+            // boardButton7
+            // 
+            this.boardButton7.Location = new System.Drawing.Point(287, 169);
+            this.boardButton7.Name = "boardButton7";
+            this.boardButton7.Size = new System.Drawing.Size(39, 33);
+            this.boardButton7.TabIndex = 15;
+            this.boardButton7.UseVisualStyleBackColor = true;
+            // 
+            // boardButton6
+            // 
+            this.boardButton6.Location = new System.Drawing.Point(242, 169);
+            this.boardButton6.Name = "boardButton6";
+            this.boardButton6.Size = new System.Drawing.Size(39, 33);
+            this.boardButton6.TabIndex = 14;
+            this.boardButton6.UseVisualStyleBackColor = true;
+            // 
+            // boardButton5
+            // 
+            this.boardButton5.Location = new System.Drawing.Point(197, 169);
+            this.boardButton5.Name = "boardButton5";
+            this.boardButton5.Size = new System.Drawing.Size(39, 33);
+            this.boardButton5.TabIndex = 13;
+            this.boardButton5.UseVisualStyleBackColor = true;
+            // 
+            // boardButton12
+            // 
+            this.boardButton12.Location = new System.Drawing.Point(152, 247);
+            this.boardButton12.Name = "boardButton12";
+            this.boardButton12.Size = new System.Drawing.Size(39, 33);
+            this.boardButton12.TabIndex = 24;
+            this.boardButton12.UseVisualStyleBackColor = true;
+            // 
+            // boardButton15
+            // 
+            this.boardButton15.Location = new System.Drawing.Point(287, 247);
+            this.boardButton15.Name = "boardButton15";
+            this.boardButton15.Size = new System.Drawing.Size(39, 33);
+            this.boardButton15.TabIndex = 23;
+            this.boardButton15.UseVisualStyleBackColor = true;
+            // 
+            // boardButton14
+            // 
+            this.boardButton14.Location = new System.Drawing.Point(242, 247);
+            this.boardButton14.Name = "boardButton14";
+            this.boardButton14.Size = new System.Drawing.Size(39, 33);
+            this.boardButton14.TabIndex = 22;
+            this.boardButton14.UseVisualStyleBackColor = true;
+            // 
+            // boardButton13
+            // 
+            this.boardButton13.Location = new System.Drawing.Point(197, 247);
+            this.boardButton13.Name = "boardButton13";
+            this.boardButton13.Size = new System.Drawing.Size(39, 33);
+            this.boardButton13.TabIndex = 21;
+            this.boardButton13.UseVisualStyleBackColor = true;
+            // 
+            // boardButton8
+            // 
+            this.boardButton8.Location = new System.Drawing.Point(152, 208);
+            this.boardButton8.Name = "boardButton8";
+            this.boardButton8.Size = new System.Drawing.Size(39, 33);
+            this.boardButton8.TabIndex = 20;
+            this.boardButton8.UseVisualStyleBackColor = true;
+            // 
+            // boardButton11
+            // 
+            this.boardButton11.Location = new System.Drawing.Point(287, 208);
+            this.boardButton11.Name = "boardButton11";
+            this.boardButton11.Size = new System.Drawing.Size(39, 33);
+            this.boardButton11.TabIndex = 19;
+            this.boardButton11.UseVisualStyleBackColor = true;
+            // 
+            // boardButton10
+            // 
+            this.boardButton10.Location = new System.Drawing.Point(242, 208);
+            this.boardButton10.Name = "boardButton10";
+            this.boardButton10.Size = new System.Drawing.Size(39, 33);
+            this.boardButton10.TabIndex = 18;
+            this.boardButton10.UseVisualStyleBackColor = true;
+            // 
+            // boardButton9
+            // 
+            this.boardButton9.Location = new System.Drawing.Point(197, 208);
+            this.boardButton9.Name = "boardButton9";
+            this.boardButton9.Size = new System.Drawing.Size(39, 33);
+            this.boardButton9.TabIndex = 17;
+            this.boardButton9.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(618, 413);
+            this.ClientSize = new System.Drawing.Size(478, 413);
+            this.Controls.Add(this.boardButton12);
+            this.Controls.Add(this.boardButton15);
+            this.Controls.Add(this.boardButton14);
+            this.Controls.Add(this.boardButton13);
+            this.Controls.Add(this.boardButton8);
+            this.Controls.Add(this.boardButton11);
+            this.Controls.Add(this.boardButton10);
+            this.Controls.Add(this.boardButton9);
+            this.Controls.Add(this.boardButton4);
+            this.Controls.Add(this.boardButton7);
+            this.Controls.Add(this.boardButton6);
+            this.Controls.Add(this.boardButton5);
+            this.Controls.Add(this.boardButton0);
+            this.Controls.Add(this.boardButton3);
+            this.Controls.Add(this.boardButton2);
+            this.Controls.Add(this.boardButton1);
             this.Controls.Add(this.player2ScoreLabel);
             this.Controls.Add(this.player1ScoreLabel);
             this.Controls.Add(this.player2ScoreBox);
@@ -185,6 +357,22 @@
         private System.Windows.Forms.TextBox player2ScoreBox;
         private System.Windows.Forms.Label player1ScoreLabel;
         private System.Windows.Forms.Label player2ScoreLabel;
+        private System.Windows.Forms.Button boardButton1;
+        private System.Windows.Forms.Button boardButton2;
+        private System.Windows.Forms.Button boardButton3;
+        private System.Windows.Forms.Button boardButton0;
+        private System.Windows.Forms.Button boardButton4;
+        private System.Windows.Forms.Button boardButton7;
+        private System.Windows.Forms.Button boardButton6;
+        private System.Windows.Forms.Button boardButton5;
+        private System.Windows.Forms.Button boardButton12;
+        private System.Windows.Forms.Button boardButton15;
+        private System.Windows.Forms.Button boardButton14;
+        private System.Windows.Forms.Button boardButton13;
+        private System.Windows.Forms.Button boardButton8;
+        private System.Windows.Forms.Button boardButton11;
+        private System.Windows.Forms.Button boardButton10;
+        private System.Windows.Forms.Button boardButton9;
     }
 }
 

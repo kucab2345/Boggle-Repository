@@ -30,8 +30,9 @@
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.gameMenuButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.createGameMenuButton = new System.Windows.Forms.ToolStripMenuItem();
             this.findGameMenuButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.createUserMenuButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeMenuButton = new System.Windows.Forms.ToolStripMenuItem();
             this.helpMenuButton = new System.Windows.Forms.ToolStripMenuItem();
             this.player1NameBox = new System.Windows.Forms.TextBox();
             this.player2NameBox = new System.Windows.Forms.TextBox();
@@ -57,8 +58,6 @@
             this.boardButton11 = new System.Windows.Forms.Button();
             this.boardButton10 = new System.Windows.Forms.Button();
             this.boardButton9 = new System.Windows.Forms.Button();
-            this.createGameMenuButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wordInputBox = new System.Windows.Forms.TextBox();
             this.wordSubmissionLabel = new System.Windows.Forms.Label();
             this.enterButton = new System.Windows.Forms.Button();
@@ -84,11 +83,16 @@
             this.gameMenuButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createGameMenuButton,
             this.findGameMenuButton,
-            this.createUserMenuButton,
-            this.closeToolStripMenuItem});
+            this.closeMenuButton});
             this.gameMenuButton.Name = "gameMenuButton";
             this.gameMenuButton.Size = new System.Drawing.Size(50, 20);
             this.gameMenuButton.Text = "Game";
+            // 
+            // createGameMenuButton
+            // 
+            this.createGameMenuButton.Name = "createGameMenuButton";
+            this.createGameMenuButton.Size = new System.Drawing.Size(152, 22);
+            this.createGameMenuButton.Text = "Create Game";
             // 
             // findGameMenuButton
             // 
@@ -96,11 +100,11 @@
             this.findGameMenuButton.Size = new System.Drawing.Size(152, 22);
             this.findGameMenuButton.Text = "Find Game";
             // 
-            // createUserMenuButton
+            // closeMenuButton
             // 
-            this.createUserMenuButton.Name = "createUserMenuButton";
-            this.createUserMenuButton.Size = new System.Drawing.Size(152, 22);
-            this.createUserMenuButton.Text = "Create User";
+            this.closeMenuButton.Name = "closeMenuButton";
+            this.closeMenuButton.Size = new System.Drawing.Size(152, 22);
+            this.closeMenuButton.Text = "Close";
             // 
             // helpMenuButton
             // 
@@ -328,18 +332,6 @@
             this.boardButton9.TabIndex = 17;
             this.boardButton9.UseVisualStyleBackColor = true;
             // 
-            // createGameMenuButton
-            // 
-            this.createGameMenuButton.Name = "createGameMenuButton";
-            this.createGameMenuButton.Size = new System.Drawing.Size(152, 22);
-            this.createGameMenuButton.Text = "Create Game";
-            // 
-            // closeToolStripMenuItem
-            // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.closeToolStripMenuItem.Text = "Close";
-            // 
             // wordInputBox
             // 
             this.wordInputBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
@@ -449,7 +441,6 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem gameMenuButton;
         private System.Windows.Forms.ToolStripMenuItem findGameMenuButton;
-        private System.Windows.Forms.ToolStripMenuItem createUserMenuButton;
         private System.Windows.Forms.ToolStripMenuItem helpMenuButton;
         private System.Windows.Forms.TextBox player1NameBox;
         private System.Windows.Forms.TextBox player2NameBox;
@@ -476,7 +467,7 @@
         private System.Windows.Forms.Button boardButton10;
         private System.Windows.Forms.Button boardButton9;
         private System.Windows.Forms.ToolStripMenuItem createGameMenuButton;
-        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem closeMenuButton;
         private System.Windows.Forms.TextBox wordInputBox;
         private System.Windows.Forms.Label wordSubmissionLabel;
         private System.Windows.Forms.Button enterButton;

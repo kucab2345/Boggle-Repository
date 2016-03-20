@@ -93,6 +93,7 @@
             this.createGameMenuButton.Name = "createGameMenuButton";
             this.createGameMenuButton.Size = new System.Drawing.Size(152, 22);
             this.createGameMenuButton.Text = "Create Game";
+            this.createGameMenuButton.Click += new System.EventHandler(this.createGameMenuButton_Click);
             // 
             // findGameMenuButton
             // 

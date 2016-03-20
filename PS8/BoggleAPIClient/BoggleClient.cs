@@ -35,20 +35,20 @@ namespace BoggleAPIClient
             using (client)
             {
                 dynamic data = new ExpandoObject();
-                data.name = "Nickname";
-                data.description = userName;
-                data.has_issues = false;
+                data.Nickname = userName;
 
                 StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = client.PostAsync(new Uri(), content).Result;
+                HttpResponseMessage response = client.PostAsync("http://bogglecs3500s16.azurewebsites.net/BoggleService.svc/users", content).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
                     // The deserialized response value is an object that describes the new repository.
                     string result = response.Content.ReadAsStringAsync().Result;
-                    dynamic userStringToken = JsonConvert.DeserializeObject(result);
-                    userToken = userStringToken;
-                    
+                    userToken = result.Remove(0, 14);
+                    userToken = userToken.Trim('}');
+                    userToken = userToken.Trim('"');
+                    userToken = userToken.Trim('\\');
+                    Console.WriteLine(userToken);
                 }
                 else
                 {

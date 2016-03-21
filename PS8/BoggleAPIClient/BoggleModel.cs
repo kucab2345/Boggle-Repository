@@ -38,7 +38,7 @@ namespace BoggleAPIClient
                 data.Nickname = userName;
 
                 StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = client.PostAsync("http://bogglecs3500s16.azurewebsites.net/BoggleService.svc/users", content).Result;
+                HttpResponseMessage response = client.PostAsync("users", content).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -67,7 +67,7 @@ namespace BoggleAPIClient
                 data.TimeLimit = gameTime;
 
                 StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = client.PostAsync("http://bogglecs3500s16.azurewebsites.net/BoggleService.svc/games", content).Result;
+                HttpResponseMessage response = client.PostAsync("games", content).Result;
 
                 if (response.IsSuccessStatusCode)
                 {

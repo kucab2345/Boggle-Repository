@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoggleClient", "BoggleClien
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoggleAPIClient", "BoggleAPIClient\BoggleAPIClient.csproj", "{257044C2-C495-4736-B5C6-D437216BC9B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoggleClientTest", "BoggleClientTest\BoggleClientTest.csproj", "{8546C7C2-1FDC-47A2-92ED-B8DBB22E8BB4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoggleModelTest", "BoggleModelTest\BoggleModelTest.csproj", "{3E2DDA90-EA67-4B8E-8AB2-6807CF1818AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{257044C2-C495-4736-B5C6-D437216BC9B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{257044C2-C495-4736-B5C6-D437216BC9B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{257044C2-C495-4736-B5C6-D437216BC9B6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8546C7C2-1FDC-47A2-92ED-B8DBB22E8BB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8546C7C2-1FDC-47A2-92ED-B8DBB22E8BB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8546C7C2-1FDC-47A2-92ED-B8DBB22E8BB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8546C7C2-1FDC-47A2-92ED-B8DBB22E8BB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E2DDA90-EA67-4B8E-8AB2-6807CF1818AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E2DDA90-EA67-4B8E-8AB2-6807CF1818AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E2DDA90-EA67-4B8E-8AB2-6807CF1818AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E2DDA90-EA67-4B8E-8AB2-6807CF1818AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

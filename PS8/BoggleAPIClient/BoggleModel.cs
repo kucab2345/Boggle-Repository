@@ -19,20 +19,29 @@ namespace BoggleAPIClient
 
         private HttpClient client;
 
+        private string server;
+
         public BoggleModel(string serverDest)
         {
+            server = serverDest;
+        }
+
+        private HttpClient CreateClient()
+        {
             client = new HttpClient();
-            client.BaseAddress = new Uri(serverDest);
+            client.BaseAddress = new Uri(server);
 
             // Tell the server that the client will accept this particular type of response data
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Add("Accept", "application/json");
+
+            return client;
         }
 
         public void createUser(string userName)
         {
             nickname = userName;
-            using (client)
+            using (HttpClient client = CreateClient())
             {
                 dynamic data = new ExpandoObject();
                 data.Nickname = userName;
@@ -60,7 +69,7 @@ namespace BoggleAPIClient
 
         public void createGame(int gameTime)
         {
-            using (client)
+            using (HttpClient client = CreateClient())
             {
                 dynamic data = new ExpandoObject();
                 data.UserToken = userToken;
@@ -73,12 +82,45 @@ namespace BoggleAPIClient
                 {
                     // The deserialized response value is an object that describes the new repository.
                     string result = response.Content.ReadAsStringAsync().Result;
-                    gameID = result;
+                    gameID = result.Remove(0, 11);
+                    gameID = gameID.Trim('}');
+                    gameID = gameID.Trim('"');
                     Console.WriteLine(gameID);
                 }
                 else
                 {
                     Console.WriteLine("Error creating game: " + response.StatusCode);
+                    Console.WriteLine(response.ReasonPhrase);
+                }
+            }
+        }
+
+        public void getGameStatus()
+        {
+            using(HttpClient client = CreateClient())
+            {
+
+            }
+        }
+
+        public void cancelJoinRequest()
+        {
+            using(HttpClient client = CreateClient())
+            {
+                dynamic data = new ExpandoObject();
+                data.UserToken = userToken;
+
+                StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = client.PutAsync("games", content).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("Game cancelled");
+                }
+                else
+                {
+                    Console.WriteLine("Error Cancelling game request: " + response.StatusCode);
                     Console.WriteLine(response.ReasonPhrase);
                 }
             }

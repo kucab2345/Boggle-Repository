@@ -12,6 +12,8 @@ namespace BoggleModelTest
         {
             BoggleModel test = new BoggleModel("http://bogglecs3500s16.azurewebsites.net/BoggleService.svc/");
             test.createUser("Joe");
+            test.createGame(50);
+            test.cancelJoinRequest();
         }
     }
 }

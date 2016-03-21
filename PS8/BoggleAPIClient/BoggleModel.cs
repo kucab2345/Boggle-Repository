@@ -38,7 +38,7 @@ namespace BoggleAPIClient
             return client;
         }
 
-        public void createUser(string userName)
+        public async void createUser(string userName)
         {
             nickname = userName;
             using (HttpClient client = CreateClient())
@@ -47,7 +47,10 @@ namespace BoggleAPIClient
                 data.Nickname = userName;
 
                 StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = client.PostAsync("users", content).Result;
+                Task<HttpResponseMessage> responseResult = new Task<HttpResponseMessage>(() =>client.PostAsync("users", content).Result);
+                responseResult.Start();
+
+                HttpResponseMessage response = await responseResult;
 
                 if (response.IsSuccessStatusCode)
                 {

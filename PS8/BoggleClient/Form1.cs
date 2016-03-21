@@ -18,11 +18,13 @@ namespace BoggleClient
         public Form1()
         {
             InitializeComponent();
+            cancelGameRequestButton.Visible = false;
         }
         /// <summary>
         /// Fires the CreateGameEvent
         /// </summary>
         public event Action<string, string, string> CreateGameEvent;
+        public event Action CancelGameEvent;
 
         /// <summary>
         /// Prompts user for nickname, timelimit, and server address they wish to connect to,
@@ -39,6 +41,15 @@ namespace BoggleClient
             if(CreateGameEvent != null)
             {
                 CreateGameEvent(nickname, clock, address);
+                cancelGameRequestButton.Visible = true;
+            }
+        }
+
+        private void cancelGameRequestButton_Click(object sender, EventArgs e)
+        {
+            if(CancelGameEvent != null)
+            {
+                CancelGameEvent();
             }
         }
     }

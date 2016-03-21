@@ -9,5 +9,6 @@ namespace BoggleClient
     public interface GameInterface
     {
         event Action<string, string, string> CreateGameEvent;
+        event Action CancelGameEvent;
     }
 }

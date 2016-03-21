@@ -64,6 +64,7 @@
             this.clearButton = new System.Windows.Forms.Button();
             this.timeBox1 = new System.Windows.Forms.TextBox();
             this.timeLabel = new System.Windows.Forms.Label();
+            this.cancelGameRequestButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -391,11 +392,22 @@
             this.timeLabel.TabIndex = 31;
             this.timeLabel.Text = "Time";
             // 
+            // cancelGameRequestButton
+            // 
+            this.cancelGameRequestButton.Location = new System.Drawing.Point(315, 378);
+            this.cancelGameRequestButton.Name = "cancelGameRequestButton";
+            this.cancelGameRequestButton.Size = new System.Drawing.Size(151, 23);
+            this.cancelGameRequestButton.TabIndex = 32;
+            this.cancelGameRequestButton.Text = "Cancel Pending Game...";
+            this.cancelGameRequestButton.UseVisualStyleBackColor = true;
+            this.cancelGameRequestButton.Click += new System.EventHandler(this.cancelGameRequestButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(478, 413);
+            this.Controls.Add(this.cancelGameRequestButton);
             this.Controls.Add(this.timeLabel);
             this.Controls.Add(this.timeBox1);
             this.Controls.Add(this.clearButton);
@@ -475,6 +487,7 @@
         private System.Windows.Forms.Button clearButton;
         private System.Windows.Forms.TextBox timeBox1;
         private System.Windows.Forms.Label timeLabel;
+        private System.Windows.Forms.Button cancelGameRequestButton;
     }
 }
 

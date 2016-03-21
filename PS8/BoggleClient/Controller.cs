@@ -16,11 +16,16 @@ namespace BoggleClient
           
             game = view;
             game.CreateGameEvent += CreateGameHandler;
+            game.CancelGameEvent += CancelGameHandler;
         }
         private void CreateGameHandler(string nickname, string timeLimit, string server)
         {
             mainClient = new BoggleModel(server);
             mainClient.createUser(nickname);
+        }
+        private void CancelGameHandler()
+        {
+            mainClient.cancelJoinRequest();
         }
     }
 }

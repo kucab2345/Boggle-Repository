@@ -11,8 +11,9 @@ namespace BoggleModelTest
         public void TestMethod1()
         {
             BoggleModel test = new BoggleModel("http://bogglecs3500s16.azurewebsites.net/BoggleService.svc/");
-            test.createUser("Joe");
+            test.createUser("hehbolwabowboawognwoq");
             test.createGame(50);
+            test.getGameStatus();
             test.cancelJoinRequest();
         }
     }

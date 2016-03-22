@@ -28,8 +28,9 @@ namespace BoggleAPIClient
         public bool gameCompleted;
         public bool gameCreation;
         private int gameTime;
-        private int player1Score;
-        private int player2Score;
+        public int player1Score;
+        public int player2Score;
+        public string player2Name;
 
         public BoggleModel(string serverDest)
         {

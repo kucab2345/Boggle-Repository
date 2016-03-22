@@ -50,6 +50,9 @@ namespace BoggleClient
 
         private void boardSetup()
         {
+            game.Player2Name = mainClient.player2Name;
+            game.Player1Score = mainClient.player1Score.ToString();
+            game.Player2Score = mainClient.player2Score.ToString();
             mainClient.gameCreation = false;
         }
 

@@ -83,12 +83,12 @@ namespace BoggleClient
 
             confirmation.Click += (sender, e) => { prompt.Close(); };
             prompt.Controls.Add(textBox);
-            prompt.Controls.Add(confirmation);
             prompt.Controls.Add(textLabel);
             prompt.Controls.Add(textBox1);
             prompt.Controls.Add(textLabel1);
             prompt.Controls.Add(textBox2);
             prompt.Controls.Add(textLabel2);
+            prompt.Controls.Add(confirmation);
 
             prompt.AcceptButton = confirmation;
 

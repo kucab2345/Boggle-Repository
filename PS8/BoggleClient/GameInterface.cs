@@ -11,6 +11,7 @@ namespace BoggleClient
         event Action<string, string, string> CreateGameEvent;
         event Action CancelGameEvent;
 
+        event Action<string> WordEnteredEvent;
         string Player1Name { get; set; }
         string Player2Name { get; set; }
         string Player1Score { get; set; }

@@ -29,6 +29,8 @@ namespace BoggleClient
         /// </summary>
         public event Action CancelGameEvent;
 
+        public event Action<string> WordEnteredEvent;
+
         public string Player1Name
         {
             get
@@ -109,8 +111,6 @@ namespace BoggleClient
                 }
             }
         }
-
-        public event<String> WordEnteredEven
 
         /// <summary>
         /// Prompts user for nickname, timelimit, and server address they wish to connect to,

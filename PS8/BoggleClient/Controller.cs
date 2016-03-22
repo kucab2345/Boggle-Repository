@@ -16,7 +16,16 @@ namespace BoggleClient
             game = view;
             game.CreateGameEvent += CreateGameHandler;
             game.CancelGameEvent += CancelGameHandler;
+            game.WordEnteredEvent += WordEnteredHandler;
         }
+
+        private async void WordEnteredHandler(string obj)
+        {
+            Task Scoring = new Task(() => mainClient.submitWord(obj));
+            Scoring.Start();
+            await Scoring;
+        }
+
         private async void CreateGameHandler(string nickname, string timeLimit, string server)
         {
             mainClient = new BoggleModel(server);

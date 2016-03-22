@@ -29,9 +29,29 @@ namespace BoggleClient
             createGame.Start();
             game.Player1Name = mainClient.nickname;
             createGame.Wait();
-            
+            while (mainClient.GamePlaying)
+            {
+                Task playGame = new Task(() => mainClient.playGame());
+                playGame.Start();
+                playGame.Wait();
+                if (mainClient.gameCreation)
+                {
+                    boardSetup();
+                }
+                await Task.Delay(1000);
+            }
+            if (mainClient.gameCompleted)
+            {
+                mainClient.finalBoardSetup();
+            }
 
         }
+
+        private void boardSetup()
+        {
+            mainClient.gameCreation = false;
+        }
+
         private async void CancelGameHandler()
         {
             Task cancelGame = new Task(() =>mainClient.cancelJoinRequest());

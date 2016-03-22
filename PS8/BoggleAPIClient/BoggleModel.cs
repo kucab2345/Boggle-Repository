@@ -22,46 +22,79 @@ namespace BoggleAPIClient
 
         private string server;
 
-        private bool cancel;
+        public bool GamePlaying { get; set; }
 
-        private bool nameCreation;
+        private bool gamePending;
+        public bool gameCompleted;
+        public bool gameCreation;
+        private int gameTime;
+        private int player1Score;
+        private int player2Score;
 
-        private bool gameCreation;
-
-        public bool gameRunning;
-
-        public bool gamePending;
-
-        public bool Cancel
-        {
-            set
-            {
-                cancel = value;
-            }
-            get
-            {
-                return cancel;
-            }
-        }
-
-        public bool NameCreation
-        {
-            set
-            {
-                nameCreation = value;
-            }
-        }
-
-        public bool GameCreation
-        {
-            set
-            {
-                gameCreation = value;
-            }
-        }
         public BoggleModel(string serverDest)
         {
             server = serverDest;
+        }
+
+        public Task playGame()
+        {
+            using (HttpClient client = CreateClient())
+            {
+                String url = String.Format("games/{0}/Brief=yes", gameID);
+
+                HttpResponseMessage response = client.GetAsync(url).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = response.Content.ReadAsStringAsync().Result;
+                    dynamic deserResult = JsonConvert.DeserializeObject(result);
+
+                    if(gamePending && deserResult.GameState == "active")
+                    {
+                        gamePending = false;
+                        gameCreation = true;
+                        Task gameMake = new Task(() => gameSetup());
+                        gameMake.Start();
+                        gameMake.Wait();
+                    }
+                    else if(deserResult.GameState == "active")
+                    {
+                        int generalInt;
+                        if (int.TryParse(deserResult.TimeLeft, out generalInt))
+                        {
+                            gameTime = generalInt;
+                        }
+
+                        if (int.TryParse(deserResult.Player1.Score, out generalInt))
+                        {
+                            player1Score = generalInt;
+                        }
+
+                        if (int.TryParse(deserResult.Player2.Score, out generalInt))
+                        {
+                            player2Score = generalInt;
+                        }
+
+                    }
+                    if(deserResult.GameState == "completed")
+                    {
+                        gameCompleted = true;
+                    }
+                    
+                }
+                else
+                {
+
+                }
+            }
+            return Task.FromResult(0);
+        }
+
+        private Task gameSetup()
+        {
+
+            return Task.FromResult(0);
+            throw new NotImplementedException();
         }
 
         private HttpClient CreateClient()
@@ -76,16 +109,7 @@ namespace BoggleAPIClient
             return client;
         }
 
-        public async void runGame()
-        {
-            using(HttpClient client = CreateClient())
-            {
-                if (nameCreation)
-                {
 
-                }
-            }
-        }
 
         public Task createUser(string userName)
         {
@@ -136,6 +160,7 @@ namespace BoggleAPIClient
                     string result = response.Content.ReadAsStringAsync().Result;
                     dynamic deserResult = JsonConvert.DeserializeObject(result);
                     gameID = deserResult.GameID;
+                    gamePending = true;
                     Console.WriteLine(gameID);
                 }
                 else
@@ -164,15 +189,15 @@ namespace BoggleAPIClient
                     string result = response.Content.ReadAsStringAsync().Result;
                     dynamic deserResult = JsonConvert.DeserializeObject(result);
                     
-                    if(deserResult.GameState == "active" && !gameCreated)
-                    {
-                        gameSetup(deserResult);
-                    }
-                    else if(deserResult.GameState == "active")
-                    {
-                        gameCurrentState(deserResult);
-                    }
-                    else if()
+                    //if(deserResult.GameState == "active" && !gameCreated)
+                    //{
+                    //    gameSetup(deserResult);
+                    //}
+                    //else if(deserResult.GameState == "active")
+                    //{
+                    //    gameCurrentState(deserResult);
+                    //}
+                    //else if()
 
                     Console.WriteLine(gameID);
                 }
@@ -196,6 +221,7 @@ namespace BoggleAPIClient
                 if (response.IsSuccessStatusCode)
                 {
                     Console.WriteLine("Game cancelled");
+                    gamePending = false;
                 }
                 else
                 {

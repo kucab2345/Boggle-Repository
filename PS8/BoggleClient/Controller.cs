@@ -50,6 +50,7 @@ namespace BoggleClient
 
         private void boardSetup()
         {
+            
             mainClient.gameCreation = false;
         }
 

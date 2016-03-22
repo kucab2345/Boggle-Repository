@@ -22,14 +22,18 @@ namespace BoggleAPIClient
 
         private string server;
 
+        public char[] boardState;
+
         public bool GamePlaying { get; set; }
 
         private bool gamePending;
         public bool gameCompleted;
         public bool gameCreation;
-        private int gameTime;
-        private int player1Score;
-        private int player2Score;
+        public int gameTime;
+        public int player1Score;
+        public int player2Score;
+
+        public string player2Name;
 
         public BoggleModel(string serverDest)
         {
@@ -92,9 +96,40 @@ namespace BoggleAPIClient
 
         private Task gameSetup()
         {
+            using (HttpClient client = CreateClient())
+            {
+                String url = String.Format("games/{0}, gameID");
 
-            return Task.FromResult(0);
-            throw new NotImplementedException();
+                HttpResponseMessage response = client.GetAsync(url).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = response.Content.ReadAsStringAsync().Result;
+                    dynamic deserResult = JsonConvert.DeserializeObject(result);
+
+                    boardState = deserResult.Board.ToCharArray();
+
+                    player2Name = deserResult.Player2.Nickname;
+
+                    int generalInt;
+                    if (int.TryParse(deserResult.TimeLeft, out generalInt))
+                    {
+                        gameTime = generalInt;
+                    }
+
+                    if (int.TryParse(deserResult.Player1.Score, out generalInt))
+                    {
+                        player1Score = generalInt;
+                    }
+
+                    if (int.TryParse(deserResult.Player2.Score, out generalInt))
+                    {
+                        player2Score = generalInt;
+                    }
+                }
+            }
+                    return Task.FromResult(0);
+            
         }
 
         private HttpClient CreateClient()

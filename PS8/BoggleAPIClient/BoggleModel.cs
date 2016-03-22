@@ -28,6 +28,10 @@ namespace BoggleAPIClient
 
         private bool gameCreation;
 
+        public bool gameRunning;
+
+        public bool gamePending;
+
         public bool Cancel
         {
             set
@@ -147,7 +151,7 @@ namespace BoggleAPIClient
         {
             using(HttpClient client = CreateClient())
             {
-                String url = String.Format("games/{0}", gameID);
+                String url = String.Format("games/{0}/Brief=yes", gameID);
 
                 Task<HttpResponseMessage> responseResult = new Task<HttpResponseMessage>(() => client.GetAsync(url).Result);
                 
@@ -157,12 +161,24 @@ namespace BoggleAPIClient
 
                 if (response.IsSuccessStatusCode)
                 {
-                    cancel = true;
+                    string result = response.Content.ReadAsStringAsync().Result;
+                    dynamic deserResult = JsonConvert.DeserializeObject(result);
+                    
+                    if(deserResult.GameState == "active" && !gameCreated)
+                    {
+                        gameSetup(deserResult);
+                    }
+                    else if(deserResult.GameState == "active")
+                    {
+                        gameCurrentState(deserResult);
+                    }
+                    else if()
+
+                    Console.WriteLine(gameID);
                 }
                 else
                 {
-                    Console.WriteLine("Error Cancelling game request: " + response.StatusCode);
-                    Console.WriteLine(response.ReasonPhrase);
+                    
                 }
             }
         }

@@ -97,8 +97,9 @@
             // closeMenuButton
             // 
             this.closeMenuButton.Name = "closeMenuButton";
-            this.closeMenuButton.Size = new System.Drawing.Size(142, 22);
+            this.closeMenuButton.Size = new System.Drawing.Size(152, 22);
             this.closeMenuButton.Text = "Close";
+            this.closeMenuButton.Click += new System.EventHandler(this.closeMenuButton_Click);
             // 
             // helpMenuButton
             // 

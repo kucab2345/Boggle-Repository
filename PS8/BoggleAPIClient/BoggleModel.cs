@@ -146,7 +146,7 @@ namespace BoggleAPIClient
             }
             return Task.FromResult(0);
         }
-
+        /*
         public async void getGameStatus()
         {
             using(HttpClient client = CreateClient())
@@ -182,7 +182,7 @@ namespace BoggleAPIClient
                 }
             }
         }
-
+        */
         public Task cancelJoinRequest()
         {
             using(HttpClient client = CreateClient())

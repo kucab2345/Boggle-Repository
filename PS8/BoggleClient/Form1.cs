@@ -50,15 +50,11 @@ namespace BoggleClient
             string nickname, clock, address;
 
             DialogResult result = Prompt.GameCreateDialogue(out nickname, out clock, out address);
-            
+
             if(CreateGameEvent != null && result == DialogResult.OK)
             {
                 CreateGameEvent(nickname, clock, address);
                 cancelGameRequestButton.Visible = true;
-            }
-            else if(result == DialogResult.Abort)
-            {
-                MessageBox.Show("Invalid Game Parameters");
             }
         }
 
@@ -82,6 +78,7 @@ namespace BoggleClient
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 StartPosition = FormStartPosition.CenterScreen
             };
+
             Label textLabel = new Label() { Left = 50, Top = 30, Text = "Nickname" };
             TextBox textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
 
@@ -93,7 +90,7 @@ namespace BoggleClient
 
             Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 200, DialogResult = DialogResult.OK };
 
-            confirmation.Click += (sender, e) => { prompt.Close(); };
+            confirmation.Click += (sender, e) => {prompt.Close(); };
             prompt.Controls.Add(textBox);
             prompt.Controls.Add(textLabel);
             prompt.Controls.Add(textBox1);
@@ -105,18 +102,18 @@ namespace BoggleClient
             prompt.AcceptButton = confirmation;
 
             prompt.ShowDialog();
+
             nickname = textBox.Text;
             gameLength = textBox1.Text;
             serverAddress = textBox2.Text;
-            
-            double test; 
-            if(!string.IsNullOrWhiteSpace(nickname) && gameLength != "" && !string.IsNullOrWhiteSpace(serverAddress) && (double.TryParse(gameLength, out test) && test > 0))
+
+            double test;
+            if (!string.IsNullOrWhiteSpace(nickname) && gameLength != "" && !string.IsNullOrWhiteSpace(serverAddress) && (double.TryParse(gameLength, out test) && test > 0))
             {
                 return DialogResult.OK;
             }
-            else
             {
-                return DialogResult.Abort;
+                return DialogResult.Cancel;
             }
         }
     }

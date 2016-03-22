@@ -191,6 +191,7 @@
             this.boardButton1.Size = new System.Drawing.Size(39, 33);
             this.boardButton1.TabIndex = 9;
             this.boardButton1.UseVisualStyleBackColor = true;
+            this.boardButton1.Click += new System.EventHandler(this.boardButton1_Click);
             // 
             // boardButton2
             // 
@@ -200,6 +201,7 @@
             this.boardButton2.Size = new System.Drawing.Size(39, 33);
             this.boardButton2.TabIndex = 10;
             this.boardButton2.UseVisualStyleBackColor = true;
+            this.boardButton2.Click += new System.EventHandler(this.boardButton2_Click);
             // 
             // boardButton3
             // 
@@ -209,6 +211,7 @@
             this.boardButton3.Size = new System.Drawing.Size(39, 33);
             this.boardButton3.TabIndex = 11;
             this.boardButton3.UseVisualStyleBackColor = true;
+            this.boardButton3.Click += new System.EventHandler(this.boardButton3_Click);
             // 
             // boardButton0
             // 
@@ -218,6 +221,7 @@
             this.boardButton0.Size = new System.Drawing.Size(39, 33);
             this.boardButton0.TabIndex = 12;
             this.boardButton0.UseVisualStyleBackColor = true;
+            this.boardButton0.Click += new System.EventHandler(this.boardButton0_Click);
             // 
             // boardButton4
             // 
@@ -227,6 +231,7 @@
             this.boardButton4.Size = new System.Drawing.Size(39, 33);
             this.boardButton4.TabIndex = 16;
             this.boardButton4.UseVisualStyleBackColor = true;
+            this.boardButton4.Click += new System.EventHandler(this.boardButton4_Click);
             // 
             // boardButton7
             // 
@@ -236,6 +241,7 @@
             this.boardButton7.Size = new System.Drawing.Size(39, 33);
             this.boardButton7.TabIndex = 15;
             this.boardButton7.UseVisualStyleBackColor = true;
+            this.boardButton7.Click += new System.EventHandler(this.boardButton7_Click);
             // 
             // boardButton6
             // 
@@ -245,6 +251,7 @@
             this.boardButton6.Size = new System.Drawing.Size(39, 33);
             this.boardButton6.TabIndex = 14;
             this.boardButton6.UseVisualStyleBackColor = true;
+            this.boardButton6.Click += new System.EventHandler(this.boardButton6_Click);
             // 
             // boardButton5
             // 
@@ -254,6 +261,7 @@
             this.boardButton5.Size = new System.Drawing.Size(39, 33);
             this.boardButton5.TabIndex = 13;
             this.boardButton5.UseVisualStyleBackColor = true;
+            this.boardButton5.Click += new System.EventHandler(this.boardButton5_Click);
             // 
             // boardButton12
             // 
@@ -263,6 +271,7 @@
             this.boardButton12.Size = new System.Drawing.Size(39, 33);
             this.boardButton12.TabIndex = 24;
             this.boardButton12.UseVisualStyleBackColor = true;
+            this.boardButton12.Click += new System.EventHandler(this.boardButton12_Click);
             // 
             // boardButton15
             // 
@@ -272,6 +281,7 @@
             this.boardButton15.Size = new System.Drawing.Size(39, 33);
             this.boardButton15.TabIndex = 23;
             this.boardButton15.UseVisualStyleBackColor = true;
+            this.boardButton15.Click += new System.EventHandler(this.boardButton15_Click);
             // 
             // boardButton14
             // 
@@ -281,6 +291,7 @@
             this.boardButton14.Size = new System.Drawing.Size(39, 33);
             this.boardButton14.TabIndex = 22;
             this.boardButton14.UseVisualStyleBackColor = true;
+            this.boardButton14.Click += new System.EventHandler(this.boardButton14_Click);
             // 
             // boardButton13
             // 
@@ -290,6 +301,7 @@
             this.boardButton13.Size = new System.Drawing.Size(39, 33);
             this.boardButton13.TabIndex = 21;
             this.boardButton13.UseVisualStyleBackColor = true;
+            this.boardButton13.Click += new System.EventHandler(this.boardButton13_Click);
             // 
             // boardButton8
             // 
@@ -299,6 +311,7 @@
             this.boardButton8.Size = new System.Drawing.Size(39, 33);
             this.boardButton8.TabIndex = 20;
             this.boardButton8.UseVisualStyleBackColor = true;
+            this.boardButton8.Click += new System.EventHandler(this.boardButton8_Click);
             // 
             // boardButton11
             // 
@@ -308,6 +321,7 @@
             this.boardButton11.Size = new System.Drawing.Size(39, 33);
             this.boardButton11.TabIndex = 19;
             this.boardButton11.UseVisualStyleBackColor = true;
+            this.boardButton11.Click += new System.EventHandler(this.boardButton11_Click);
             // 
             // boardButton10
             // 
@@ -317,6 +331,7 @@
             this.boardButton10.Size = new System.Drawing.Size(39, 33);
             this.boardButton10.TabIndex = 18;
             this.boardButton10.UseVisualStyleBackColor = true;
+            this.boardButton10.Click += new System.EventHandler(this.boardButton10_Click);
             // 
             // boardButton9
             // 
@@ -326,6 +341,7 @@
             this.boardButton9.Size = new System.Drawing.Size(39, 33);
             this.boardButton9.TabIndex = 17;
             this.boardButton9.UseVisualStyleBackColor = true;
+            this.boardButton9.Click += new System.EventHandler(this.boardButton9_Click);
             // 
             // wordInputBox
             // 
@@ -365,6 +381,7 @@
             this.clearButton.TabIndex = 28;
             this.clearButton.Text = "Clear";
             this.clearButton.UseVisualStyleBackColor = true;
+            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
             // 
             // timeBox1
             // 

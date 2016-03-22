@@ -166,6 +166,108 @@ namespace BoggleClient
                 wordInputBox.Text = "";
             }
         }
+
+        private void boardButton0_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton0.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton1_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton1.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton2_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton2.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton3_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton3.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton4_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton4.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton5_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton5.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton6_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton6.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton7_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton7.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton8_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton8.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton9_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton9.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton10_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton10.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton11_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton11.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton12_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton12.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton13_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton13.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton14_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton14.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton15_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton15.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void clearButton_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = "";
+            wordInputBox.Refresh();
+        }
     }
     public static class Prompt
     {

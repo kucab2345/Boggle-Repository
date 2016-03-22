@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,7 +44,7 @@ namespace BoggleAPIClient
         {
             using (HttpClient client = CreateClient())
             {
-                String url = String.Format("games/{0}/Brief=yes", gameID);
+                String url = String.Format("games/{0}", gameID);
 
                 HttpResponseMessage response = client.GetAsync(url).Result;
 
@@ -63,17 +64,20 @@ namespace BoggleAPIClient
                     else if(deserResult.GameState == "active")
                     {
                         int generalInt;
-                        if (int.TryParse(deserResult.TimeLeft, out generalInt))
+                        string parsedResult = deserResult.TimeLeft;
+                        if (int.TryParse(parsedResult, out generalInt))
                         {
                             gameTime = generalInt;
                         }
 
-                        if (int.TryParse(deserResult.Player1.Score, out generalInt))
+                        parsedResult = deserResult.Player1.Score;
+                        if (int.TryParse(parsedResult, out generalInt))
                         {
                             player1Score = generalInt;
                         }
 
-                        if (int.TryParse(deserResult.Player2.Score, out generalInt))
+                        parsedResult = deserResult.Player2.Score;
+                        if (int.TryParse(parsedResult, out generalInt))
                         {
                             player2Score = generalInt;
                         }
@@ -82,6 +86,7 @@ namespace BoggleAPIClient
                     if(deserResult.GameState == "completed")
                     {
                         gameCompleted = true;
+                        GamePlaying = false;
                     }
                     
                 }
@@ -97,7 +102,7 @@ namespace BoggleAPIClient
         {
             using (HttpClient client = CreateClient())
             {
-                String url = String.Format("games/{0}, gameID");
+                String url = String.Format("games/{0}", gameID);
 
                 HttpResponseMessage response = client.GetAsync(url).Result;
 
@@ -106,22 +111,26 @@ namespace BoggleAPIClient
                     string result = response.Content.ReadAsStringAsync().Result;
                     dynamic deserResult = JsonConvert.DeserializeObject(result);
 
-                    boardState = deserResult.Board.ToCharArray();
+                    string parsedResult = deserResult.Board;
+                    boardState = parsedResult.ToCharArray();
 
                     player2Name = deserResult.Player2.Nickname;
 
                     int generalInt;
-                    if (int.TryParse(deserResult.TimeLeft, out generalInt))
+                    parsedResult = deserResult.TimeLeft;
+                    if (int.TryParse(parsedResult, out generalInt))
                     {
                         gameTime = generalInt;
                     }
 
-                    if (int.TryParse(deserResult.Player1.Score, out generalInt))
+                    parsedResult = deserResult.Player1.Score;
+                    if (int.TryParse(parsedResult, out generalInt))
                     {
                         player1Score = generalInt;
                     }
 
-                    if (int.TryParse(deserResult.Player2.Score, out generalInt))
+                    parsedResult = deserResult.Player2.Score;
+                    if (int.TryParse(parsedResult, out generalInt))
                     {
                         player2Score = generalInt;
                     }
@@ -190,12 +199,25 @@ namespace BoggleAPIClient
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // The deserialized response value is an object that describes the new repository.
                     string result = response.Content.ReadAsStringAsync().Result;
                     dynamic deserResult = JsonConvert.DeserializeObject(result);
                     gameID = deserResult.GameID;
-                    gamePending = true;
-                    Console.WriteLine(gameID);
+                    if (response.StatusCode == HttpStatusCode.Accepted)
+                    {
+                        // The deserialized response value is an object that describes the new repository.
+                        
+                        gamePending = true;
+                        GamePlaying = true;
+                        Console.WriteLine(gameID);
+                    }
+                    else if (response.StatusCode == HttpStatusCode.Created)
+                    {
+                        Task gameMake = new Task(() => gameSetup());
+                        gameMake.Start();
+                        gameCreation = true;
+                        GamePlaying = true;
+                        gameMake.Wait();
+                    }
                 }
                 else
                 {
@@ -256,6 +278,7 @@ namespace BoggleAPIClient
                 {
                     Console.WriteLine("Game cancelled");
                     gamePending = false;
+                    GamePlaying = false;
                 }
                 else
                 {

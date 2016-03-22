@@ -24,26 +24,27 @@ namespace BoggleClient
             Task createUser = new Task (() =>mainClient.createUser(nickname));
             createUser.Start();
             int.TryParse(timeLimit, out gameTime);
-            createUser.Wait();
+            await createUser;
             Task createGame = new Task(() => mainClient.createGame(gameTime));
             createGame.Start();
             game.Player1Name = mainClient.nickname;
-            createGame.Wait();
+            await createGame;
             game.cancelbutton = true;
             while (mainClient.GamePlaying)
             {
                 Task playGame = new Task(() => mainClient.playGame());
                 playGame.Start();
-                playGame.Wait();
+                await playGame;
                 if (mainClient.gameCreation)
                 {
                     boardSetup();
+                    game.cancelbutton = false;
                 }
                 await Task.Delay(1000);
             }
             if (mainClient.gameCompleted)
             {
-                mainClient.finalBoardSetup();
+                //mainClient.finalBoardSetup();
             }
 
         }

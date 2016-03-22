@@ -29,10 +29,9 @@ namespace BoggleAPIClient
         private bool gamePending;
         public bool gameCompleted;
         public bool gameCreation;
-        public int gameTime;
+        private int gameTime;
         public int player1Score;
         public int player2Score;
-
         public string player2Name;
 
         public BoggleModel(string serverDest)
@@ -128,7 +127,7 @@ namespace BoggleAPIClient
                     }
                 }
             }
-                    return Task.FromResult(0);
+            return Task.FromResult(0);
             
         }
 

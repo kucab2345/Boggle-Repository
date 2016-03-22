@@ -18,5 +18,7 @@ namespace BoggleClient
 
         string Message { set; }
         bool cancelbutton { get; set; }
+
+        char[] Board { set; }
     }
 }

@@ -27,7 +27,7 @@ namespace BoggleClient
             await createUser;
             Task createGame = new Task(() => mainClient.createGame(gameTime));
             createGame.Start();
-            game.Player1Name = mainClient.nickname;
+            
             await createGame;
             game.cancelbutton = true;
             while (mainClient.GamePlaying)
@@ -40,6 +40,7 @@ namespace BoggleClient
                     boardSetup();
                     game.cancelbutton = false;
                 }
+                boardScoreUpdate();
                 await Task.Delay(1000);
             }
             if (mainClient.gameCompleted)
@@ -49,8 +50,16 @@ namespace BoggleClient
 
         }
 
+        private void boardScoreUpdate()
+        {
+            game.Player1Score = mainClient.player1Score.ToString();
+            game.Player2Score = mainClient.player2Score.ToString();
+        }
+
         private void boardSetup()
         {
+            game.Board = mainClient.boardState;
+            game.Player1Name = mainClient.player1Name;
             game.Player2Name = mainClient.player2Name;
             game.Player1Score = mainClient.player1Score.ToString();
             game.Player2Score = mainClient.player2Score.ToString();

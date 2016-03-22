@@ -95,6 +95,23 @@ namespace BoggleClient
             }
         }
 
+        public char[] Board
+        {
+            set
+            {
+                int i = 0;
+                Button[] buttons = new Button[] { boardButton0, boardButton1, boardButton2, boardButton3, boardButton4, boardButton5, boardButton6, boardButton7, boardButton8,
+                    boardButton9,boardButton10,boardButton11,boardButton12,boardButton13,boardButton14,boardButton15};
+                foreach (char letter in value)
+                {
+                    buttons[i].Text = letter.ToString();
+                    i++;
+                }
+            }
+        }
+
+        public event<String> WordEnteredEven
+
         /// <summary>
         /// Prompts user for nickname, timelimit, and server address they wish to connect to,
         /// passes those three strings are parameters through CreateGameEvent, which calls CreateGameHandler
@@ -125,6 +142,15 @@ namespace BoggleClient
         private void closeMenuButton_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void enterButton_Click(object sender, EventArgs e)
+        {
+            if(WordEnteredEvent != null)
+            {
+                WordEnteredEvent(wordInputBox.Text);
+                wordInputBox.Text = "";
+            }
         }
     }
     public static class Prompt

@@ -90,14 +90,14 @@
             // createGameMenuButton
             // 
             this.createGameMenuButton.Name = "createGameMenuButton";
-            this.createGameMenuButton.Size = new System.Drawing.Size(152, 22);
+            this.createGameMenuButton.Size = new System.Drawing.Size(130, 22);
             this.createGameMenuButton.Text = "Play Game";
             this.createGameMenuButton.Click += new System.EventHandler(this.createGameMenuButton_Click);
             // 
             // closeMenuButton
             // 
             this.closeMenuButton.Name = "closeMenuButton";
-            this.closeMenuButton.Size = new System.Drawing.Size(152, 22);
+            this.closeMenuButton.Size = new System.Drawing.Size(130, 22);
             this.closeMenuButton.Text = "Close";
             this.closeMenuButton.Click += new System.EventHandler(this.closeMenuButton_Click);
             // 
@@ -332,7 +332,6 @@
             this.wordInputBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.wordInputBox.Location = new System.Drawing.Point(152, 316);
             this.wordInputBox.Name = "wordInputBox";
-            this.wordInputBox.ReadOnly = true;
             this.wordInputBox.Size = new System.Drawing.Size(174, 20);
             this.wordInputBox.TabIndex = 25;
             // 
@@ -355,6 +354,7 @@
             this.enterButton.TabIndex = 27;
             this.enterButton.Text = "Enter";
             this.enterButton.UseVisualStyleBackColor = true;
+            this.enterButton.Click += new System.EventHandler(this.enterButton_Click);
             // 
             // clearButton
             // 

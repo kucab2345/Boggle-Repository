@@ -13,7 +13,7 @@ namespace BoggleAPIClient
 {
     public class BoggleModel
     {
-        public string nickname;
+        public string player1Name;
 
         public string gameID;
 
@@ -34,6 +34,7 @@ namespace BoggleAPIClient
         public int player1Score;
         public int player2Score;
         public string player2Name;
+        private bool playerIs1;
 
         public BoggleModel(string serverDest)
         {
@@ -111,18 +112,17 @@ namespace BoggleAPIClient
                     string result = response.Content.ReadAsStringAsync().Result;
                     dynamic deserResult = JsonConvert.DeserializeObject(result);
 
+                    int generalInt;
                     string parsedResult = deserResult.Board;
                     boardState = parsedResult.ToCharArray();
 
-                    player2Name = deserResult.Player2.Nickname;
-
-                    int generalInt;
                     parsedResult = deserResult.TimeLeft;
                     if (int.TryParse(parsedResult, out generalInt))
                     {
                         gameTime = generalInt;
                     }
-
+                    player1Name = deserResult.Player1.Nickname;
+                    player2Name = deserResult.Player2.Nickname;
                     parsedResult = deserResult.Player1.Score;
                     if (int.TryParse(parsedResult, out generalInt))
                     {
@@ -134,6 +134,7 @@ namespace BoggleAPIClient
                     {
                         player2Score = generalInt;
                     }
+
                 }
             }
             return Task.FromResult(0);
@@ -156,7 +157,6 @@ namespace BoggleAPIClient
 
         public Task createUser(string userName)
         {
-            nickname = userName;
             using (HttpClient client = CreateClient())
             {
                 dynamic data = new ExpandoObject();
@@ -205,7 +205,7 @@ namespace BoggleAPIClient
                     if (response.StatusCode == HttpStatusCode.Accepted)
                     {
                         // The deserialized response value is an object that describes the new repository.
-                        
+                        playerIs1 = true;
                         gamePending = true;
                         GamePlaying = true;
                         Console.WriteLine(gameID);
@@ -214,6 +214,7 @@ namespace BoggleAPIClient
                     {
                         Task gameMake = new Task(() => gameSetup());
                         gameMake.Start();
+                        playerIs1 = false;
                         gameCreation = true;
                         GamePlaying = true;
                         gameMake.Wait();
@@ -287,6 +288,46 @@ namespace BoggleAPIClient
             }
             return Task.FromResult(0);
         }
-        
+
+        public Task submitWord(string word)
+        {
+            using (HttpClient client = CreateClient())
+            {
+                dynamic data = new ExpandoObject();
+                data.UserToken = userToken;
+                data.Word = word;
+
+                String url = String.Format("games/{0}", gameID);
+
+                StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = client.PutAsync(url, content).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = response.Content.ReadAsStringAsync().Result;
+                    dynamic deserResult = JsonConvert.DeserializeObject(result);
+                    string score = deserResult.Score;
+
+                    int numberScore;
+                    if(int.TryParse(score, out numberScore))
+                    {
+                        if (playerIs1)
+                        {
+                            player1Score += numberScore;
+                        }
+                        else
+                        {
+                            player2Score += numberScore;
+                        }
+                    }
+                }
+                else
+                {
+                    //throw new Exception();
+                }
+            }
+            return Task.FromResult(0);
+        }
+
     }
 }

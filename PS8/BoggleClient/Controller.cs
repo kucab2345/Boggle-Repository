@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BoggleAPIClient;
+using System.Threading;
 
 namespace BoggleClient
 {
@@ -11,12 +12,15 @@ namespace BoggleClient
     {
         BoggleModel mainClient;
         private GameInterface game;
+
+        CancellationTokenSource cts;
         public Controller(GameInterface view)
         { 
             game = view;
             game.CreateGameEvent += CreateGameHandler;
             game.CancelGameEvent += CancelGameHandler;
             game.WordEnteredEvent += WordEnteredHandler;
+            cts = new CancellationTokenSource();
         }
 
         private async void WordEnteredHandler(string obj)
@@ -30,18 +34,17 @@ namespace BoggleClient
         {
             mainClient = new BoggleModel(server);
             int gameTime;
-            Task createUser = new Task (() =>mainClient.createUser(nickname));
-            createUser.Start();
+            Task createUser = new Task (() =>mainClient.createUser(nickname, cts.Token));
             int.TryParse(timeLimit, out gameTime);
+            createUser.Start();
             await createUser;
-            Task createGame = new Task(() => mainClient.createGame(gameTime));
+            Task createGame = new Task(() => mainClient.createGame(gameTime, cts.Token));
             createGame.Start();
-            
             await createGame;
             game.cancelbutton = true;
             while (mainClient.GamePlaying)
             {
-                Task playGame = new Task(() => mainClient.playGame());
+                Task playGame = new Task(() => mainClient.playGame(cts.Token));
                 playGame.Start();
                 await playGame;
                 if (mainClient.gameCreation)
@@ -79,9 +82,16 @@ namespace BoggleClient
 
         private async void CancelGameHandler()
         {
+            cts.Cancel();
             Task cancelGame = new Task(() =>mainClient.cancelJoinRequest());
+            cancelGame.Start();
             await cancelGame;
-            game.cancelbutton = false;
+            Console.WriteLine();
+            if (mainClient.cancel)
+            {
+                game.cancelbutton = false;
+            }
+            cts = new CancellationTokenSource();
         }
     }
 }

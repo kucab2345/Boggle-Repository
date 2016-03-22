@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace BoggleClient
 {
-    public partial class Form1 : Form , GameInterface
+    public partial class Form1 : Form, GameInterface
     {
         /// <summary>
         /// Constructs the form
@@ -51,6 +51,7 @@ namespace BoggleClient
             {
                 CancelGameEvent();
             }
+            //cancelGameRequestButton.Visible = false;
         }
     }
     public static class Prompt

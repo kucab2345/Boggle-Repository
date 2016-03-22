@@ -13,7 +13,6 @@ namespace BoggleClient
         private GameInterface game;
         public Controller(GameInterface view)
         { 
-          
             game = view;
             game.CreateGameEvent += CreateGameHandler;
             game.CancelGameEvent += CancelGameHandler;

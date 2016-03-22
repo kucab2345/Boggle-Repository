@@ -38,6 +38,14 @@ namespace BoggleClient
             }
         }
 
+        public string Message
+        {
+            set
+            {
+                MessageBox.Show(value);
+            }
+        }
+
         /// <summary>
         /// Prompts user for nickname, timelimit, and server address they wish to connect to,
         /// passes those three strings are parameters through CreateGameEvent, which calls CreateGameHandler

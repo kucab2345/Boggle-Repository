@@ -12,5 +12,7 @@ namespace BoggleClient
         event Action CancelGameEvent;
 
         string Player1Name { get; set; }
+
+        string Message { set; }
     }
 }

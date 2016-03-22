@@ -36,12 +36,17 @@ namespace BoggleClient
         private void createGameMenuButton_Click(object sender, EventArgs e)
         {
             string nickname, clock, address;
-            Prompt.GameCreateDialogue(out nickname, out clock, out address);
 
-            if(CreateGameEvent != null)
+            DialogResult result = Prompt.GameCreateDialogue(out nickname, out clock, out address);
+            
+            if(CreateGameEvent != null && result == DialogResult.OK)
             {
                 CreateGameEvent(nickname, clock, address);
                 cancelGameRequestButton.Visible = true;
+            }
+            else if(result == DialogResult.Abort)
+            {
+                MessageBox.Show("Invalid Game Parameters");
             }
         }
 
@@ -56,7 +61,7 @@ namespace BoggleClient
     }
     public static class Prompt
     {
-        public static bool GameCreateDialogue(out string nickname, out string gameLength, out string serverAddress)
+        public static DialogResult GameCreateDialogue(out string nickname, out string gameLength, out string serverAddress)
         {
             Form prompt = new Form()
             {
@@ -91,8 +96,16 @@ namespace BoggleClient
             nickname = textBox.Text;
             gameLength = textBox1.Text;
             serverAddress = textBox2.Text;
-
-            return true;
+            
+            double test; 
+            if(!string.IsNullOrWhiteSpace(nickname) && gameLength != "" && !string.IsNullOrWhiteSpace(serverAddress) && (double.TryParse(gameLength, out test) && test > 0))
+            {
+                return DialogResult.OK;
+            }
+            else
+            {
+                return DialogResult.Abort;
+            }
         }
     }
 }

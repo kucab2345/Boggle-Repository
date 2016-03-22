@@ -20,15 +20,23 @@ namespace BoggleClient
         private async void CreateGameHandler(string nickname, string timeLimit, string server)
         {
             mainClient = new BoggleModel(server);
+            int gameTime;
             Task createUser = new Task (() =>mainClient.createUser(nickname));
             createUser.Start();
+            int.TryParse(timeLimit, out gameTime);
             createUser.Wait();
+            Task createGame = new Task(() => mainClient.createGame(gameTime));
+            createGame.Start();
             game.Player1Name = mainClient.nickname;
-           
+            createGame.Wait();
+            
+
         }
-        private void CancelGameHandler()
+        private async void CancelGameHandler()
         {
-            mainClient.cancelJoinRequest();
+            Task cancelGame = new Task(() =>mainClient.cancelJoinRequest());
+
+            await cancelGame;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace BoggleAPIClient
     {
         public string nickname;
 
-        private string gameID;
+        public string gameID;
 
         private string userToken;
 
@@ -33,6 +33,10 @@ namespace BoggleAPIClient
             set
             {
                 cancel = value;
+            }
+            get
+            {
+                return cancel;
             }
         }
 
@@ -79,7 +83,7 @@ namespace BoggleAPIClient
             }
         }
 
-        public async void createUser(string userName)
+        public Task createUser(string userName)
         {
             nickname = userName;
             using (HttpClient client = CreateClient())
@@ -88,10 +92,9 @@ namespace BoggleAPIClient
                 data.Nickname = userName;
 
                 StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                Task<HttpResponseMessage> responseResult = new Task<HttpResponseMessage> (() => client.PostAsync("users", content).Result);
-                responseResult.Start();
+                HttpResponseMessage response = client.PostAsync("users", content).Result;
                 
-                HttpResponseMessage response = await responseResult;
+                //HttpResponseMessage response = responseResult;
                 
                 if (response.IsSuccessStatusCode)
                 {
@@ -103,14 +106,16 @@ namespace BoggleAPIClient
                 }
                 else
                 {
-                    throw new Exception();
+                    //throw new Exception();
                     Console.WriteLine("Error creating user: " + response.StatusCode);
                     Console.WriteLine(response.ReasonPhrase);
                 }
+
+                return Task.FromResult(0);
             }
         }
 
-        public async Task createGame(int gameTime)
+        public Task createGame(int gameTime)
         {
             using (HttpClient client = CreateClient())
             {
@@ -118,10 +123,8 @@ namespace BoggleAPIClient
                 data.UserToken = userToken;
                 data.TimeLimit = gameTime;
 
-                Task<HttpResponseMessage> responseResult = new Task<HttpResponseMessage>(() => client.PostAsync("games", data).Result);
-                responseResult.Start();
-
-                HttpResponseMessage response = await responseResult;
+                StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = client.PostAsync("games", content).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -137,23 +140,24 @@ namespace BoggleAPIClient
                     Console.WriteLine(response.ReasonPhrase);
                 }
             }
+            return Task.FromResult(0);
         }
 
-        public async Task getGameStatus()
+        public async void getGameStatus()
         {
             using(HttpClient client = CreateClient())
             {
                 String url = String.Format("games/{0}", gameID);
 
                 Task<HttpResponseMessage> responseResult = new Task<HttpResponseMessage>(() => client.GetAsync(url).Result);
-                responseResult.Start();
+                
 
                 HttpResponseMessage response = await responseResult;
                 
 
                 if (response.IsSuccessStatusCode)
                 {
-                    
+                    cancel = true;
                 }
                 else
                 {
@@ -163,7 +167,7 @@ namespace BoggleAPIClient
             }
         }
 
-        public async Task cancelJoinRequest()
+        public Task cancelJoinRequest()
         {
             using(HttpClient client = CreateClient())
             {
@@ -171,10 +175,7 @@ namespace BoggleAPIClient
                 data.UserToken = userToken;
 
                 StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                Task<HttpResponseMessage> responseResult = new Task<HttpResponseMessage>(() => client.PutAsync("games", content).Result);
-                responseResult.Start();
-
-                HttpResponseMessage response = await responseResult;
+                HttpResponseMessage response = client.PutAsync("games", content).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -182,10 +183,11 @@ namespace BoggleAPIClient
                 }
                 else
                 {
-                    Console.WriteLine("Error Cancelling game request: " + response.StatusCode);
-                    Console.WriteLine(response.ReasonPhrase);
+                    //throw new Exception();
                 }
             }
+            return Task.FromResult(0);
         }
+        
     }
 }

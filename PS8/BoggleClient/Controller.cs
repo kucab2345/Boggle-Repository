@@ -29,6 +29,7 @@ namespace BoggleClient
             createGame.Start();
             game.Player1Name = mainClient.nickname;
             createGame.Wait();
+            game.cancelbutton = true;
             while (mainClient.GamePlaying)
             {
                 Task playGame = new Task(() => mainClient.playGame());
@@ -55,8 +56,8 @@ namespace BoggleClient
         private async void CancelGameHandler()
         {
             Task cancelGame = new Task(() =>mainClient.cancelJoinRequest());
-
             await cancelGame;
+            game.cancelbutton = false;
         }
     }
 }

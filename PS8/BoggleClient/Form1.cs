@@ -24,6 +24,9 @@ namespace BoggleClient
         /// Fires the CreateGameEvent
         /// </summary>
         public event Action<string, string, string> CreateGameEvent;
+        /// <summary>
+        /// Fires cancelGameEvent
+        /// </summary>
         public event Action CancelGameEvent;
 
         public string Player1Name
@@ -37,12 +40,58 @@ namespace BoggleClient
                 player1NameBox.Text = value;
             }
         }
+        public string Player2Name
+        {
+            get
+            {
+                return player2NameBox.Text;
+            }
+            set
+            {
+                player2NameBox.Text = value;
+            }
+        }
+        public string Player1Score
+        {
+            get
+            {
+                return player1ScoreBox.Text;
+            }
+            set
+            {
+                player1ScoreBox.Text = value;
+            }
+        }
+        public string Player2Score
+        {
+            get
+            {
+                return player2ScoreBox.Text;
+            }
+            set
+            {
+                player2ScoreBox.Text = value;
+            }
+        }
 
         public string Message
         {
             set
             {
                 MessageBox.Show(value);
+            }
+        }
+
+        public bool cancelbutton
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                cancelGameRequestButton.Visible = value;
             }
         }
 
@@ -72,7 +121,10 @@ namespace BoggleClient
             {
                 CancelGameEvent();
             }
-            //cancelGameRequestButton.Visible = false;
+        }
+        private void closeMenuButton_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
     public static class Prompt

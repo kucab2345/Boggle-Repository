@@ -1,6 +1,7 @@
 ﻿using System;
 using BoggleAPIClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace BoggleModelTest
 {
@@ -10,11 +11,16 @@ namespace BoggleModelTest
         [TestMethod]
         public void TestMethod1()
         {
+            runGame();
+        }
+
+        private async void runGame()
+        {
             BoggleModel test = new BoggleModel("http://bogglecs3500s16.azurewebsites.net/BoggleService.svc/");
-            test.createUser("hehbolwabowboawognwoq");
-            test.createGame(50);
-            test.getGameStatus();
-            test.cancelJoinRequest();
+            Task test2 = new Task(() => test.createUser("hehbolwabowboawognwoq"));
+            test2.Start();
+            test2.Wait();
+            Console.WriteLine("Finished result");
         }
     }
 }

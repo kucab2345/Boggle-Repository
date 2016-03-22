@@ -26,6 +26,18 @@ namespace BoggleClient
         public event Action<string, string, string> CreateGameEvent;
         public event Action CancelGameEvent;
 
+        public string Player1Name
+        {
+            get
+            {
+                return player1NameBox.Text;
+            }
+            set
+            {
+                player1NameBox.Text = value;
+            }
+        }
+
         /// <summary>
         /// Prompts user for nickname, timelimit, and server address they wish to connect to,
         /// passes those three strings are parameters through CreateGameEvent, which calls CreateGameHandler

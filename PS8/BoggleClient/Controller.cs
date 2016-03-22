@@ -63,6 +63,7 @@ namespace BoggleClient
         {
             game.Player1Score = mainClient.player1Score.ToString();
             game.Player2Score = mainClient.player2Score.ToString();
+            game.Timer = mainClient.gameTime.ToString();
         }
 
         private void boardSetup()
@@ -72,6 +73,7 @@ namespace BoggleClient
             game.Player2Name = mainClient.player2Name;
             game.Player1Score = mainClient.player1Score.ToString();
             game.Player2Score = mainClient.player2Score.ToString();
+            game.Timer = mainClient.gameTime.ToString();
             mainClient.gameCreation = false;
         }
 

@@ -30,7 +30,7 @@ namespace BoggleAPIClient
         private bool gamePending;
         public bool gameCompleted;
         public bool gameCreation;
-        private int gameTime;
+        public int gameTime;
         public int player1Score;
         public int player2Score;
         public string player2Name;

@@ -106,9 +106,23 @@ namespace BoggleClient
                     boardButton9,boardButton10,boardButton11,boardButton12,boardButton13,boardButton14,boardButton15};
                 foreach (char letter in value)
                 {
-                    buttons[i].Text = letter.ToString();
+                    if (letter == 'Q')
+                    {
+                        buttons[i].Text = letter.ToString() + "U";
+                    }
+                    else {
+                        buttons[i].Text = letter.ToString();
+                    }
                     i++;
                 }
+            }
+        }
+
+        public string Timer
+        {
+            set
+            {
+                timeBox1.Text = value;
             }
         }
 

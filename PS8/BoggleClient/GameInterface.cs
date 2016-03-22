@@ -21,5 +21,7 @@ namespace BoggleClient
         bool cancelbutton { get; set; }
 
         char[] Board { set; }
+
+        string Timer { set; }
     }
 }

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace BoggleClient
 {
-    public partial class Form1 : Form , GameInterface
+    public partial class Form1 : Form, GameInterface
     {
         /// <summary>
         /// Constructs the form
@@ -48,12 +48,17 @@ namespace BoggleClient
         private void createGameMenuButton_Click(object sender, EventArgs e)
         {
             string nickname, clock, address;
-            Prompt.GameCreateDialogue(out nickname, out clock, out address);
 
-            if(CreateGameEvent != null)
+            DialogResult result = Prompt.GameCreateDialogue(out nickname, out clock, out address);
+            
+            if(CreateGameEvent != null && result == DialogResult.OK)
             {
                 CreateGameEvent(nickname, clock, address);
                 cancelGameRequestButton.Visible = true;
+            }
+            else if(result == DialogResult.Abort)
+            {
+                MessageBox.Show("Invalid Game Parameters");
             }
         }
 
@@ -63,11 +68,12 @@ namespace BoggleClient
             {
                 CancelGameEvent();
             }
+            //cancelGameRequestButton.Visible = false;
         }
     }
     public static class Prompt
     {
-        public static bool GameCreateDialogue(out string nickname, out string gameLength, out string serverAddress)
+        public static DialogResult GameCreateDialogue(out string nickname, out string gameLength, out string serverAddress)
         {
             Form prompt = new Form()
             {
@@ -89,12 +95,12 @@ namespace BoggleClient
 
             confirmation.Click += (sender, e) => { prompt.Close(); };
             prompt.Controls.Add(textBox);
-            prompt.Controls.Add(confirmation);
             prompt.Controls.Add(textLabel);
             prompt.Controls.Add(textBox1);
             prompt.Controls.Add(textLabel1);
             prompt.Controls.Add(textBox2);
             prompt.Controls.Add(textLabel2);
+            prompt.Controls.Add(confirmation);
 
             prompt.AcceptButton = confirmation;
 
@@ -102,8 +108,16 @@ namespace BoggleClient
             nickname = textBox.Text;
             gameLength = textBox1.Text;
             serverAddress = textBox2.Text;
-
-            return true;
+            
+            double test; 
+            if(!string.IsNullOrWhiteSpace(nickname) && gameLength != "" && !string.IsNullOrWhiteSpace(serverAddress) && (double.TryParse(gameLength, out test) && test > 0))
+            {
+                return DialogResult.OK;
+            }
+            else
+            {
+                return DialogResult.Abort;
+            }
         }
     }
 }

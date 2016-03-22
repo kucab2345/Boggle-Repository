@@ -31,7 +31,6 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.gameMenuButton = new System.Windows.Forms.ToolStripMenuItem();
             this.createGameMenuButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.findGameMenuButton = new System.Windows.Forms.ToolStripMenuItem();
             this.closeMenuButton = new System.Windows.Forms.ToolStripMenuItem();
             this.helpMenuButton = new System.Windows.Forms.ToolStripMenuItem();
             this.player1NameBox = new System.Windows.Forms.TextBox();
@@ -83,7 +82,6 @@
             // 
             this.gameMenuButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createGameMenuButton,
-            this.findGameMenuButton,
             this.closeMenuButton});
             this.gameMenuButton.Name = "gameMenuButton";
             this.gameMenuButton.Size = new System.Drawing.Size(50, 20);
@@ -92,15 +90,9 @@
             // createGameMenuButton
             // 
             this.createGameMenuButton.Name = "createGameMenuButton";
-            this.createGameMenuButton.Size = new System.Drawing.Size(142, 22);
-            this.createGameMenuButton.Text = "Create Game";
+            this.createGameMenuButton.Size = new System.Drawing.Size(152, 22);
+            this.createGameMenuButton.Text = "Play Game";
             this.createGameMenuButton.Click += new System.EventHandler(this.createGameMenuButton_Click);
-            // 
-            // findGameMenuButton
-            // 
-            this.findGameMenuButton.Name = "findGameMenuButton";
-            this.findGameMenuButton.Size = new System.Drawing.Size(142, 22);
-            this.findGameMenuButton.Text = "Find Game";
             // 
             // closeMenuButton
             // 
@@ -453,7 +445,6 @@
 
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem gameMenuButton;
-        private System.Windows.Forms.ToolStripMenuItem findGameMenuButton;
         private System.Windows.Forms.ToolStripMenuItem helpMenuButton;
         private System.Windows.Forms.TextBox player1NameBox;
         private System.Windows.Forms.TextBox player2NameBox;

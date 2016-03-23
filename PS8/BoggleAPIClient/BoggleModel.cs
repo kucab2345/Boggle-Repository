@@ -143,7 +143,6 @@ namespace BoggleAPIClient
                     foreach(var item in deserResult.Player1.WordsPlayed)
                     {
                         string word = item.Word;
-                        if(word != null)
                         player1Words.Add(word);
                         
                     }

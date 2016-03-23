@@ -276,7 +276,7 @@ namespace BoggleClient
                 + "How to Play\n"
                 + "Press Game > Play Game\n"
                 + "Enter in a nickname, desired game length in seconds, and server\n"
-                + "Wait for a game to begin (you can cancel waiting for a game from the bottom right of the client\n"
+                + "Wait for a game to begin (you can cancel waiting for a game from the bottom right of the client)\n"
                 + "==============================================\n"
                 + "Rules\n"
                 + "Either click on the tiles or type in a word that can be made from the tiles\n"

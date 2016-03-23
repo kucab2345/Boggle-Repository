@@ -46,6 +46,8 @@ namespace BoggleAPIClient
         public BoggleModel(string serverDest)
         {
             server = serverDest;
+            player1Words = new List<string>();
+            player2Words = new List<string>();
         }
 
         public Task playGame(CancellationToken ct)
@@ -141,13 +143,16 @@ namespace BoggleAPIClient
                     foreach(var item in deserResult.Player1.WordsPlayed)
                     {
                         string word = item.Word;
+                        if(word != null)
                         player1Words.Add(word);
+                        
                     }
 
                     foreach (var item in deserResult.Player2.WordsPlayed)
                     {
                         string word = item.Word;
-                        player2Words.Add(item.Word);
+                        player2Words.Add(word);
+                        
                     }
                 }
                 else

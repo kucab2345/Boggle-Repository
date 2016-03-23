@@ -60,7 +60,7 @@ namespace BoggleClient
                 Task endGame = new Task(() =>mainClient.finalBoardSetup());
                 endGame.Start();
                 await endGame;
-                boardScoreUpdate();
+                boardEndScoreUpdate();
             }
 
         }
@@ -70,6 +70,15 @@ namespace BoggleClient
             game.Player1Score = mainClient.player1Score.ToString();
             game.Player2Score = mainClient.player2Score.ToString();
             game.Timer = mainClient.gameTime.ToString();
+         
+        }
+
+        private void boardEndScoreUpdate()
+        {
+            game.Player1Score = mainClient.player1Score.ToString();
+            game.Player2Score = mainClient.player2Score.ToString();
+            game.Timer = mainClient.gameTime.ToString();
+            game.Board = new Char[] { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
         }
 
         private void boardSetup()

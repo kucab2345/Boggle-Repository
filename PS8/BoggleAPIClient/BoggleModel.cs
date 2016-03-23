@@ -160,7 +160,7 @@ namespace BoggleAPIClient
                 }
             }
             return Task.FromResult(0);
-            throw new NotImplementedException();
+            
         }
 
         private Task gameSetup()
@@ -251,6 +251,7 @@ namespace BoggleAPIClient
 
         public Task createGame(int gameTime, CancellationToken ct)
         {
+            gameCompleted = false;
             using (HttpClient client = CreateClient())
             {
                 dynamic data = new ExpandoObject();

@@ -163,7 +163,8 @@ namespace BoggleClient
             if(WordEnteredEvent != null)
             {
                 WordEnteredEvent(wordInputBox.Text);
-                wordInputBox.Text = "";
+                wordInputBox.Clear();
+
             }
         }
 
@@ -285,6 +286,19 @@ namespace BoggleClient
                 + "When time runs out, the player with the highest score wins!\n"
                 + "Invalid words cause you to lose a point, so be careful!\n"
                 + "Created by Ryan Steele and Henry Kucab\n");
+        }
+
+        private void wordInputBox_TextChanged(object sender, KeyEventArgs e)
+        {
+            
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (WordEnteredEvent != null)
+                {
+                    WordEnteredEvent(wordInputBox.Text);
+                    wordInputBox.Clear();
+                }
+            }
         }
     }
     public static class Prompt

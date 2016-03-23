@@ -351,6 +351,7 @@
             this.wordInputBox.Name = "wordInputBox";
             this.wordInputBox.Size = new System.Drawing.Size(174, 20);
             this.wordInputBox.TabIndex = 25;
+            this.wordInputBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.wordInputBox_TextChanged);
             // 
             // wordSubmissionLabel
             // 

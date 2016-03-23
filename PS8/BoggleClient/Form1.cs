@@ -268,6 +268,24 @@ namespace BoggleClient
             wordInputBox.Text = "";
             wordInputBox.Refresh();
         }
+
+        private void helpMenuButton_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Boggle\n"
+                + "==============================================\n"
+                + "How to Play\n"
+                + "Press Game > Play Game\n"
+                + "Enter in a nickname, desired game length in seconds, and server\n"
+                + "Wait for a game to begin (you can cancel waiting for a game from the bottom right of the client\n"
+                + "==============================================\n"
+                + "Rules\n"
+                + "Either click on the tiles or type in a word that can be made from the tiles\n"
+                + "Each tile can only be used once per word, and each next tile must 'touch' the previous one\n"
+                + "Two tiles touch when they are above, below, left, right, or diagonally from one another\n"
+                + "When time runs out, the player with the highest score wins!\n"
+                + "Invalid words cause you to lose a point, so be careful!\n"
+                + "Created by Ryan Steele and Henry Kucab\n");
+        }
     }
     public static class Prompt
     {

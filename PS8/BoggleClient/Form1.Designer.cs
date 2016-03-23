@@ -106,6 +106,7 @@
             this.helpMenuButton.Name = "helpMenuButton";
             this.helpMenuButton.Size = new System.Drawing.Size(44, 20);
             this.helpMenuButton.Text = "Help";
+            this.helpMenuButton.Click += new System.EventHandler(this.helpMenuButton_Click);
             // 
             // player1NameBox
             // 

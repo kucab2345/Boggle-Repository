@@ -67,6 +67,7 @@ namespace BoggleClient
                 createGame.Start();
                 await createGame;
                 game.cancelbutton = true;
+                game.cancelbuttonText = "Cancel Pending Game...";
                 while (mainClient.GamePlaying)
                 {
                     Task playGame = new Task(() => mainClient.playGame(cts.Token));
@@ -75,17 +76,24 @@ namespace BoggleClient
                     if (mainClient.gameCreation)
                     {
                         boardSetup();
-                        game.cancelbutton = false;
+                        game.cancelbuttonText = "Exit Game...";
                     }
-                    boardScoreUpdate();
+                    game.boardScoreUpdate(mainClient.player1Score.ToString(), mainClient.player2Score.ToString(), mainClient.gameTime.ToString());
                     await Task.Delay(1000);
                 }
                 if (mainClient.gameCompleted)
                 {
                     Task endGame = new Task(() => mainClient.finalBoardSetup());
+                    game.cancelbutton = false;
                     endGame.Start();
                     await endGame;
-                    boardEndScoreUpdate();
+                    game.EndGame(mainClient.player1Words,mainClient.player2Words);
+                    game.ResetBoard();
+                }
+                else
+                {
+                    game.ResetBoard();
+
                 }
             }
             catch (Exception e)
@@ -105,14 +113,6 @@ namespace BoggleClient
          
         }
 
-        private void boardEndScoreUpdate()
-        {
-            game.Player1Score = mainClient.player1Score.ToString();
-            game.Player2Score = mainClient.player2Score.ToString();
-            game.Timer = mainClient.gameTime.ToString();
-            game.Board = new Char[] { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
-            game.EndGame(mainClient.player1Words, mainClient.player2Words);
-        }
 
         private void boardSetup()
         {
@@ -136,14 +136,24 @@ namespace BoggleClient
                 try {
                     game.EndRequestButton = true;
                     await cancelGame;
-                    
+                    game.cancelbutton = false;
+                    game.ResetBoard();
+                    game.Message = "Game Cancelled";
                 }
                 catch(AggregateException e)
                 {
                     game.Message = "There has been an error in the application." + "\n" + e.Message;
                 }
-                game.cancelbutton = false;
+                
                 game.EndRequestButton = false;
+                cts = new CancellationTokenSource();
+            }
+            else
+            {
+                cts.Cancel();
+                game.cancelbutton = false;
+                game.ResetBoard();
+                game.Message = "You have left the game.";
                 cts = new CancellationTokenSource();
             }
         }

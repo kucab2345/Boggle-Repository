@@ -140,6 +140,19 @@ namespace BoggleClient
             }
         }
 
+        public string cancelbuttonText
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                cancelGameRequestButton.Text = value;
+            }
+        }
+
         public void WordFocus()
         {
             wordInputBox.Focus();
@@ -330,6 +343,8 @@ namespace BoggleClient
             player2NameBox.Clear();
             player1ScoreBox.Clear();
             player2ScoreBox.Clear();
+            timeBox1.Clear();
+            Board = new Char[] { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
         }
 
         private void CancelRequestlButton_Click(object sender, EventArgs e)
@@ -338,6 +353,13 @@ namespace BoggleClient
             {
                 EndCancelEvent();
             }
+        }
+
+        public void boardScoreUpdate(string v1, string v2, string v3)
+        {
+            player1ScoreBox.Text = v1;
+            player2ScoreBox.Text = v2;
+            timeBox1.Text = v3;
         }
     }
     public static class Prompt

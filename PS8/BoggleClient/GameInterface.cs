@@ -25,8 +25,11 @@ namespace BoggleClient
         char[] Board { set; }
 
         string Timer { set; }
+        string cancelbuttonText { get; set; }
+
         void ResetBoard();
 
         void WordFocus();
+        void boardScoreUpdate(string v1, string v2, string v3);
     }
 }

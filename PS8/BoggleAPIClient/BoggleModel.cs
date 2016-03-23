@@ -37,7 +37,6 @@ namespace BoggleAPIClient
         public int player2Score;
         public string player2Name;
         private bool playerIs1;
-        public bool cancel;
 
 
         public List<string> player1Words;
@@ -110,7 +109,8 @@ namespace BoggleAPIClient
 
                 catch (AggregateException e)
                 {
-                    throw e.Flatten();
+                    GamePending = false;
+                    GamePlaying = false;
                 }
             }
             return Task.FromResult(0);
@@ -261,7 +261,9 @@ namespace BoggleAPIClient
 
                 catch (AggregateException e)
                 {
-                    throw e.Flatten();
+
+                    GamePending = false;
+                    GamePlaying = false;
                 }
 
                 return Task.FromResult(0);
@@ -307,13 +309,13 @@ namespace BoggleAPIClient
                     }
                     else
                     {
-                        Console.WriteLine("Error creating game: " + response.StatusCode);
-                        Console.WriteLine(response.ReasonPhrase);
+                        
                     }
                 }
                 catch (AggregateException e)
                 {
-                    throw e.Flatten();
+                    GamePending = false;
+                    GamePlaying = false;
                 }
             }
             return Task.FromResult(0);
@@ -336,7 +338,7 @@ namespace BoggleAPIClient
                         Console.WriteLine("Game cancelled");
                         GamePending = false;
                         GamePlaying = false;
-                        cancel = true;
+                        
                     }
                     else
                     {
@@ -345,7 +347,7 @@ namespace BoggleAPIClient
                 }
                 catch (AggregateException e)
                 {
-                    throw e.Flatten();
+                    
                 }
             }
             return Task.FromResult(0);
@@ -389,7 +391,9 @@ namespace BoggleAPIClient
 
                 catch (AggregateException e)
                 {
-                    throw e.Flatten();
+
+                    GamePending = false;
+                    GamePlaying = false;
                 }
             }
             return Task.FromResult(0);

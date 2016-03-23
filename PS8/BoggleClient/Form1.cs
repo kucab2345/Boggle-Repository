@@ -166,6 +166,126 @@ namespace BoggleClient
                 wordInputBox.Text = "";
             }
         }
+
+        private void boardButton0_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton0.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton1_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton1.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton2_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton2.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton3_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton3.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton4_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton4.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton5_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton5.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton6_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton6.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton7_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton7.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton8_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton8.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton9_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton9.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton10_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton10.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton11_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton11.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton12_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton12.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton13_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton13.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton14_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton14.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void boardButton15_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = wordInputBox.Text + boardButton15.Text;
+            wordInputBox.Refresh();
+        }
+
+        private void clearButton_Click(object sender, EventArgs e)
+        {
+            wordInputBox.Text = "";
+            wordInputBox.Refresh();
+        }
+
+        private void helpMenuButton_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Boggle\n"
+                + "==============================================\n"
+                + "How to Play\n"
+                + "Press Game > Play Game\n"
+                + "Enter in a nickname, desired game length in seconds, and server\n"
+                + "Wait for a game to begin (you can cancel waiting for a game from the bottom right of the client\n"
+                + "==============================================\n"
+                + "Rules\n"
+                + "Either click on the tiles or type in a word that can be made from the tiles\n"
+                + "Each tile can only be used once per word, and each next tile must 'touch' the previous one\n"
+                + "Two tiles touch when they are above, below, left, right, or diagonally from one another\n"
+                + "When time runs out, the player with the highest score wins!\n"
+                + "Invalid words cause you to lose a point, so be careful!\n"
+                + "Created by Ryan Steele and Henry Kucab\n");
+        }
     }
     public static class Prompt
     {

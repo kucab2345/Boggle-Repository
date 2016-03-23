@@ -30,6 +30,7 @@ namespace BoggleClient
         public event Action CancelGameEvent;
 
         public event Action<string> WordEnteredEvent;
+        public event Action EndCancelEvent;
 
         public string Player1Name
         {
@@ -126,6 +127,23 @@ namespace BoggleClient
             }
         }
 
+        public bool EndRequestButton
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                CancelRequestlButton.Visible = value;
+            }
+        }
+
+        public void WordFocus()
+        {
+            wordInputBox.Focus();
+        }
         /// <summary>
         /// Prompts user for nickname, timelimit, and server address they wish to connect to,
         /// passes those three strings are parameters through CreateGameEvent, which calls CreateGameHandler
@@ -160,6 +178,7 @@ namespace BoggleClient
         public void EndGame(List<string> Player1List, List<string> Player2List)
         {
             Prompt.EndGameWindow(Player1Name, Player2Name, Player1Score, Player2Score, Player1List, Player2List);
+            ResetBoard();
         }
 
         private void enterButton_Click(object sender, EventArgs e)
@@ -302,6 +321,22 @@ namespace BoggleClient
                     WordEnteredEvent(wordInputBox.Text);
                     wordInputBox.Clear();
                 }
+            }
+        }
+
+        public void ResetBoard()
+        {
+            player1NameBox.Clear();
+            player2NameBox.Clear();
+            player1ScoreBox.Clear();
+            player2ScoreBox.Clear();
+        }
+
+        private void CancelRequestlButton_Click(object sender, EventArgs e)
+        {
+            if(EndCancelEvent != null)
+            {
+                EndCancelEvent();
             }
         }
     }

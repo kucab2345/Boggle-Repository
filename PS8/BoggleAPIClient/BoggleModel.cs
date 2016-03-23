@@ -38,7 +38,7 @@ namespace BoggleAPIClient
         public string player2Name;
         private bool playerIs1;
         public bool cancel;
-        
+
 
         public List<string> player1Words;
         public List<string> player2Words;
@@ -56,54 +56,61 @@ namespace BoggleAPIClient
             using (HttpClient client = CreateClient())
             {
                 String url = String.Format("games/{0}", gameID);
-
-                HttpResponseMessage response = client.GetAsync(url, ct).Result;
-
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    string result = response.Content.ReadAsStringAsync().Result;
-                    dynamic deserResult = JsonConvert.DeserializeObject(result);
+                    HttpResponseMessage response = client.GetAsync(url, ct).Result;
 
-                    if (GamePending && deserResult.GameState == "active")
+                    if (response.IsSuccessStatusCode)
                     {
-                        GamePending = false;
-                        gameCreation = true;
-                        Task gameMake = new Task(() => gameSetup());
-                        gameMake.Start();
-                        gameMake.Wait();
-                    }
-                    else if (deserResult.GameState == "active")
-                    {
-                        int generalInt;
-                        string parsedResult = deserResult.TimeLeft;
-                        if (int.TryParse(parsedResult, out generalInt))
+                        string result = response.Content.ReadAsStringAsync().Result;
+                        dynamic deserResult = JsonConvert.DeserializeObject(result);
+
+                        if (GamePending && deserResult.GameState == "active")
                         {
-                            gameTime = generalInt;
+                            GamePending = false;
+                            gameCreation = true;
+                            Task gameMake = new Task(() => gameSetup());
+                            gameMake.Start();
+                            gameMake.Wait();
+                        }
+                        else if (deserResult.GameState == "active")
+                        {
+                            int generalInt;
+                            string parsedResult = deserResult.TimeLeft;
+                            if (int.TryParse(parsedResult, out generalInt))
+                            {
+                                gameTime = generalInt;
+                            }
+
+                            parsedResult = deserResult.Player1.Score;
+                            if (int.TryParse(parsedResult, out generalInt))
+                            {
+                                player1Score = generalInt;
+                            }
+
+                            parsedResult = deserResult.Player2.Score;
+                            if (int.TryParse(parsedResult, out generalInt))
+                            {
+                                player2Score = generalInt;
+                            }
+
+                        }
+                        if (deserResult.GameState == "completed")
+                        {
+                            gameCompleted = true;
+                            GamePlaying = false;
                         }
 
-                        parsedResult = deserResult.Player1.Score;
-                        if (int.TryParse(parsedResult, out generalInt))
-                        {
-                            player1Score = generalInt;
-                        }
-
-                        parsedResult = deserResult.Player2.Score;
-                        if (int.TryParse(parsedResult, out generalInt))
-                        {
-                            player2Score = generalInt;
-                        }
-
                     }
-                    if (deserResult.GameState == "completed")
+                    else
                     {
-                        gameCompleted = true;
-                        GamePlaying = false;
-                    }
 
+                    }
                 }
-                else
-                {
 
+                catch (AggregateException e)
+                {
+                    throw e.Flatten();
                 }
             }
             return Task.FromResult(0);
@@ -141,7 +148,7 @@ namespace BoggleAPIClient
                         player2Score = generalInt;
                     }
 
-                    foreach(var item in deserResult.Player1.WordsPlayed)
+                    foreach (var item in deserResult.Player1.WordsPlayed)
                     {
                         string word = item.Word;
                         string score = item.Score;
@@ -154,7 +161,7 @@ namespace BoggleAPIClient
                         string word = item.Word;
                         string score = item.Score;
                         player2Words.Add("Word: " + word + " Score: " + score);
-                        
+
                     }
                 }
                 else
@@ -163,7 +170,7 @@ namespace BoggleAPIClient
                 }
             }
             return Task.FromResult(0);
-            
+
         }
 
         private Task gameSetup()
@@ -229,23 +236,32 @@ namespace BoggleAPIClient
                 data.Nickname = userName;
 
                 StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = client.PostAsync("users", content, ct).Result;
 
-                //HttpResponseMessage response = responseResult;
-
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    // The deserialized response value is an object that describes the new repository.
-                    string result = response.Content.ReadAsStringAsync().Result;
-                    dynamic deserResult = JsonConvert.DeserializeObject(result);
-                    userToken = deserResult.UserToken;
-                    Console.WriteLine(userToken);
+                    HttpResponseMessage response = client.PostAsync("users", content, ct).Result;
+
+                    //HttpResponseMessage response = responseResult;
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // The deserialized response value is an object that describes the new repository.
+                        string result = response.Content.ReadAsStringAsync().Result;
+                        dynamic deserResult = JsonConvert.DeserializeObject(result);
+                        userToken = deserResult.UserToken;
+                        Console.WriteLine(userToken);
+                    }
+                    else
+                    {
+                        //throw new Exception();
+                        Console.WriteLine("Error creating user: " + response.StatusCode);
+                        Console.WriteLine(response.ReasonPhrase);
+                    }
                 }
-                else
+
+                catch (AggregateException e)
                 {
-                    //throw new Exception();
-                    Console.WriteLine("Error creating user: " + response.StatusCode);
-                    Console.WriteLine(response.ReasonPhrase);
+                    throw e.Flatten();
                 }
 
                 return Task.FromResult(0);
@@ -262,77 +278,49 @@ namespace BoggleAPIClient
                 data.TimeLimit = gameTime;
 
                 StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = client.PostAsync("games", content, ct).Result;
-
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    string result = response.Content.ReadAsStringAsync().Result;
-                    dynamic deserResult = JsonConvert.DeserializeObject(result);
-                    gameID = deserResult.GameID;
-                    if (response.StatusCode == HttpStatusCode.Accepted)
+                    HttpResponseMessage response = client.PostAsync("games", content, ct).Result;
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        // The deserialized response value is an object that describes the new repository.
-                        playerIs1 = true;
-                        GamePending = true;
-                        GamePlaying = true;
-                        Console.WriteLine(gameID);
+                        string result = response.Content.ReadAsStringAsync().Result;
+                        dynamic deserResult = JsonConvert.DeserializeObject(result);
+                        gameID = deserResult.GameID;
+                        if (response.StatusCode == HttpStatusCode.Accepted)
+                        {
+                            // The deserialized response value is an object that describes the new repository.
+                            playerIs1 = true;
+                            GamePending = true;
+                            GamePlaying = true;
+                            Console.WriteLine(gameID);
+                        }
+                        else if (response.StatusCode == HttpStatusCode.Created)
+                        {
+                            Task gameMake = new Task(() => gameSetup());
+                            gameMake.Start();
+                            playerIs1 = false;
+                            gameCreation = true;
+                            GamePlaying = true;
+                            gameMake.Wait();
+                        }
                     }
-                    else if (response.StatusCode == HttpStatusCode.Created)
+                    else
                     {
-                        Task gameMake = new Task(() => gameSetup());
-                        gameMake.Start();
-                        playerIs1 = false;
-                        gameCreation = true;
-                        GamePlaying = true;
-                        gameMake.Wait();
+                        Console.WriteLine("Error creating game: " + response.StatusCode);
+                        Console.WriteLine(response.ReasonPhrase);
                     }
                 }
-                else
+                catch (AggregateException e)
                 {
-                    Console.WriteLine("Error creating game: " + response.StatusCode);
-                    Console.WriteLine(response.ReasonPhrase);
+                    throw e.Flatten();
                 }
             }
             return Task.FromResult(0);
         }
-        /*
-        public async void getGameStatus()
-        {
-            using(HttpClient client = CreateClient())
-            {
-                String url = String.Format("games/{0}/Brief=yes", gameID);
+       
 
-                Task<HttpResponseMessage> responseResult = new Task<HttpResponseMessage>(() => client.GetAsync(url).Result);
-                
-
-                HttpResponseMessage response = await responseResult;
-                
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string result = response.Content.ReadAsStringAsync().Result;
-                    dynamic deserResult = JsonConvert.DeserializeObject(result);
-                    
-                    //if(deserResult.GameState == "active" && !gameCreated)
-                    //{
-                    //    gameSetup(deserResult);
-                    //}
-                    //else if(deserResult.GameState == "active")
-                    //{
-                    //    gameCurrentState(deserResult);
-                    //}
-                    //else if()
-
-                    Console.WriteLine(gameID);
-                }
-                else
-                {
-                    
-                }
-            }
-        }
-        */
-        public Task cancelJoinRequest()
+        public Task cancelJoinRequest(CancellationToken ct)
         {
             using (HttpClient client = CreateClient())
             {
@@ -340,24 +328,30 @@ namespace BoggleAPIClient
                 data.UserToken = userToken;
 
                 StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = client.PutAsync("games", content).Result;
+                try {
+                    HttpResponseMessage response = client.PutAsync("games", content, ct).Result;
 
-                if (response.IsSuccessStatusCode)
-                {
-                    Console.WriteLine("Game cancelled");
-                    GamePending = false;
-                    GamePlaying = false;
-                    cancel = true;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("Game cancelled");
+                        GamePending = false;
+                        GamePlaying = false;
+                        cancel = true;
+                    }
+                    else
+                    {
+                        //throw new Exception();
+                    }
                 }
-                else
+                catch (AggregateException e)
                 {
-                    //throw new Exception();
+                    throw e.Flatten();
                 }
             }
             return Task.FromResult(0);
         }
 
-        public Task submitWord(string word)
+        public Task submitWord(string word, CancellationToken ct)
         {
             using (HttpClient client = CreateClient())
             {
@@ -368,30 +362,34 @@ namespace BoggleAPIClient
                 String url = String.Format("games/{0}", gameID);
 
                 StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = client.PutAsync(url, content).Result;
-
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    string result = response.Content.ReadAsStringAsync().Result;
-                    dynamic deserResult = JsonConvert.DeserializeObject(result);
-                    string score = deserResult.Score;
+                    HttpResponseMessage response = client.PutAsync(url, content, ct).Result;
 
-                    int numberScore;
-                    if (int.TryParse(score, out numberScore))
+                    if (response.IsSuccessStatusCode)
                     {
-                        if (playerIs1)
+                        string result = response.Content.ReadAsStringAsync().Result;
+                        dynamic deserResult = JsonConvert.DeserializeObject(result);
+                        string score = deserResult.Score;
+
+                        int numberScore;
+                        if (int.TryParse(score, out numberScore))
                         {
-                            player1Score += numberScore;
-                        }
-                        else
-                        {
-                            player2Score += numberScore;
+                            if (playerIs1)
+                            {
+                                player1Score += numberScore;
+                            }
+                            else
+                            {
+                                player2Score += numberScore;
+                            }
                         }
                     }
                 }
-                else
+
+                catch (AggregateException e)
                 {
-                    //throw new Exception();
+                    throw e.Flatten();
                 }
             }
             return Task.FromResult(0);

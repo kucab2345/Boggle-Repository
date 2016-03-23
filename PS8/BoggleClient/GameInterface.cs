@@ -11,6 +11,7 @@ namespace BoggleClient
         void EndGame(List<string> Player1List, List<string> Player2List);
         event Action<string, string, string> CreateGameEvent;
         event Action CancelGameEvent;
+        event Action EndCancelEvent;
         event Action<string> WordEnteredEvent;
         string Player1Name { get; set; }
         string Player2Name { get; set; }
@@ -20,8 +21,12 @@ namespace BoggleClient
         string Message { set; }
         bool cancelbutton { get; set; }
 
+        bool EndRequestButton { get; set; }
         char[] Board { set; }
 
         string Timer { set; }
+        void ResetBoard();
+
+        void WordFocus();
     }
 }

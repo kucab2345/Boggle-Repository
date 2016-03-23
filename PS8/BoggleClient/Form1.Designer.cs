@@ -64,6 +64,7 @@
             this.timeBox1 = new System.Windows.Forms.TextBox();
             this.timeLabel = new System.Windows.Forms.Label();
             this.cancelGameRequestButton = new System.Windows.Forms.Button();
+            this.CancelRequestlButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -90,14 +91,14 @@
             // createGameMenuButton
             // 
             this.createGameMenuButton.Name = "createGameMenuButton";
-            this.createGameMenuButton.Size = new System.Drawing.Size(152, 22);
+            this.createGameMenuButton.Size = new System.Drawing.Size(130, 22);
             this.createGameMenuButton.Text = "Play Game";
             this.createGameMenuButton.Click += new System.EventHandler(this.createGameMenuButton_Click);
             // 
             // closeMenuButton
             // 
             this.closeMenuButton.Name = "closeMenuButton";
-            this.closeMenuButton.Size = new System.Drawing.Size(152, 22);
+            this.closeMenuButton.Size = new System.Drawing.Size(130, 22);
             this.closeMenuButton.Text = "Close";
             this.closeMenuButton.Click += new System.EventHandler(this.closeMenuButton_Click);
             // 
@@ -414,11 +415,23 @@
             this.cancelGameRequestButton.UseVisualStyleBackColor = true;
             this.cancelGameRequestButton.Click += new System.EventHandler(this.cancelGameRequestButton_Click);
             // 
+            // CancelRequestlButton
+            // 
+            this.CancelRequestlButton.Location = new System.Drawing.Point(222, 502);
+            this.CancelRequestlButton.Name = "CancelRequestlButton";
+            this.CancelRequestlButton.Size = new System.Drawing.Size(171, 23);
+            this.CancelRequestlButton.TabIndex = 33;
+            this.CancelRequestlButton.Text = "Cancel Request to End Game";
+            this.CancelRequestlButton.UseVisualStyleBackColor = true;
+            this.CancelRequestlButton.Visible = false;
+            this.CancelRequestlButton.Click += new System.EventHandler(this.CancelRequestlButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(612, 529);
+            this.Controls.Add(this.CancelRequestlButton);
             this.Controls.Add(this.cancelGameRequestButton);
             this.Controls.Add(this.timeLabel);
             this.Controls.Add(this.timeBox1);
@@ -499,6 +512,7 @@
         private System.Windows.Forms.TextBox timeBox1;
         private System.Windows.Forms.Label timeLabel;
         private System.Windows.Forms.Button cancelGameRequestButton;
+        private System.Windows.Forms.Button CancelRequestlButton;
     }
 }
 

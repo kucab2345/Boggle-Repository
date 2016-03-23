@@ -79,6 +79,7 @@ namespace BoggleClient
             game.Player2Score = mainClient.player2Score.ToString();
             game.Timer = mainClient.gameTime.ToString();
             game.Board = new Char[] { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
+            game.EndGame(mainClient.player1Words, mainClient.player2Words);
         }
 
         private void boardSetup()

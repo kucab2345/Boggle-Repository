@@ -157,6 +157,10 @@ namespace BoggleClient
         {
             Close();
         }
+        public void EndGame(List<string> Player1List, List<string> Player2List)
+        {
+            Prompt.EndGameWindow(Player1Name, Player2Name, Player1Score, Player2Score, Player1List, Player2List);
+        }
 
         private void enterButton_Click(object sender, EventArgs e)
         {
@@ -349,6 +353,62 @@ namespace BoggleClient
             {
                 return DialogResult.Cancel;
             }
+        }
+        public static void EndGameWindow(string Player1Name, string Player2Name, string Player1Score, string Player2Score, List<string> Player1Words, List<string> Player2Words)
+        {
+            Form prompt = new Form()
+            {
+                Width = 525,
+                Height = 450,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                StartPosition = FormStartPosition.CenterScreen
+            };
+
+            ListBox player1WordBox = new ListBox() { Left = 50, Top = 80, Width = 150, Height = 250 };
+            ListBox player2WordBox = new ListBox() { Left = 300, Top = 80, Width = 150, Height = 250 };
+
+            Label header = new Label() { Left = 210, Top = 10 };
+            header.Text = "GAME RESULTS";
+
+            TextBox result = new TextBox() { Left = 50, Top = 40, Width = 400 };
+            result.ReadOnly = true;
+
+            if (Int32.Parse(Player1Score) > Int32.Parse(Player2Score))
+            {
+                result.Text = Player1Name + " beat " + Player2Name + ", " + Player1Score + " to " + Player2Score;
+                result.Refresh();
+            }
+            if (Int32.Parse(Player1Score) < Int32.Parse(Player2Score))
+            {
+                result.Text = Player2Name + " beat " + Player1Name + ", " + Player2Score + " to " + Player1Score;
+                result.Refresh();
+            }
+            if (Int32.Parse(Player1Score) == Int32.Parse(Player2Score))
+            {
+                result.Text = Player1Name + " tied " + Player2Name + ", " + Player1Score + " to " + Player2Score;
+                result.Refresh();
+            }
+
+            foreach(string i in Player1Words)
+            {
+                player1WordBox.Items.Add(i);
+            }
+            foreach(string j in Player2Words)
+            {
+                player2WordBox.Items.Add(j);
+            }
+
+            Button confirmation = new Button() { Text = "Continue", Left = 175, Width = 150, Top = 350 };
+
+            confirmation.Click += (sender, e) => { prompt.Close(); };
+            prompt.Controls.Add(player1WordBox);
+            prompt.Controls.Add(player2WordBox);
+            prompt.Controls.Add(confirmation);
+            prompt.Controls.Add(header);
+            prompt.Controls.Add(result);
+
+            prompt.ShowDialog();
+
         }
     }
 }

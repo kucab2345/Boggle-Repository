@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -28,7 +29,7 @@ namespace BoggleAPIClient
 
         public bool GamePlaying { get; set; }
 
-        private bool gamePending;
+        public bool GamePending;
         public bool gameCompleted;
         public bool gameCreation;
         public int gameTime;
@@ -37,6 +38,10 @@ namespace BoggleAPIClient
         public string player2Name;
         private bool playerIs1;
         public bool cancel;
+        
+
+        public List<string> player1Words;
+        public List<string> player2Words;
 
         public BoggleModel(string serverDest)
         {
@@ -56,15 +61,15 @@ namespace BoggleAPIClient
                     string result = response.Content.ReadAsStringAsync().Result;
                     dynamic deserResult = JsonConvert.DeserializeObject(result);
 
-                    if(gamePending && deserResult.GameState == "active")
+                    if (GamePending && deserResult.GameState == "active")
                     {
-                        gamePending = false;
+                        GamePending = false;
                         gameCreation = true;
                         Task gameMake = new Task(() => gameSetup());
                         gameMake.Start();
                         gameMake.Wait();
                     }
-                    else if(deserResult.GameState == "active")
+                    else if (deserResult.GameState == "active")
                     {
                         int generalInt;
                         string parsedResult = deserResult.TimeLeft;
@@ -86,12 +91,12 @@ namespace BoggleAPIClient
                         }
 
                     }
-                    if(deserResult.GameState == "completed")
+                    if (deserResult.GameState == "completed")
                     {
                         gameCompleted = true;
                         GamePlaying = false;
                     }
-                    
+
                 }
                 else
                 {
@@ -99,6 +104,59 @@ namespace BoggleAPIClient
                 }
             }
             return Task.FromResult(0);
+        }
+
+        public Task finalBoardSetup()
+        {
+
+            using (HttpClient client = CreateClient())
+            {
+                String url = String.Format("games/{0}", gameID);
+
+                HttpResponseMessage response = client.GetAsync(url).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = response.Content.ReadAsStringAsync().Result;
+                    dynamic deserResult = JsonConvert.DeserializeObject(result);
+                    int generalInt;
+                    string parsedResult = deserResult.TimeLeft;
+                    if (int.TryParse(parsedResult, out generalInt))
+                    {
+                        gameTime = generalInt;
+                    }
+
+                    parsedResult = deserResult.Player1.Score;
+                    if (int.TryParse(parsedResult, out generalInt))
+                    {
+                        player1Score = generalInt;
+                    }
+
+                    parsedResult = deserResult.Player2.Score;
+                    if (int.TryParse(parsedResult, out generalInt))
+                    {
+                        player2Score = generalInt;
+                    }
+
+                    foreach(var item in deserResult.Player1.WordsPlayed)
+                    {
+                        string word = item.Word;
+                        player1Words.Add(word);
+                    }
+
+                    foreach (var item in deserResult.Player2.WordsPlayed)
+                    {
+                        string word = item.Word;
+                        player2Words.Add(item.Word);
+                    }
+                }
+                else
+                {
+
+                }
+            }
+            return Task.FromResult(0);
+            throw new NotImplementedException();
         }
 
         private Task gameSetup()
@@ -113,7 +171,6 @@ namespace BoggleAPIClient
                 {
                     string result = response.Content.ReadAsStringAsync().Result;
                     dynamic deserResult = JsonConvert.DeserializeObject(result);
-
                     int generalInt;
                     string parsedResult = deserResult.Board;
                     boardState = parsedResult.ToCharArray();
@@ -140,7 +197,7 @@ namespace BoggleAPIClient
                 }
             }
             return Task.FromResult(0);
-            
+
         }
 
         private HttpClient CreateClient()
@@ -166,9 +223,9 @@ namespace BoggleAPIClient
 
                 StringContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = client.PostAsync("users", content, ct).Result;
-                
+
                 //HttpResponseMessage response = responseResult;
-                
+
                 if (response.IsSuccessStatusCode)
                 {
                     // The deserialized response value is an object that describes the new repository.
@@ -208,7 +265,7 @@ namespace BoggleAPIClient
                     {
                         // The deserialized response value is an object that describes the new repository.
                         playerIs1 = true;
-                        gamePending = true;
+                        GamePending = true;
                         GamePlaying = true;
                         Console.WriteLine(gameID);
                     }
@@ -269,7 +326,7 @@ namespace BoggleAPIClient
         */
         public Task cancelJoinRequest()
         {
-            using(HttpClient client = CreateClient())
+            using (HttpClient client = CreateClient())
             {
                 dynamic data = new ExpandoObject();
                 data.UserToken = userToken;
@@ -280,7 +337,7 @@ namespace BoggleAPIClient
                 if (response.IsSuccessStatusCode)
                 {
                     Console.WriteLine("Game cancelled");
-                    gamePending = false;
+                    GamePending = false;
                     GamePlaying = false;
                     cancel = true;
                 }
@@ -312,7 +369,7 @@ namespace BoggleAPIClient
                     string score = deserResult.Score;
 
                     int numberScore;
-                    if(int.TryParse(score, out numberScore))
+                    if (int.TryParse(score, out numberScore))
                     {
                         if (playerIs1)
                         {

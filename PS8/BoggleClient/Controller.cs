@@ -57,7 +57,10 @@ namespace BoggleClient
             }
             if (mainClient.gameCompleted)
             {
-                //mainClient.finalBoardSetup();
+                Task endGame = new Task(() =>mainClient.finalBoardSetup());
+                endGame.Start();
+                await endGame;
+                boardScoreUpdate();
             }
 
         }
@@ -82,16 +85,19 @@ namespace BoggleClient
 
         private async void CancelGameHandler()
         {
-            cts.Cancel();
-            Task cancelGame = new Task(() =>mainClient.cancelJoinRequest());
-            cancelGame.Start();
-            await cancelGame;
-            Console.WriteLine();
-            if (mainClient.cancel)
+            if (mainClient.GamePending)
             {
-                game.cancelbutton = false;
+                cts.Cancel();
+                Task cancelGame = new Task(() => mainClient.cancelJoinRequest());
+                cancelGame.Start();
+                await cancelGame;
+                Console.WriteLine();
+                if (mainClient.cancel)
+                {
+                    game.cancelbutton = false;
+                }
+                cts = new CancellationTokenSource();
             }
-            cts = new CancellationTokenSource();
         }
     }
 }

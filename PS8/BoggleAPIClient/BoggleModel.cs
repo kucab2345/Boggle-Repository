@@ -43,11 +43,18 @@ namespace BoggleAPIClient
         public List<string> player1Words;
         public List<string> player2Words;
 
+        public Dictionary<string, string> player1ScoreWords;
+
+        public Dictionary<string, string> Player2ScoreWords;
+
         public BoggleModel(string serverDest)
         {
             server = serverDest;
+
             player1Words = new List<string>();
             player2Words = new List<string>();
+            player1ScoreWords = new Dictionary<string, string>();
+            Player2ScoreWords = new Dictionary<string, string>();
         }
 
         public Task playGame(CancellationToken ct)
@@ -143,6 +150,8 @@ namespace BoggleAPIClient
                     foreach(var item in deserResult.Player1.WordsPlayed)
                     {
                         string word = item.Word;
+                        string score = item.Score;
+                        player1ScoreWords.Add(word, score);
                         player1Words.Add(word);
                         
                     }
@@ -150,6 +159,8 @@ namespace BoggleAPIClient
                     foreach (var item in deserResult.Player2.WordsPlayed)
                     {
                         string word = item.Word;
+                        string score = item.Score;
+                        Player2ScoreWords.Add(word, score);
                         player2Words.Add(word);
                         
                     }

@@ -55,24 +55,54 @@ namespace BoggleAPIClient
         public char[] boardState;
 
         /// <summary>
-        /// This tells whether there is an active game happening or not.  This allows the controller to only need to do brief pings 
+        /// This tells whether there is an active game happening or not.
         /// </summary>
         public bool GamePlaying { get; set; }
 
+        /// <summary>
+        /// This tells whether we are pending on a game request or not.  
+        /// </summary>
         public bool GamePending { get; set; }
+
+        /// <summary>
+        /// This tells whether the game is finished or not.
+        /// </summary>
         public bool GameCompleted { get; set; }
+
+        /// <summary>
+        /// This tells whether the game needs to be created on the board, or if the board has been set up
+        /// </summary>
         public bool GameCreation { get; set;}
+
+        /// <summary>
+        /// This is the amount of time left that the server has for the game, retrieved from the server.
+        /// </summary>
         public int GameTime { get; set; }
+
+        /// <summary>
+        /// This is the score of the first player, retrieved from the server
+        /// </summary>
         public int Player1Score { get; set; }
+
+        /// <summary>
+        /// This is the score of the second player, retrieved from the server
+        /// </summary>
         public int Player2Score { get; set; }
-        
-        private bool playerIs1;
 
-
+        /// <summary>
+        /// This is the list of words and the scores that the first player will have at the end of the game.
+        /// </summary>
         public List<string> player1Words { get; set; }
 
+        /// <summary>
+        /// This is the list of words and the scores that the second player will have at the end of the game.
+        /// </summary>
         public List<string> player2Words { get; set; }
 
+        /// <summary>
+        /// The constructor for the class.  Sets up the lists and sets the serverAddress to the field inputted by the user.
+        /// </summary>
+        /// <param name="serverDest"></param>
         public BoggleModel(string serverDest)
         {
             serverAddress = serverDest;
@@ -81,6 +111,13 @@ namespace BoggleAPIClient
             player2Words = new List<string>();
         }
 
+        /// <summary>
+        /// runs the game, getting the results of the time, and both players scores during the game from the server.
+        /// If the user is the first player, will tell when the game has started and call the gameSetup() method.
+        /// When the game is finished, it will set GameCompleted to true, causing the controller to properly get all results.
+        /// </summary>
+        /// <param name="ct">token used to cancel the task if the user wishes to</param>
+        /// <returns></returns>
         public Task playGame(CancellationToken ct)
         {
             using (HttpClient client = CreateClient())
@@ -138,7 +175,7 @@ namespace BoggleAPIClient
                     }
                 }
 
-                catch (AggregateException e)
+                catch (AggregateException)
                 {
                     GamePending = false;
                     GamePlaying = false;
@@ -147,6 +184,10 @@ namespace BoggleAPIClient
             return Task.FromResult(0);
         }
 
+        /// <summary>
+        /// Retrieves the final board state from the server, setting up the lists of the wrods and scores from both users at the end of the game.
+        /// </summary>
+        /// <returns></returns>
         public Task finalBoardSetup()
         {
 
@@ -204,6 +245,11 @@ namespace BoggleAPIClient
 
         }
 
+        /// <summary>
+        /// Sets up the inital results from the server, including both player's names, the initial scores(should be zero unless the other player was able to cnnect and play sooner)
+        /// and time of the game.
+        /// </summary>
+        /// <returns></returns>
         private Task gameSetup()
         {
             using (HttpClient client = CreateClient())
@@ -245,6 +291,11 @@ namespace BoggleAPIClient
 
         }
 
+        /// <summary>
+        /// Private method that is used to create a httpclient for each of the server requests.
+        /// Uses serverAddress as the base address.
+        /// </summary>
+        /// <returns></returns>
         private HttpClient CreateClient()
         {
             client = new HttpClient();
@@ -257,8 +308,12 @@ namespace BoggleAPIClient
             return client;
         }
 
-
-
+        /// <summary>
+        /// Creates the user from the server response.  Uses the userName input to send to the server to retrieve a user token
+        /// </summary>
+        /// <param name="userName">INput for the nickname that the user will have</param>
+        /// <param name="ct">Token to canccel the task</param>
+        /// <returns></returns>
         public Task createUser(string userName, CancellationToken ct)
         {
             using (HttpClient client = CreateClient())
@@ -290,7 +345,7 @@ namespace BoggleAPIClient
                     }
                 }
 
-                catch (AggregateException e)
+                catch (AggregateException)
                 {
 
                     GamePending = false;
@@ -301,6 +356,13 @@ namespace BoggleAPIClient
             }
         }
 
+        /// <summary>
+        /// Creates a game, sending the server the userToken and the gameTime to create a gameID.  If the user is the first player, then it will go to pending,
+        /// If the user is the second player, then it will immediately go to gameSetup()
+        /// </summary>
+        /// <param name="gameTime">The amount of time that the user wants the game to go</param>
+        /// <param name="ct">token to cancel the task</param>
+        /// <returns></returns>
         public Task createGame(int gameTime, CancellationToken ct)
         {
             GameCompleted = false;
@@ -321,9 +383,7 @@ namespace BoggleAPIClient
                         dynamic deserResult = JsonConvert.DeserializeObject(result);
                         gameID = deserResult.GameID;
                         if (response.StatusCode == HttpStatusCode.Accepted)
-                        {
-                            // The deserialized response value is an object that describes the new repository.
-                            playerIs1 = true;
+                        {   
                             GamePending = true;
                             GamePlaying = true;
                             Console.WriteLine(gameID);
@@ -332,18 +392,14 @@ namespace BoggleAPIClient
                         {
                             Task gameMake = new Task(() => gameSetup());
                             gameMake.Start();
-                            playerIs1 = false;
+                            GamePending = false;
                             GameCreation = true;
                             GamePlaying = true;
                             gameMake.Wait();
                         }
                     }
-                    else
-                    {
-                        
-                    }
                 }
-                catch (AggregateException e)
+                catch (AggregateException)
                 {
                     GamePending = false;
                     GamePlaying = false;
@@ -352,7 +408,11 @@ namespace BoggleAPIClient
             return Task.FromResult(0);
         }
        
-
+        /// <summary>
+        /// Sends the server a request to cancel a pending game request.
+        /// </summary>
+        /// <param name="ct">token used to cancel the task</param>
+        /// <returns></returns>
         public Task cancelJoinRequest(CancellationToken ct)
         {
             using (HttpClient client = CreateClient())
@@ -376,7 +436,7 @@ namespace BoggleAPIClient
                         //throw new Exception();
                     }
                 }
-                catch (AggregateException e)
+                catch (AggregateException)
                 {
                     
                 }
@@ -384,6 +444,12 @@ namespace BoggleAPIClient
             return Task.FromResult(0);
         }
 
+        /// <summary>
+        /// Sends the server a word, allowing the server to grade the score.
+        /// </summary>
+        /// <param name="word">Word to be scored</param>
+        /// <param name="ct">token to cancel the task</param>
+        /// <returns></returns>
         public Task submitWord(string word, CancellationToken ct)
         {
             using (HttpClient client = CreateClient())
@@ -401,26 +467,10 @@ namespace BoggleAPIClient
 
                     if (response.IsSuccessStatusCode)
                     {
-                        string result = response.Content.ReadAsStringAsync().Result;
-                        dynamic deserResult = JsonConvert.DeserializeObject(result);
-                        string score = deserResult.Score;
-
-                        int numberScore;
-                        if (int.TryParse(score, out numberScore))
-                        {
-                            if (playerIs1)
-                            {
-                                Player1Score += numberScore;
-                            }
-                            else
-                            {
-                                Player2Score += numberScore;
-                            }
-                        }
                     }
                 }
 
-                catch (AggregateException e)
+                catch (AggregateException)
                 {
 
                     GamePending = false;

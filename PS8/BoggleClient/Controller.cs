@@ -8,17 +8,32 @@ using System.Threading;
 
 namespace BoggleClient
 {
+    /// <summary>
+    /// Main Controller class for the client. Communicates to the view via Interface "game"
+    /// </summary>
     public class Controller
     {
+        /// <summary>
+        /// Current BoggleModel client
+        /// </summary>
         BoggleModel mainClient;
+        /// <summary>
+        /// Interface that the Controller interacts with to access the view
+        /// </summary>
         private GameInterface game;
-
+        /// <summary>
+        /// This token is used to cancel game tasks in the event that the player cancels it
+        /// </summary>
         CancellationTokenSource cts;
-
+        /// <summary>
+        /// This token is used to cancel the Cancel Request task
+        /// </summary>
         CancellationTokenSource cancelRequestToken;
 
-        
-
+        /// <summary>
+        /// Constructor for the controller, it access the view through the interface
+        /// </summary>
+        /// <param name="view"></param>
         public Controller(GameInterface view)
         { 
             game = view;
@@ -29,14 +44,19 @@ namespace BoggleClient
             cts = new CancellationTokenSource();
             cancelRequestToken = new CancellationTokenSource();
         }
-
+        /// <summary>
+        /// Async method that submits words to the server
+        /// </summary>
+        /// <param name="obj"></param>
         private async void WordEnteredHandler(string obj)
         {
             Task Scoring = new Task(() => mainClient.submitWord(obj, cts.Token));
             Scoring.Start();
             await Scoring;
         }
-
+        /// <summary>
+        /// Ends the cancellation request if user calls for a game to be cancelled
+        /// </summary>
         public void EndCancelHandler()
         {
             cancelRequestToken.Cancel();
@@ -53,7 +73,14 @@ namespace BoggleClient
             }
             cancelRequestToken = new CancellationTokenSource(); 
         }
-
+        /// <summary>
+        /// Handles the initial creation of a game. Waits for the server to 
+        /// ping back with a positive game joined response, removes the cancel button
+        /// and its associated task, and draws the new board state
+        /// </summary>
+        /// <param name="nickname"></param>
+        /// <param name="timeLimit"></param>
+        /// <param name="server"></param>
         private async void CreateGameHandler(string nickname, string timeLimit, string server)
         {
             mainClient = new BoggleModel(server);
@@ -104,7 +131,9 @@ namespace BoggleClient
             
 
         }
-
+        /// <summary>
+        /// Update the board's score after each ping
+        /// </summary>
         private void boardScoreUpdate()
         {
             game.Player1Score = mainClient.Player1Score.ToString();
@@ -112,8 +141,10 @@ namespace BoggleClient
             game.Timer = mainClient.GameTime.ToString();
          
         }
-
-
+        /// <summary>
+        /// Method called by the CreateGame method above. Setups the board by bringing in the two players' names, 
+        /// setting their scores, and setting the game timer.
+        /// </summary>
         private void boardSetup()
         {
             game.Board = mainClient.boardState;
@@ -125,7 +156,10 @@ namespace BoggleClient
             mainClient.GameCreation = false;
             game.WordFocus();
         }
-
+        /// <summary>
+        /// Handles the actual cancellation of a game request. Creates a seperate task for the cancellation thread to run on
+        /// and cancels the game if the cancel game button is depressed.
+        /// </summary>
         private async void CancelGameHandler()
         {
             if (mainClient.GamePending)

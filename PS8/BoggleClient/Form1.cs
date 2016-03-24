@@ -153,11 +153,23 @@ namespace BoggleClient
         /// <param name="e"></param>
         private void createGameMenuButton_Click(object sender, EventArgs e)
         {
-            string nickname, clock, address;
+            string nickname, address, clock;
+            bool enterGame = true;
 
             DialogResult result = Prompt.GameCreateDialogue(out nickname, out clock, out address);
 
-            if(CreateGameEvent != null && result == DialogResult.OK)
+            if(clock == "")
+            {
+                clock = "0";
+            }
+
+            if(Int32.Parse(clock) < 5 || Int32.Parse(clock) > 120)
+            {
+                MessageBox.Show("Parameters are empty or incorrect");
+                enterGame = false;
+            }
+
+            if(CreateGameEvent != null && result == DialogResult.OK && enterGame == true)
             {
                 CreateGameEvent(nickname, clock, address);
                 cancelGameRequestButton.Visible = true;
@@ -355,13 +367,13 @@ namespace BoggleClient
             Label textLabel = new Label() { Left = 50, Top = 30, Text = "Nickname" };
             TextBox textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
 
-            Label textLabel1 = new Label() { Left = 50, Top = 80, Text = "Game Length" };
+            Label textLabel1 = new Label() { Left = 50, Top = 80, Width = 200, Text = "Game Length, between 5-120 seconds" };
             TextBox textBox1 = new TextBox() { Left = 50, Top = 100, Width = 400 };
 
             Label textLabel2 = new Label() { Left = 50, Top = 130, Text = "Server" };
             TextBox textBox2 = new TextBox() { Left = 50, Top = 150, Width = 400 };
 
-            Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 200, DialogResult = DialogResult.OK };
+            Button confirmation = new Button() { Text = "Search", Left = 350, Width = 100, Top = 200, DialogResult = DialogResult.OK };
 
             confirmation.Click += (sender, e) => {prompt.Close(); };
             prompt.Controls.Add(textBox);
@@ -380,6 +392,7 @@ namespace BoggleClient
             gameLength = textBox1.Text;
             serverAddress = textBox2.Text;
 
+            
             double test;
             if (!string.IsNullOrWhiteSpace(nickname) && gameLength != "" && !string.IsNullOrWhiteSpace(serverAddress) && (double.TryParse(gameLength, out test) && test > 0))
             {
@@ -398,9 +411,10 @@ namespace BoggleClient
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 StartPosition = FormStartPosition.CenterScreen
             };
-
-            ListBox player1WordBox = new ListBox() { Left = 50, Top = 80, Width = 150, Height = 250 };
-            ListBox player2WordBox = new ListBox() { Left = 300, Top = 80, Width = 150, Height = 250 };
+            Label player1BoxLabel = new Label() { Left = 85, Top = 70 };
+            Label player2BoxLabel = new Label() { Left = 340, Top = 70 };
+            ListBox player1WordBox = new ListBox() { Left = 50, Top = 90, Width = 150, Height = 250 };
+            ListBox player2WordBox = new ListBox() { Left = 300, Top = 90, Width = 150, Height = 250 };
 
             Label header = new Label() { Left = 210, Top = 10 };
             header.Text = "GAME RESULTS";
@@ -424,7 +438,9 @@ namespace BoggleClient
                 result.Refresh();
             }
 
-            foreach(string i in Player1Words)
+            player1BoxLabel.Text = "Player 1's Words";
+            player2BoxLabel.Text = "Player 2's Words";
+            foreach (string i in Player1Words)
             {
                 player1WordBox.Items.Add(i);
             }
@@ -438,6 +454,8 @@ namespace BoggleClient
             confirmation.Click += (sender, e) => { prompt.Close(); };
             prompt.Controls.Add(player1WordBox);
             prompt.Controls.Add(player2WordBox);
+            prompt.Controls.Add(player1BoxLabel);
+            prompt.Controls.Add(player2BoxLabel);
             prompt.Controls.Add(confirmation);
             prompt.Controls.Add(header);
             prompt.Controls.Add(result);

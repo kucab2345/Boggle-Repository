@@ -75,7 +75,7 @@
             this.helpMenuButton});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(612, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(517, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -112,7 +112,7 @@
             // player1NameBox
             // 
             this.player1NameBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.player1NameBox.Location = new System.Drawing.Point(195, 79);
+            this.player1NameBox.Location = new System.Drawing.Point(133, 87);
             this.player1NameBox.Name = "player1NameBox";
             this.player1NameBox.ReadOnly = true;
             this.player1NameBox.Size = new System.Drawing.Size(100, 20);
@@ -121,7 +121,7 @@
             // player2NameBox
             // 
             this.player2NameBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.player2NameBox.Location = new System.Drawing.Point(320, 78);
+            this.player2NameBox.Location = new System.Drawing.Point(258, 86);
             this.player2NameBox.Name = "player2NameBox";
             this.player2NameBox.ReadOnly = true;
             this.player2NameBox.Size = new System.Drawing.Size(100, 20);
@@ -131,7 +131,7 @@
             // 
             this.player1NameLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.player1NameLabel.AutoSize = true;
-            this.player1NameLabel.Location = new System.Drawing.Point(141, 81);
+            this.player1NameLabel.Location = new System.Drawing.Point(79, 89);
             this.player1NameLabel.Name = "player1NameLabel";
             this.player1NameLabel.Size = new System.Drawing.Size(48, 13);
             this.player1NameLabel.TabIndex = 3;
@@ -141,7 +141,7 @@
             // 
             this.player2NameLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.player2NameLabel.AutoSize = true;
-            this.player2NameLabel.Location = new System.Drawing.Point(427, 79);
+            this.player2NameLabel.Location = new System.Drawing.Point(365, 87);
             this.player2NameLabel.Name = "player2NameLabel";
             this.player2NameLabel.Size = new System.Drawing.Size(45, 13);
             this.player2NameLabel.TabIndex = 4;
@@ -150,7 +150,7 @@
             // player1ScoreBox
             // 
             this.player1ScoreBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.player1ScoreBox.Location = new System.Drawing.Point(195, 106);
+            this.player1ScoreBox.Location = new System.Drawing.Point(133, 114);
             this.player1ScoreBox.Name = "player1ScoreBox";
             this.player1ScoreBox.ReadOnly = true;
             this.player1ScoreBox.Size = new System.Drawing.Size(100, 20);
@@ -159,7 +159,7 @@
             // player2ScoreBox
             // 
             this.player2ScoreBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.player2ScoreBox.Location = new System.Drawing.Point(320, 105);
+            this.player2ScoreBox.Location = new System.Drawing.Point(258, 113);
             this.player2ScoreBox.Name = "player2ScoreBox";
             this.player2ScoreBox.ReadOnly = true;
             this.player2ScoreBox.Size = new System.Drawing.Size(100, 20);
@@ -169,7 +169,7 @@
             // 
             this.player1ScoreLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.player1ScoreLabel.AutoSize = true;
-            this.player1ScoreLabel.Location = new System.Drawing.Point(144, 112);
+            this.player1ScoreLabel.Location = new System.Drawing.Point(82, 120);
             this.player1ScoreLabel.Name = "player1ScoreLabel";
             this.player1ScoreLabel.Size = new System.Drawing.Size(35, 13);
             this.player1ScoreLabel.TabIndex = 7;
@@ -179,7 +179,7 @@
             // 
             this.player2ScoreLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.player2ScoreLabel.AutoSize = true;
-            this.player2ScoreLabel.Location = new System.Drawing.Point(427, 108);
+            this.player2ScoreLabel.Location = new System.Drawing.Point(365, 116);
             this.player2ScoreLabel.Name = "player2ScoreLabel";
             this.player2ScoreLabel.Size = new System.Drawing.Size(35, 13);
             this.player2ScoreLabel.TabIndex = 8;
@@ -188,7 +188,7 @@
             // boardButton1
             // 
             this.boardButton1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton1.Location = new System.Drawing.Point(264, 141);
+            this.boardButton1.Location = new System.Drawing.Point(202, 149);
             this.boardButton1.Name = "boardButton1";
             this.boardButton1.Size = new System.Drawing.Size(39, 33);
             this.boardButton1.TabIndex = 9;
@@ -198,7 +198,7 @@
             // boardButton2
             // 
             this.boardButton2.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton2.Location = new System.Drawing.Point(309, 141);
+            this.boardButton2.Location = new System.Drawing.Point(247, 149);
             this.boardButton2.Name = "boardButton2";
             this.boardButton2.Size = new System.Drawing.Size(39, 33);
             this.boardButton2.TabIndex = 10;
@@ -208,7 +208,7 @@
             // boardButton3
             // 
             this.boardButton3.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton3.Location = new System.Drawing.Point(354, 141);
+            this.boardButton3.Location = new System.Drawing.Point(292, 149);
             this.boardButton3.Name = "boardButton3";
             this.boardButton3.Size = new System.Drawing.Size(39, 33);
             this.boardButton3.TabIndex = 11;
@@ -218,7 +218,7 @@
             // boardButton0
             // 
             this.boardButton0.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton0.Location = new System.Drawing.Point(219, 141);
+            this.boardButton0.Location = new System.Drawing.Point(157, 149);
             this.boardButton0.Name = "boardButton0";
             this.boardButton0.Size = new System.Drawing.Size(39, 33);
             this.boardButton0.TabIndex = 12;
@@ -228,7 +228,7 @@
             // boardButton4
             // 
             this.boardButton4.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton4.Location = new System.Drawing.Point(219, 180);
+            this.boardButton4.Location = new System.Drawing.Point(157, 188);
             this.boardButton4.Name = "boardButton4";
             this.boardButton4.Size = new System.Drawing.Size(39, 33);
             this.boardButton4.TabIndex = 16;
@@ -238,7 +238,7 @@
             // boardButton7
             // 
             this.boardButton7.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton7.Location = new System.Drawing.Point(354, 180);
+            this.boardButton7.Location = new System.Drawing.Point(292, 188);
             this.boardButton7.Name = "boardButton7";
             this.boardButton7.Size = new System.Drawing.Size(39, 33);
             this.boardButton7.TabIndex = 15;
@@ -248,7 +248,7 @@
             // boardButton6
             // 
             this.boardButton6.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton6.Location = new System.Drawing.Point(309, 180);
+            this.boardButton6.Location = new System.Drawing.Point(247, 188);
             this.boardButton6.Name = "boardButton6";
             this.boardButton6.Size = new System.Drawing.Size(39, 33);
             this.boardButton6.TabIndex = 14;
@@ -258,7 +258,7 @@
             // boardButton5
             // 
             this.boardButton5.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton5.Location = new System.Drawing.Point(264, 180);
+            this.boardButton5.Location = new System.Drawing.Point(202, 188);
             this.boardButton5.Name = "boardButton5";
             this.boardButton5.Size = new System.Drawing.Size(39, 33);
             this.boardButton5.TabIndex = 13;
@@ -268,7 +268,7 @@
             // boardButton12
             // 
             this.boardButton12.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton12.Location = new System.Drawing.Point(219, 258);
+            this.boardButton12.Location = new System.Drawing.Point(157, 266);
             this.boardButton12.Name = "boardButton12";
             this.boardButton12.Size = new System.Drawing.Size(39, 33);
             this.boardButton12.TabIndex = 24;
@@ -278,7 +278,7 @@
             // boardButton15
             // 
             this.boardButton15.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton15.Location = new System.Drawing.Point(354, 258);
+            this.boardButton15.Location = new System.Drawing.Point(292, 266);
             this.boardButton15.Name = "boardButton15";
             this.boardButton15.Size = new System.Drawing.Size(39, 33);
             this.boardButton15.TabIndex = 23;
@@ -288,7 +288,7 @@
             // boardButton14
             // 
             this.boardButton14.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton14.Location = new System.Drawing.Point(309, 258);
+            this.boardButton14.Location = new System.Drawing.Point(247, 266);
             this.boardButton14.Name = "boardButton14";
             this.boardButton14.Size = new System.Drawing.Size(39, 33);
             this.boardButton14.TabIndex = 22;
@@ -298,7 +298,7 @@
             // boardButton13
             // 
             this.boardButton13.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton13.Location = new System.Drawing.Point(264, 258);
+            this.boardButton13.Location = new System.Drawing.Point(202, 266);
             this.boardButton13.Name = "boardButton13";
             this.boardButton13.Size = new System.Drawing.Size(39, 33);
             this.boardButton13.TabIndex = 21;
@@ -308,7 +308,7 @@
             // boardButton8
             // 
             this.boardButton8.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton8.Location = new System.Drawing.Point(219, 219);
+            this.boardButton8.Location = new System.Drawing.Point(157, 227);
             this.boardButton8.Name = "boardButton8";
             this.boardButton8.Size = new System.Drawing.Size(39, 33);
             this.boardButton8.TabIndex = 20;
@@ -318,7 +318,7 @@
             // boardButton11
             // 
             this.boardButton11.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton11.Location = new System.Drawing.Point(354, 219);
+            this.boardButton11.Location = new System.Drawing.Point(292, 227);
             this.boardButton11.Name = "boardButton11";
             this.boardButton11.Size = new System.Drawing.Size(39, 33);
             this.boardButton11.TabIndex = 19;
@@ -328,7 +328,7 @@
             // boardButton10
             // 
             this.boardButton10.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton10.Location = new System.Drawing.Point(309, 219);
+            this.boardButton10.Location = new System.Drawing.Point(247, 227);
             this.boardButton10.Name = "boardButton10";
             this.boardButton10.Size = new System.Drawing.Size(39, 33);
             this.boardButton10.TabIndex = 18;
@@ -338,7 +338,7 @@
             // boardButton9
             // 
             this.boardButton9.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.boardButton9.Location = new System.Drawing.Point(264, 219);
+            this.boardButton9.Location = new System.Drawing.Point(202, 227);
             this.boardButton9.Name = "boardButton9";
             this.boardButton9.Size = new System.Drawing.Size(39, 33);
             this.boardButton9.TabIndex = 17;
@@ -348,7 +348,7 @@
             // wordInputBox
             // 
             this.wordInputBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.wordInputBox.Location = new System.Drawing.Point(219, 316);
+            this.wordInputBox.Location = new System.Drawing.Point(157, 324);
             this.wordInputBox.Name = "wordInputBox";
             this.wordInputBox.Size = new System.Drawing.Size(174, 20);
             this.wordInputBox.TabIndex = 25;
@@ -358,7 +358,7 @@
             // 
             this.wordSubmissionLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.wordSubmissionLabel.AutoSize = true;
-            this.wordSubmissionLabel.Location = new System.Drawing.Point(124, 319);
+            this.wordSubmissionLabel.Location = new System.Drawing.Point(62, 327);
             this.wordSubmissionLabel.Name = "wordSubmissionLabel";
             this.wordSubmissionLabel.Size = new System.Drawing.Size(89, 13);
             this.wordSubmissionLabel.TabIndex = 26;
@@ -367,7 +367,7 @@
             // enterButton
             // 
             this.enterButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.enterButton.Location = new System.Drawing.Point(411, 314);
+            this.enterButton.Location = new System.Drawing.Point(349, 322);
             this.enterButton.Name = "enterButton";
             this.enterButton.Size = new System.Drawing.Size(75, 23);
             this.enterButton.TabIndex = 27;
@@ -378,7 +378,7 @@
             // clearButton
             // 
             this.clearButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.clearButton.Location = new System.Drawing.Point(492, 314);
+            this.clearButton.Location = new System.Drawing.Point(430, 322);
             this.clearButton.Name = "clearButton";
             this.clearButton.Size = new System.Drawing.Size(75, 23);
             this.clearButton.TabIndex = 28;
@@ -389,7 +389,7 @@
             // timeBox1
             // 
             this.timeBox1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.timeBox1.Location = new System.Drawing.Point(264, 52);
+            this.timeBox1.Location = new System.Drawing.Point(202, 60);
             this.timeBox1.Name = "timeBox1";
             this.timeBox1.ReadOnly = true;
             this.timeBox1.Size = new System.Drawing.Size(84, 20);
@@ -399,7 +399,7 @@
             // 
             this.timeLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.timeLabel.AutoSize = true;
-            this.timeLabel.Location = new System.Drawing.Point(294, 36);
+            this.timeLabel.Location = new System.Drawing.Point(232, 44);
             this.timeLabel.Name = "timeLabel";
             this.timeLabel.Size = new System.Drawing.Size(30, 13);
             this.timeLabel.TabIndex = 31;
@@ -407,7 +407,7 @@
             // 
             // cancelGameRequestButton
             // 
-            this.cancelGameRequestButton.Location = new System.Drawing.Point(460, 502);
+            this.cancelGameRequestButton.Location = new System.Drawing.Point(354, 425);
             this.cancelGameRequestButton.Name = "cancelGameRequestButton";
             this.cancelGameRequestButton.Size = new System.Drawing.Size(151, 23);
             this.cancelGameRequestButton.TabIndex = 32;
@@ -417,7 +417,7 @@
             // 
             // CancelRequestlButton
             // 
-            this.CancelRequestlButton.Location = new System.Drawing.Point(222, 502);
+            this.CancelRequestlButton.Location = new System.Drawing.Point(157, 425);
             this.CancelRequestlButton.Name = "CancelRequestlButton";
             this.CancelRequestlButton.Size = new System.Drawing.Size(171, 23);
             this.CancelRequestlButton.TabIndex = 33;
@@ -430,7 +430,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(612, 529);
+            this.ClientSize = new System.Drawing.Size(517, 460);
             this.Controls.Add(this.CancelRequestlButton);
             this.Controls.Add(this.cancelGameRequestButton);
             this.Controls.Add(this.timeLabel);

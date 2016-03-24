@@ -152,7 +152,6 @@ namespace BoggleClient
             {
                 cts.Cancel();
                 game.cancelbutton = false;
-                game.ResetBoard();
                 game.Message = "You have left the game.";
                 cts = new CancellationTokenSource();
             }

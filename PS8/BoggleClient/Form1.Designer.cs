@@ -65,6 +65,7 @@
             this.timeLabel = new System.Windows.Forms.Label();
             this.cancelGameRequestButton = new System.Windows.Forms.Button();
             this.CancelRequestlButton = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -426,11 +427,22 @@
             this.CancelRequestlButton.Visible = false;
             this.CancelRequestlButton.Click += new System.EventHandler(this.CancelRequestlButton_Click);
             // 
+            // label2
+            // 
+            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(147, 24);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(211, 13);
+            this.label2.TabIndex = 35;
+            this.label2.Text = "\"Boggle\" by Ryan Steele and Henry Kucab";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(517, 460);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.CancelRequestlButton);
             this.Controls.Add(this.cancelGameRequestButton);
             this.Controls.Add(this.timeLabel);
@@ -513,6 +525,7 @@
         private System.Windows.Forms.Label timeLabel;
         private System.Windows.Forms.Button cancelGameRequestButton;
         private System.Windows.Forms.Button CancelRequestlButton;
+        private System.Windows.Forms.Label label2;
     }
 }
 

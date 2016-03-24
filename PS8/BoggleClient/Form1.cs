@@ -163,7 +163,7 @@ namespace BoggleClient
                 clock = "0";
             }
 
-            if(Int32.Parse(clock) < 5 || Int32.Parse(clock) > 120)
+            if((Int32.Parse(clock) < 5 || Int32.Parse(clock) > 120) && result == DialogResult.OK)
             {
                 MessageBox.Show("Parameters are empty or incorrect");
                 enterGame = false;

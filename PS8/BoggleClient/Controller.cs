@@ -73,15 +73,15 @@ namespace BoggleClient
                     Task playGame = new Task(() => mainClient.playGame(cts.Token));
                     playGame.Start();
                     await playGame;
-                    if (mainClient.gameCreation)
+                    if (mainClient.GameCreation)
                     {
                         boardSetup();
                         game.cancelbuttonText = "Exit Game...";
                     }
-                    game.boardScoreUpdate(mainClient.player1Score.ToString(), mainClient.player2Score.ToString(), mainClient.gameTime.ToString());
+                    game.boardScoreUpdate(mainClient.Player1Score.ToString(), mainClient.Player2Score.ToString(), mainClient.GameTime.ToString());
                     await Task.Delay(1000);
                 }
-                if (mainClient.gameCompleted)
+                if (mainClient.GameCompleted)
                 {
                     Task endGame = new Task(() => mainClient.finalBoardSetup());
                     game.cancelbutton = false;
@@ -107,9 +107,9 @@ namespace BoggleClient
 
         private void boardScoreUpdate()
         {
-            game.Player1Score = mainClient.player1Score.ToString();
-            game.Player2Score = mainClient.player2Score.ToString();
-            game.Timer = mainClient.gameTime.ToString();
+            game.Player1Score = mainClient.Player1Score.ToString();
+            game.Player2Score = mainClient.Player2Score.ToString();
+            game.Timer = mainClient.GameTime.ToString();
          
         }
 
@@ -119,10 +119,10 @@ namespace BoggleClient
             game.Board = mainClient.boardState;
             game.Player1Name = mainClient.player1Name;
             game.Player2Name = mainClient.player2Name;
-            game.Player1Score = mainClient.player1Score.ToString();
-            game.Player2Score = mainClient.player2Score.ToString();
-            game.Timer = mainClient.gameTime.ToString();
-            mainClient.gameCreation = false;
+            game.Player1Score = mainClient.Player1Score.ToString();
+            game.Player2Score = mainClient.Player2Score.ToString();
+            game.Timer = mainClient.GameTime.ToString();
+            mainClient.GameCreation = false;
             game.WordFocus();
         }
 

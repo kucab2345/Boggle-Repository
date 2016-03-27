@@ -14,6 +14,28 @@ namespace Boggle
         [WebGet(UriTemplate = "/api")]
         Stream API();
 
+        [WebInvoke(Method = "POST", UriTemplate = "/users")]
+        string RegisterUser(UserInfo user);
+
+        [WebInvoke(Method = "POST", UriTemplate = "/games")]
+        string JoinGame(GameJoinInfo info);
+
+        [WebInvoke(Method = "PUT", UriTemplate = "/games")]
+
+        void CancelGame(string userToken);
+
+        [WebInvoke(Method = "PUT", UriTemplate = "/games/{GameID}")]
+        string playWord(UserGame words, string GameID);
+
+        [WebGet(UriTemplate = "/games/{GameID")]
+        string getGamestatus(string GameID);
+
+        [WebGet(UriTemplate = "//games/{GameID")]
+        string GetAllItems(bool completedOnly, string userID);
+
+
+
+
         /// <summary>
         /// Demo.  You can delete this.
         /// </summary>

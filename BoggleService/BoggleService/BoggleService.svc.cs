@@ -150,8 +150,17 @@ namespace Boggle
 
             if(words.Word == null || words.Word.Trim().Length == 0 || !AllGames.ContainsKey(GameID))
             {
-
+                SetStatus(Forbidden);
+                return null;
             }
+
+            if(AllGames[GameID].GameState != "active")
+            {
+                SetStatus(Conflict);
+                return null;
+            }
+
+            if()
             throw new NotImplementedException();
         }
 

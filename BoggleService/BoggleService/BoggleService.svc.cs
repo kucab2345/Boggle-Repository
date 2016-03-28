@@ -40,7 +40,23 @@ namespace Boggle
 
         public void CancelGame(string userToken)
         {
-            
+            string cancelGameID = null;
+            foreach(KeyValuePair<string, GameStatus> games in AllGames)
+            {
+                if(games.Value.GameState == "pending" && games.Value.Player1.UserToken == userToken)
+                {
+                    cancelGameID = games.Key;
+                }
+            }
+            if(cancelGameID != null)
+            {
+                SetStatus(OK);
+                AllGames.Remove(cancelGameID);
+            }
+            else
+            {
+                SetStatus(Forbidden);
+            }
         }
 
         public string GetBriefGamestatus(string GameID)

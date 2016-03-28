@@ -16,10 +16,11 @@ namespace Boggle
         /// </summary>
         /// <param name="status"></param>
         /// 
-        private static Dictionary<string, GameStatus> AllGames;
-        private static Dictionary<string, UserInfo> AllPlayers;
+        private static Dictionary<string, GameStatus> AllGames = new Dictionary<string, GameStatus>();
+        private static Dictionary<string, UserInfo> AllPlayers = new Dictionary<string, UserInfo>();
         private static readonly object sync = new object();
-
+        int gameID = 0;
+        BoggleBoard board = new BoggleBoard();
 
         private static void SetStatus(HttpStatusCode status)
         {
@@ -39,24 +40,95 @@ namespace Boggle
 
         public void CancelGame(string userToken)
         {
-            throw new NotImplementedException();
+            
         }
 
         public string GetBriefGamestatus(string GameID)
         {
+            TimeSpan current = DateTime.Now.TimeOfDay;
+            double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
+            AllGames[GameID].TimeLeft = Convert.ToInt32(result).ToString();
             throw new NotImplementedException();
         }
 
         public string GetFullGameStatus(string GameID)
         {
+            TimeSpan current = DateTime.Now.TimeOfDay;
+            double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
+            AllGames[GameID].TimeLeft = Convert.ToInt32(result).ToString();
             throw new NotImplementedException();
         }
 
         public string JoinGame(GameJoin info)
         {
-            throw new NotImplementedException();
+            if (info.UserToken == null || info.UserToken.Trim().Length == 0)
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+            int test;
+            if (!int.TryParse(info.TimeLimit, out test))
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            if (test < 5 || test > 120)
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            foreach (KeyValuePair<string, GameStatus> game in AllGames)
+            {
+                if (game.Value.GameState == "pending")
+                {
+                    if (game.Value.Player1.UserToken == info.UserToken)
+                    {
+                        SetStatus(Conflict);
+                        return null;
+                    }
+                }
+            }
+
+            foreach (KeyValuePair<string, GameStatus> game in AllGames)
+            {
+                if (game.Value.GameState == "pending")
+                {
+                    foreach(KeyValuePair<string, UserInfo>  player in AllPlayers)
+                    {
+                        if(player.Value.UserToken == info.UserToken)
+                        {
+                            game.Value.Player2 = player.Value;
+                            SetStatus(Created);
+                            setupGame(info.TimeLimit, game.Key);
+                            return game.Key;
+                        }
+                    }
+                }
+            }
+
+            gameID += 1;
+            AllGames.Add(gameID.ToString(), new GameStatus());
+            AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
+            AllGames[gameID.ToString()].GameState = "pending";
+            return gameID.ToString();
         }
 
+        private void setupGame(string timeLimit, string gameID)
+        {
+            int time1;
+            int time2;
+            int.TryParse(AllGames[gameID].TimeLimit, out time1);
+            int.TryParse(timeLimit, out time2);
+
+            AllGames[gameID].TimeLimit = ((time1 + time2) / 2).ToString();
+
+            AllGames[gameID].GameState = "active";
+
+            AllGames[gameID].Board = board.ToString();
+            AllGames[gameID].StartGameTime = DateTime.Now.TimeOfDay;
+        }
 
         public string playWord(UserGame words, string GameID)
         {
@@ -74,6 +146,7 @@ namespace Boggle
                 }
                 else
                 {
+                    SetStatus(Created);
                     string userID = Guid.NewGuid().ToString();
                     AllPlayers.Add(userID, user);
                     return userID;

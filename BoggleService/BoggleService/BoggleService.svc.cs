@@ -41,14 +41,14 @@ namespace Boggle
         public void CancelGame(string userToken)
         {
             string cancelGameID = null;
-            foreach(KeyValuePair<string, GameStatus> games in AllGames)
+            foreach (KeyValuePair<string, GameStatus> games in AllGames)
             {
-                if(games.Value.GameState == "pending" && games.Value.Player1.UserToken == userToken)
+                if (games.Value.GameState == "pending" && games.Value.Player1.UserToken == userToken)
                 {
                     cancelGameID = games.Key;
                 }
             }
-            if(cancelGameID != null)
+            if (cancelGameID != null)
             {
                 SetStatus(OK);
                 AllGames.Remove(cancelGameID);
@@ -77,7 +77,7 @@ namespace Boggle
 
         public string JoinGame(GameJoin info)
         {
-            if (info.UserToken == null || info.UserToken.Trim().Length == 0)
+            if (info.UserToken == null || info.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(info.UserToken))
             {
                 SetStatus(Forbidden);
                 return null;
@@ -111,16 +111,10 @@ namespace Boggle
             {
                 if (game.Value.GameState == "pending")
                 {
-                    foreach(KeyValuePair<string, UserInfo>  player in AllPlayers)
-                    {
-                        if(player.Value.UserToken == info.UserToken)
-                        {
-                            game.Value.Player2 = player.Value;
-                            SetStatus(Created);
-                            setupGame(info.TimeLimit, game.Key);
-                            return game.Key;
-                        }
-                    }
+                    game.Value.Player2 = AllPlayers[info.UserToken];
+                    SetStatus(Created);
+                    setupGame(info.TimeLimit, game.Key);
+                    return game.Key;
                 }
             }
 
@@ -148,6 +142,16 @@ namespace Boggle
 
         public string playWord(UserGame words, string GameID)
         {
+            if (words.UserToken == null || words.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(words.UserToken))
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            if(words.Word == null || words.Word.Trim().Length == 0 || !AllGames.ContainsKey(GameID))
+            {
+
+            }
             throw new NotImplementedException();
         }
 

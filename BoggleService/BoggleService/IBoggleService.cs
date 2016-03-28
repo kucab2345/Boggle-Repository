@@ -31,7 +31,7 @@ namespace Boggle
         string GetBriefGamestatus(string GameID);
 
         [WebGet(UriTemplate = "/games/{GameID}")]
-        string GetFullGameStatus(string );
+        string GetFullGameStatus(string GameID);
 
 
 

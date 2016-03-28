@@ -18,16 +18,17 @@ namespace Boggle
         {
             public string Nickname { get; set; }
             public string Score { get; set; }
-            public string userToken { get; set; }
+            public string UserToken { get; set; }
         }
         public class GameJoin
         {
             public string TimeLimit { get; set; }
-            public string userToken { get; set; }
+            public string UserToken { get; set; }
         }
         public class UserGame
         {
-            public string currentWord { get; set; }
+            public string Word { get; set; }
+            public string UserToken { get; set; }
         }
     }
 }

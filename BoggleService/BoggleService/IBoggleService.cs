@@ -27,11 +27,11 @@ namespace Boggle
         [WebInvoke(Method = "PUT", UriTemplate = "/games/{GameID}")]
         string playWord(UserGame words, string GameID);
 
-        [WebGet(UriTemplate = "/games/{GameID")]
-        string getGamestatus(string GameID);
+        [WebGet(UriTemplate = "/games/{GameID}?Brief=yes")]
+        string GetBriefGamestatus(string GameID);
 
-        [WebGet(UriTemplate = "//games/{GameID")]
-        string GetAllItems(bool completedOnly, string userID);
+        [WebGet(UriTemplate = "/games/{GameID}")]
+        string GetFullGameStatus(string );
 
 
 

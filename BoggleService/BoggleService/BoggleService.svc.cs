@@ -47,15 +47,6 @@ namespace Boggle
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Demo.  You can delete this.
-        /// </summary>
-        public int GetFirst(IList<int> list)
-        {
-            SetStatus(OK);
-            return list[0];
-        }
-
         public string GetFullGameStatus(string GameID)
         {
             throw new NotImplementedException();
@@ -66,11 +57,6 @@ namespace Boggle
             throw new NotImplementedException();
         }
 
-
-        public IList<int> Numbers(string n)
-        {
-            throw new NotImplementedException();
-        }
 
         public string playWord(UserGame words, string GameID)
         {

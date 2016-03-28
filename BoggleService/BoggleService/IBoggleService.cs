@@ -32,22 +32,5 @@ namespace Boggle
 
         [WebGet(UriTemplate = "/games/{GameID}")]
         string GetFullGameStatus(string GameID);
-
-
-
-
-        /// <summary>
-        /// Demo.  You can delete this.
-        /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        [WebGet(UriTemplate = "/numbers?length={n}")]
-        IList<int> Numbers(string n);
-
-        /// <summary>
-        /// Demo.  You can delete this.
-        /// </summary>
-        [WebInvoke(Method = "POST", UriTemplate = "/first")]
-        int GetFirst(IList<int> list);
     }
 }

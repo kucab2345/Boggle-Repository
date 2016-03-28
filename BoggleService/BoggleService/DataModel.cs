@@ -13,7 +13,6 @@ namespace Boggle
             public string Board { get; set; }
             public string TimeLimit { get; set; }
             public string TimeLeft { get; set; }
-            
         }
         public class UserInfo
         {
@@ -23,7 +22,8 @@ namespace Boggle
         }
         public class GameJoin
         {
-            public string gameTime { get; set; }
+            public string TimeLimit { get; set; }
+            public string userToken { get; set; }
         }
         public class UserGame
         {

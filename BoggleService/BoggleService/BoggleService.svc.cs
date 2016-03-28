@@ -14,6 +14,12 @@ namespace Boggle
         /// an http response is sent.
         /// </summary>
         /// <param name="status"></param>
+        /// 
+        private static Dictionary<string, GameStatus> AllGames;
+        private static Dictionary<string, UserInfo> AllPlayers;
+        private static readonly object sync = new object();
+
+
         private static void SetStatus(HttpStatusCode status)
         {
             WebOperationContext.Current.OutgoingResponse.StatusCode = status;
@@ -30,6 +36,16 @@ namespace Boggle
             return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
         }
 
+        public void CancelGame(string userToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetBriefGamestatus(string GameID)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Demo.  You can delete this.
         /// </summary>
@@ -37,6 +53,16 @@ namespace Boggle
         {
             SetStatus(OK);
             return list[0];
+        }
+
+        public string GetFullGameStatus(string GameID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string JoinGame(GameJoinInfo info)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -61,6 +87,16 @@ namespace Boggle
                 SetStatus(OK);
                 return list;
             }
+        }
+
+        public string playWord(UserGame words, string GameID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string RegisterUser(UserInfo user)
+        {
+            throw new NotImplementedException();
         }
     }
 }

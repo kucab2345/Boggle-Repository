@@ -61,33 +61,15 @@ namespace Boggle
             throw new NotImplementedException();
         }
 
-        public string JoinGame(GameJoinInfo info)
+        public string JoinGame(GameJoin info)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Demo.  You can delete this.
-        /// </summary>
-        /// <returns></returns>
+
         public IList<int> Numbers(string n)
         {
-            int index;
-            if (!Int32.TryParse(n, out index) || index < 0)
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-            else
-            {
-                List<int> list = new List<int>();
-                for (int i = 0; i < index; i++)
-                {
-                    list.Add(i);
-                }
-                SetStatus(OK);
-                return list;
-            }
+            throw new NotImplementedException();
         }
 
         public string playWord(UserGame words, string GameID)
@@ -97,7 +79,20 @@ namespace Boggle
 
         public string RegisterUser(UserInfo user)
         {
-            throw new NotImplementedException();
+            lock (sync)
+            {
+                if (user.Nickname == null || user.Nickname.Trim().Length == 0)
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+                else
+                {
+                    string userID = Guid.NewGuid().ToString();
+                    AllPlayers.Add(userID, user);
+                    return userID;
+                }
+            }
         }
     }
 }

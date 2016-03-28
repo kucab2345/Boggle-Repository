@@ -5,8 +5,6 @@ using System.Web;
 
 namespace Boggle
 {
-    public class DataModel 
-    {
         public class GameStatus
         {
             public string GameState { get; set; }
@@ -30,5 +28,5 @@ namespace Boggle
             public string Word { get; set; }
             public string UserToken { get; set; }
         }
-    }
+    
 }

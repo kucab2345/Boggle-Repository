@@ -21,6 +21,7 @@ namespace Boggle
         private static readonly object sync = new object();
         int gameID = 0;
         BoggleBoard board = new BoggleBoard();
+        string dictionaryContents = File.ReadAllText("dictionary.txt");
 
         private static void SetStatus(HttpStatusCode status)
         {
@@ -163,7 +164,53 @@ namespace Boggle
             if()
             throw new NotImplementedException();
         }
-
+        private string ScoreWord(string word, UserInfo currentUser)
+        {
+            bool legalWord = searchDictionary(word.Trim().ToUpper());
+            string currentWord = word.Trim();
+            if(legalWord == true)
+            {
+                if (currentWord.Length < 3 || currentUser.Words.Contains(currentWord))
+                {
+                    return 0.ToString();
+                }
+                else if (currentWord.Length == 3 || currentWord.Length == 4)
+                {
+                    return 1.ToString();
+                }
+                else if (currentWord.Length == 5)
+                {
+                    return 2.ToString();
+                }
+                else if (currentWord.Length == 6)
+                {
+                    return 3.ToString();
+                }
+                else if (currentWord.Length == 7)
+                {
+                    return 5.ToString();
+                }
+                else
+                {
+                    return 11.ToString();
+                }
+            }
+            else
+            {
+                return (-1).ToString();
+            }
+        }
+        private bool searchDictionary(string key)
+        {
+            if (dictionaryContents.Contains(key))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public string RegisterUser(UserInfo user)
         {
             lock (sync)

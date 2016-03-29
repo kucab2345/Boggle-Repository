@@ -24,7 +24,7 @@ namespace Boggle
         private static readonly object sync = new object();
         int gameID = 0;
         BoggleBoard board = new BoggleBoard();
-        string dictionaryContents = File.ReadAllText("dictionary.txt");
+        static string dictionaryContents = File.ReadAllText("dictionary.txt");
 
         private static void SetStatus(HttpStatusCode status)
         {
@@ -44,125 +44,166 @@ namespace Boggle
 
         public void CancelGame(string userToken)
         {
-            string cancelGameID = null;
-            foreach (KeyValuePair<string, GameStatus> games in AllGames)
+            lock (sync)
             {
-                if (games.Value.GameState == "pending" && games.Value.Player1.UserToken == userToken)
+                string cancelGameID = null;
+                foreach (KeyValuePair<string, GameStatus> games in AllGames)
                 {
-                    cancelGameID = games.Key;
+                    if (games.Value.GameState == "pending" && games.Value.Player1.UserToken == userToken)
+                    {
+                        cancelGameID = games.Key;
+                    }
                 }
-            }
-            if (cancelGameID != null)
-            {
-                SetStatus(OK);
-                AllGames[cancelGameID].GameState = "Completed";
-            }
-            else
-            {
-                SetStatus(Forbidden);
+                if (cancelGameID != null)
+                {
+                    SetStatus(OK);
+                    AllGames[cancelGameID].GameState = "completed";
+                }
+                else
+                {
+                    SetStatus(Forbidden);
+                }
             }
         }
 
         public string GetBriefGamestatus(string GameID)
         {
-            TimeSpan current = DateTime.Now.TimeOfDay;
-            double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
-            int times = Convert.ToInt32(result);
-            if (times >= 0) {
-                AllGames[GameID].TimeLeft = times.ToString();
-            }
-
-            else
+            lock (sync)
             {
-                AllGames[GameID].TimeLeft = "0";
-            }
+                if (!AllGames.ContainsKey(GameID))
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+                SetStatus(OK);
 
-            if (times <= 0)
-            {
-                AllGames[GameID].GameState = "Completed";
-            }
+                TimeSpan current = DateTime.Now.TimeOfDay;
+                double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
+                int times = Convert.ToInt32(result);
 
-            dynamic var = new ExpandoObject();
-            var.GameState = AllGames[GameID].GameState;
-            var.TimeLeft = AllGames[GameID].TimeLeft;
-            var.Player1 = AllGames[GameID].Player1;
-            var.Player2 = AllGames[GameID].Player2;
-            string stringResult = JsonConvert.SerializeObject(var);
-            return stringResult;
+                int TimeRemaining;
+
+
+                if (int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining) && (TimeRemaining - times >= 0))
+                {
+                    AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
+                }
+
+                else
+                {
+                    AllGames[GameID].TimeLeft = "0";
+                }
+
+                if (times <= 0)
+                {
+                    AllGames[GameID].GameState = "completed";
+                }
+
+                dynamic var = new ExpandoObject();
+                var.GameState = AllGames[GameID].GameState;
+                var.TimeLeft = AllGames[GameID].TimeLeft;
+                var.Player1 = AllGames[GameID].Player1;
+                var.Player2 = AllGames[GameID].Player2;
+                string stringResult = JsonConvert.SerializeObject(var);
+                return stringResult;
+            }
         }
 
         public string GetFullGameStatus(string GameID)
         {
-            TimeSpan current = DateTime.Now.TimeOfDay;
-            double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
-            int times = Convert.ToInt32(result);
-            if (times >= 0)
+            lock (sync)
             {
-                AllGames[GameID].TimeLeft = times.ToString();
-            }
+                if (!AllGames.ContainsKey(GameID))
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+                SetStatus(OK);
 
-            else
-            {
-                AllGames[GameID].TimeLeft = "0";
-            }
+                TimeSpan current = DateTime.Now.TimeOfDay;
+                double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
+                int times = Convert.ToInt32(result);
+                int TimeRemaining;
 
-            if (times <= 0)
-            {
-                AllGames[GameID].GameState = "Completed";
-            }
+                if (int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining) && (TimeRemaining - times >= 0))
+                {
+                    AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
+                }
 
-            string stringResult = JsonConvert.SerializeObject(AllGames[GameID]);
-            return stringResult;
+                else
+                {
+                    AllGames[GameID].TimeLeft = "0";
+                }
+
+                if (times <= 0)
+                {
+                    AllGames[GameID].GameState = "completed";
+                }
+                string stringResult;
+                if (AllGames[GameID].GameState == "completed")
+                {
+                    dynamic var = new ExpandoObject();
+                    var = AllGames[GameID];
+                    var.Player1.WordsPlayed = AllGames[GameID].Player1.WordsPlayed;
+                    var.Player2.WordsPlayed = AllGames[GameID].Player2.WordsPlayed;
+                    stringResult = JsonConvert.SerializeObject(var);
+                    return stringResult;
+                }
+                stringResult = JsonConvert.SerializeObject(AllGames[GameID]);
+                return stringResult;
+            }
         }
 
         public string JoinGame(GameJoin info)
         {
-            if (info.UserToken == null || info.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(info.UserToken))
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-            int test;
-            if (!int.TryParse(info.TimeLimit, out test))
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-
-            if (test < 5 || test > 120)
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-
-            foreach (KeyValuePair<string, GameStatus> game in AllGames)
-            {
-                if (game.Value.GameState == "pending")
+            lock(sync){
+                if (info.UserToken == null || info.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(info.UserToken))
                 {
-                    if (game.Value.Player1.UserToken == info.UserToken)
+                    SetStatus(Forbidden);
+                    return null;
+                }
+                int test;
+                if (!int.TryParse(info.TimeLimit, out test))
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+
+                if (test < 5 || test > 120)
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+
+                foreach (KeyValuePair<string, GameStatus> game in AllGames)
+                {
+                    if (game.Value.GameState == "pending")
                     {
-                        SetStatus(Conflict);
-                        return null;
+                        if (game.Value.Player1.UserToken == info.UserToken)
+                        {
+                            SetStatus(Conflict);
+                            return null;
+                        }
                     }
                 }
-            }
 
-            foreach (KeyValuePair<string, GameStatus> game in AllGames)
-            {
-                if (game.Value.GameState == "pending")
+                foreach (KeyValuePair<string, GameStatus> game in AllGames)
                 {
-                    game.Value.Player2 = AllPlayers[info.UserToken];
-                    SetStatus(Created);
-                    setupGame(info.TimeLimit, game.Key);
-                    return game.Key;
+                    if (game.Value.GameState == "pending")
+                    {
+                        game.Value.Player2 = AllPlayers[info.UserToken];
+                        SetStatus(Created);
+                        setupGame(info.TimeLimit, game.Key);
+                        return game.Key;
+                    }
                 }
-            }
 
-            gameID += 1;
-            AllGames.Add(gameID.ToString(), new GameStatus());
-            AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
-            AllGames[gameID.ToString()].GameState = "pending";
-            return gameID.ToString();
+                gameID += 1;
+                AllGames.Add(gameID.ToString(), new GameStatus());
+                AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
+                AllGames[gameID.ToString()].GameState = "pending";
+                return gameID.ToString();
+            }
         }
 
         private void setupGame(string timeLimit, string gameID)
@@ -182,69 +223,77 @@ namespace Boggle
 
         public string playWord(UserGame words, string GameID)
         {
-            if (words.UserToken == null || words.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(words.UserToken))
-            {
-                SetStatus(Forbidden);
-                return null;
+            lock (sync) {
+                if (words.UserToken == null || words.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(words.UserToken))
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+
+                if (words.Word == null || words.Word.Trim().Length == 0 || !AllGames.ContainsKey(GameID))
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+
+                if (AllGames[GameID].GameState != "active")
+                {
+                    SetStatus(Conflict);
+                    return null;
+                }
+
+
+                if (AllPlayers[words.UserToken].WordsPlayed == null)
+                {
+                    AllPlayers[words.UserToken].WordsPlayed = new List<WordScore>();
+                }
+
+                int userScore;
+                int.TryParse(AllPlayers[words.UserToken].Score, out userScore);
+                int WordScoreResult = ScoreWord(words.Word, words.UserToken);
+                AllPlayers[words.UserToken].Score = (userScore + WordScoreResult).ToString();
+                dynamic var = new ExpandoObject();
+                var.Score = WordScoreResult;
+                SetStatus(OK);
+                return JsonConvert.SerializeObject(var);
+            
             }
-
-            if(words.Word == null || words.Word.Trim().Length == 0 || !AllGames.ContainsKey(GameID))
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-
-            if(AllGames[GameID].GameState != "active")
-            {
-                SetStatus(Conflict);
-                return null;
-            }
-
-
-            if(AllPlayers[words.UserToken].WordsPlayed == null)
-            {
-                AllPlayers[words.UserToken].WordsPlayed = new List<WordScore>();
-            }
-
-
-            // if()
-            throw new NotImplementedException();
         }
-        private string ScoreWord(string word, UserInfo currentUser)
+        private int ScoreWord(string word, string userToken)
         {
             bool legalWord = searchDictionary(word.Trim().ToUpper());
             string currentWord = word.Trim();
 
             if(legalWord == true)
             {
-                if (currentWord.Length < 3 || currentUser.WordsPlayed.Any(x => x.Word == currentWord))
+                if (currentWord.Length < 3 || AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord))
                 {
-                    return 0.ToString();
+                    return 0;
                 }
                 else if (currentWord.Length == 3 || currentWord.Length == 4)
                 {
-                    return 1.ToString();
+                    return 1;
                 }
                 else if (currentWord.Length == 5)
                 {
-                    return 2.ToString();
+                    return 2;
                 }
                 else if (currentWord.Length == 6)
                 {
-                    return 3.ToString();
+                    return 3;
                 }
                 else if (currentWord.Length == 7)
                 {
-                    return 5.ToString();
+                    return 5;
                 }
                 else
                 {
-                    return 11.ToString();
+                    return 11;
                 }
             }
             else
             {
-                return (-1).ToString();
+                return -1;
             }
         }
         private bool searchDictionary(string key)

@@ -172,7 +172,7 @@ namespace Boggle
             string currentWord = word.Trim();
             if(legalWord == true)
             {
-                if (currentWord.Length < 3 || currentUser.Words.Contains(currentWord))
+                if (currentWord.Length < 3 || currentUser.Words.ContainsKey(currentWord))
                 {
                     return 0.ToString();
                 }

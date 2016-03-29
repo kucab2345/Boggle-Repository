@@ -25,22 +25,6 @@ namespace Boggle
         public TimeSpan StartGameTime;
     }
 
-    [DataContract]
-    public class BriefGameStatus
-    {
-        [DataMember]
-        public string GameState { get; set; }
-
-        [DataMember(EmitDefaultValue = false)]
-        public string TimeLeft { get; set; }
-
-        [DataMember(EmitDefaultValue = false)]
-        public UserInfo Player1 { get; set; }
-        [DataMember(EmitDefaultValue = false)]
-        public UserInfo Player2 { get; set; }
-
-
-    }
 
     [DataContract]
     public class UserInfo
@@ -52,20 +36,9 @@ namespace Boggle
         public string Score { get; set; }
 
         public string UserToken { get; set; }
+        
+        public List<WordScore> WordsPlayed { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
-        public Dictionary<string,string> Words { get; set; }
-
-    }
-
-    [DataContract]
-    public class UserBriefInfo
-    {
-        [DataMember]
-        public string Nickname { get; set; }
-
-        [DataMember(EmitDefaultValue = false)]
-        public string Score { get; set; }
     }
 
     public class GameJoin
@@ -77,6 +50,13 @@ namespace Boggle
     {
         public string Word { get; set; }
         public string UserToken { get; set; }
+    }
+
+    public class WordScore
+    {
+        public string Word { get; set; }
+
+        public int Score { get; set; }
     }
 
 }

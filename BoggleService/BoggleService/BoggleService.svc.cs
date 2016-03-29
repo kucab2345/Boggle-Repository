@@ -7,6 +7,7 @@ using System.ServiceModel.Web;
 using Newtonsoft.Json;
 
 using static System.Net.HttpStatusCode;
+using System.Linq;
 
 namespace Boggle
 {
@@ -54,7 +55,7 @@ namespace Boggle
             if (cancelGameID != null)
             {
                 SetStatus(OK);
-                AllGames.Remove(cancelGameID);
+                AllGames[cancelGameID].GameState = "Completed";
             }
             else
             {
@@ -66,16 +67,52 @@ namespace Boggle
         {
             TimeSpan current = DateTime.Now.TimeOfDay;
             double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
-            AllGames[GameID].TimeLeft = Convert.ToInt32(result).ToString();
-            throw new NotImplementedException();
+            int times = Convert.ToInt32(result);
+            if (times >= 0) {
+                AllGames[GameID].TimeLeft = times.ToString();
+            }
+
+            else
+            {
+                AllGames[GameID].TimeLeft = "0";
+            }
+
+            if (times <= 0)
+            {
+                AllGames[GameID].GameState = "Completed";
+            }
+
+            dynamic var = new ExpandoObject();
+            var.GameState = AllGames[GameID].GameState;
+            var.TimeLeft = AllGames[GameID].TimeLeft;
+            var.Player1 = AllGames[GameID].Player1;
+            var.Player2 = AllGames[GameID].Player2;
+            string stringResult = JsonConvert.SerializeObject(var);
+            return stringResult;
         }
 
         public string GetFullGameStatus(string GameID)
         {
             TimeSpan current = DateTime.Now.TimeOfDay;
             double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
-            AllGames[GameID].TimeLeft = Convert.ToInt32(result).ToString();
-            throw new NotImplementedException();
+            int times = Convert.ToInt32(result);
+            if (times >= 0)
+            {
+                AllGames[GameID].TimeLeft = times.ToString();
+            }
+
+            else
+            {
+                AllGames[GameID].TimeLeft = "0";
+            }
+
+            if (times <= 0)
+            {
+                AllGames[GameID].GameState = "Completed";
+            }
+
+            string stringResult = JsonConvert.SerializeObject(AllGames[GameID]);
+            return stringResult;
         }
 
         public string JoinGame(GameJoin info)
@@ -163,16 +200,24 @@ namespace Boggle
                 return null;
             }
 
-           // if()
+
+            if(AllPlayers[words.UserToken].WordsPlayed == null)
+            {
+                AllPlayers[words.UserToken].WordsPlayed = new List<WordScore>();
+            }
+
+
+            // if()
             throw new NotImplementedException();
         }
         private string ScoreWord(string word, UserInfo currentUser)
         {
             bool legalWord = searchDictionary(word.Trim().ToUpper());
             string currentWord = word.Trim();
+
             if(legalWord == true)
             {
-                if (currentWord.Length < 3 || currentUser.Words.ContainsKey(currentWord))
+                if (currentWord.Length < 3 || currentUser.WordsPlayed.Any(x => x.Word == currentWord))
                 {
                     return 0.ToString();
                 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Net;
 using System.ServiceModel.Web;
+using Newtonsoft.Json;
 
 using static System.Net.HttpStatusCode;
 
@@ -160,7 +162,7 @@ namespace Boggle
                 return null;
             }
 
-            if()
+           // if()
             throw new NotImplementedException();
         }
 
@@ -178,7 +180,11 @@ namespace Boggle
                     SetStatus(Created);
                     string userID = Guid.NewGuid().ToString();
                     AllPlayers.Add(userID, user);
-                    return userID;
+                    AllPlayers[userID].UserToken = user.UserToken;
+                    AllPlayers[userID].Nickname = user.Nickname;
+                    dynamic var = new ExpandoObject();
+                    var.UserToken = userID;
+                    return JsonConvert.SerializeObject(var) ;
                 }
             }
         }

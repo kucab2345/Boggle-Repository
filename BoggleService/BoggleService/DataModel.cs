@@ -26,21 +26,48 @@ namespace Boggle
     }
 
     [DataContract]
-    public class UserInfo
+    public class BriefGameStatus
     {
         [DataMember]
+        public string GameState { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public string TimeLeft { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public UserInfo Player1 { get; set; }
+        [DataMember(EmitDefaultValue = false)]
+        public UserInfo Player2 { get; set; }
+
+
+    }
+
+    [DataContract]
+    public class UserInfo
+    {
+        [DataMember(EmitDefaultValue = false)]
         public string Nickname { get; set; }
         
         [DataMember(EmitDefaultValue = false)]
         public string Score { get; set; }
 
-        [DataMember]
         public string UserToken { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
-        public List<string> Words { get; set; }
+        public Dictionary<string,string> Words { get; set; }
 
     }
+
+    [DataContract]
+    public class UserBriefInfo
+    {
+        [DataMember]
+        public string Nickname { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public string Score { get; set; }
+    }
+
     public class GameJoin
     {
         public string TimeLimit { get; set; }

@@ -130,7 +130,7 @@ namespace BoggleAPIClient
                     if (response.IsSuccessStatusCode)
                     {
                         string result = response.Content.ReadAsStringAsync().Result;
-                        dynamic deserResult = JsonConvert.DeserializeObject(result);
+                        dynamic deserResult = JsonConvert.DeserializeObject<ExpandoObject>(result);
 
                         if (GamePending && deserResult.GameState == "active")
                         {
@@ -200,7 +200,7 @@ namespace BoggleAPIClient
                 if (response.IsSuccessStatusCode)
                 {
                     string result = response.Content.ReadAsStringAsync().Result;
-                    dynamic deserResult = JsonConvert.DeserializeObject(result);
+                    dynamic deserResult = JsonConvert.DeserializeObject<ExpandoObject>(result);
                     int generalInt;
                     string parsedResult = deserResult.TimeLeft;
                     if (int.TryParse(parsedResult, out generalInt))
@@ -261,7 +261,7 @@ namespace BoggleAPIClient
                 if (response.IsSuccessStatusCode)
                 {
                     string result = response.Content.ReadAsStringAsync().Result;
-                    dynamic deserResult = JsonConvert.DeserializeObject(result);
+                    dynamic deserResult = JsonConvert.DeserializeObject<ExpandoObject>(result);
                     int generalInt;
                     string parsedResult = deserResult.Board;
                     boardState = parsedResult.ToCharArray();
@@ -333,7 +333,7 @@ namespace BoggleAPIClient
                     {
                         // The deserialized response value is an object that describes the new repository.
                         string result = response.Content.ReadAsStringAsync().Result;
-                        dynamic deserResult = JsonConvert.DeserializeObject(result);
+                        dynamic deserResult = JsonConvert.DeserializeObject<ExpandoObject>(result);
                         userToken = deserResult.UserToken;
                         Console.WriteLine(userToken);
                     }
@@ -380,7 +380,7 @@ namespace BoggleAPIClient
                     if (response.IsSuccessStatusCode)
                     {
                         string result = response.Content.ReadAsStringAsync().Result;
-                        dynamic deserResult = JsonConvert.DeserializeObject(result);
+                        dynamic deserResult = JsonConvert.DeserializeObject<ExpandoObject>(result);
                         gameID = deserResult.GameID;
                         if (response.StatusCode == HttpStatusCode.Accepted)
                         {   

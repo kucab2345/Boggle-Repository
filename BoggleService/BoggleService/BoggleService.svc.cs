@@ -150,6 +150,15 @@ namespace Boggle
                     stringResult = JsonConvert.SerializeObject(var);
                     return stringResult;
                 }
+
+                if (AllGames[GameID].GameState == "pending")
+                {
+                    dynamic var = new ExpandoObject();
+                    var.GameState = AllGames[GameID].GameState;
+                    stringResult = JsonConvert.SerializeObject(var);
+                    return stringResult;
+                }
+
                 stringResult = JsonConvert.SerializeObject(AllGames[GameID]);
                 return stringResult;
             }
@@ -202,7 +211,7 @@ namespace Boggle
                     }
                 }
 
-                SetStatus(Accepted);
+                
                 gameID += 1;
                 
                 AllGames.Add(gameID.ToString(), new GameStatus());
@@ -210,7 +219,7 @@ namespace Boggle
                 AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
                 AllGames[gameID.ToString()].GameState = "pending";
        
-                var.GameID = gameID;
+                var.GameID = gameID.ToString();
 
                 return JsonConvert.SerializeObject(var);
             }

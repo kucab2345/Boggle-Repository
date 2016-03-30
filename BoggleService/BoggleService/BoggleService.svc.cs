@@ -364,7 +364,8 @@ namespace Boggle
                     AllPlayers[userID].Nickname = user.Nickname;
                     dynamic var = new ExpandoObject();
                     var.UserToken = userID;
-                    return JsonConvert.SerializeObject(var) ;
+                    string jsonResult = JsonConvert.SerializeObject(var);
+                    return jsonResult;
                 }
             }
         }

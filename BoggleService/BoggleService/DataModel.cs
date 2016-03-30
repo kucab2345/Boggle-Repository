@@ -43,8 +43,9 @@ namespace Boggle
 
     public class GameJoin
     {
-        public string TimeLimit { get; set; }
         public string UserToken { get; set; }
+        public string TimeLimit { get; set; }
+        
     }
     public class UserGame
     {

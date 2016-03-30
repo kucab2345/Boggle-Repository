@@ -14,23 +14,22 @@ namespace Boggle
         [WebGet(UriTemplate = "/api")]
         Stream API();
 
-        [WebInvoke(Method = "POST", UriTemplate = "/users")]
+        [WebInvoke(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST", UriTemplate = "/users")]
         string RegisterUser(UserInfo user);
 
-        [WebInvoke(Method = "POST", UriTemplate = "/games")]
+        [WebInvoke(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST", UriTemplate = "/games")]
         string JoinGame(GameJoin info);
 
-        [WebInvoke(Method = "PUT", UriTemplate = "/games")]
-
+        [WebInvoke(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "PUT", UriTemplate = "/games")]
         void CancelGame(string userToken);
 
-        [WebInvoke(Method = "PUT", UriTemplate = "/games/{GameID}")]
+        [WebInvoke(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "PUT", UriTemplate = "/games/{GameID}")]
         string playWord(UserGame words, string GameID);
 
-        [WebGet(UriTemplate = "/games/{GameID}?Brief=yes")]
+        [WebGet(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "/games/{GameID}?Brief=yes")]
         string GetBriefGamestatus(string GameID);
 
-        [WebGet(UriTemplate = "/games/{GameID}")]
+        [WebGet(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "/games/{GameID}")]
         string GetFullGameStatus(string GameID);
     }
 }

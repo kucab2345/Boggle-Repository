@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Net;
+using System.Web;
 using System.ServiceModel.Web;
 using Newtonsoft.Json;
 
@@ -22,9 +23,9 @@ namespace Boggle
         private static Dictionary<string, GameStatus> AllGames = new Dictionary<string, GameStatus>();
         private static Dictionary<string, UserInfo> AllPlayers = new Dictionary<string, UserInfo>();
         private static readonly object sync = new object();
-        int gameID = 0;
-        BoggleBoard board = new BoggleBoard();
-        static string dictionaryContents = File.ReadAllText("dictionary.txt");
+        private static int gameID = 0;
+        private static BoggleBoard board = new BoggleBoard();
+        //string dictionaryContents = File.ReadAllText(HttpContext.Current.Server.MapPath("dictionary.txt"));
 
         private static void SetStatus(HttpStatusCode status)
         {
@@ -223,7 +224,8 @@ namespace Boggle
 
         public string playWord(UserGame words, string GameID)
         {
-            lock (sync) {
+            lock (sync)
+            {
                 if (words.UserToken == null || words.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(words.UserToken))
                 {
                     SetStatus(Forbidden);
@@ -256,7 +258,7 @@ namespace Boggle
                 var.Score = WordScoreResult;
                 SetStatus(OK);
                 return JsonConvert.SerializeObject(var);
-            
+
             }
         }
         private int ScoreWord(string word, string userToken)
@@ -264,7 +266,7 @@ namespace Boggle
             bool legalWord = searchDictionary(word.Trim().ToUpper());
             string currentWord = word.Trim();
 
-            if(legalWord == true)
+            if (legalWord == true)
             {
                 if (currentWord.Length < 3 || AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord))
                 {
@@ -296,21 +298,25 @@ namespace Boggle
                 return -1;
             }
         }
+
         private bool searchDictionary(string key)
         {
-            if (dictionaryContents.Contains(key))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            //if (dictionaryContents.Contains(key))
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
+            return true;
         }
+
         public string RegisterUser(UserInfo user)
         {
             lock (sync)
             {
+                
                 if (user.Nickname == null || user.Nickname.Trim().Length == 0)
                 {
                     SetStatus(Forbidden);
@@ -321,7 +327,7 @@ namespace Boggle
                     SetStatus(Created);
                     string userID = Guid.NewGuid().ToString();
                     AllPlayers.Add(userID, user);
-                    AllPlayers[userID].UserToken = user.UserToken;
+                    AllPlayers[userID].UserToken = userID;
                     AllPlayers[userID].Nickname = user.Nickname;
                     dynamic var = new ExpandoObject();
                     var.UserToken = userID;

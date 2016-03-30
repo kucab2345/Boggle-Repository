@@ -547,10 +547,9 @@ namespace BoggleClient
             TextBox textBox1 = new TextBox() { Left = 50, Top = 100, Width = 400 };
 
             Label textLabel2 = new Label() { Left = 50, Top = 130, Text = "Server" };
-            Label defaultAddress = new Label() { Left = 50, Top = 170, Width = 500, Text = "(Professor's: http://bogglecs3500s16.azurewebsites.net/BoggleService.svc/)" };
             TextBox textBox2 = new TextBox() { Left = 50, Top = 150, Width = 400 };
 
-            Button confirmation = new Button() { Text = "Search", Left = 350, Width = 100, Top = 210, DialogResult = DialogResult.OK };
+            Button confirmation = new Button() { Text = "Search", Left = 350, Width = 100, Top = 200, DialogResult = DialogResult.OK };
 
             confirmation.Click += (sender, e) => {prompt.Close(); };
             prompt.Controls.Add(textBox);
@@ -559,7 +558,6 @@ namespace BoggleClient
             prompt.Controls.Add(textLabel1);
             prompt.Controls.Add(textBox2);
             prompt.Controls.Add(textLabel2);
-            prompt.Controls.Add(defaultAddress);
             prompt.Controls.Add(confirmation);
 
             prompt.AcceptButton = confirmation;

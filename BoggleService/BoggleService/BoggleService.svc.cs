@@ -97,7 +97,7 @@ namespace Boggle
 
                 int.TryParse(AllGames[GameID].TimeLeft, out times);
 
-                if (times == 0)
+                if (times == 0 && !(AllGames[GameID].GameState == "pending"))
                 {
                     AllGames[GameID].GameState = "completed";
 
@@ -142,7 +142,7 @@ namespace Boggle
 
                 int.TryParse(AllGames[GameID].TimeLeft, out times);
 
-                if (times == 0)
+                if (times == 0 && !(AllGames[GameID].GameState == "pending"))
                 {
                     AllGames[GameID].GameState = "completed";
                     

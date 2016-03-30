@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 
 using static System.Net.HttpStatusCode;
 using System.Linq;
+using System.Text;
 
 namespace Boggle
 {
@@ -345,7 +346,7 @@ namespace Boggle
             }
         }
 
-        public string RegisterUser(UserInfo user)
+        public UserTokenClass RegisterUser(UserInfo user)
         {
             lock (sync)
             {
@@ -362,9 +363,9 @@ namespace Boggle
                     AllPlayers.Add(userID, user);
                     AllPlayers[userID].UserToken = userID;
                     AllPlayers[userID].Nickname = user.Nickname;
-                    dynamic var = new ExpandoObject();
-                    var.UserToken = userID;          
-                    return JsonConvert.SerializeObject(var); ;
+                    UserTokenClass result = new UserTokenClass();
+                    result.UserToken = userID;
+                    return result;
                 }
             }
         }

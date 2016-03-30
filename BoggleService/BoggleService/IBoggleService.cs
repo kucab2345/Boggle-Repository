@@ -15,7 +15,7 @@ namespace Boggle
         Stream API();
 
         [WebInvoke(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST", UriTemplate = "/users")]
-        string RegisterUser(UserInfo user);
+        UserTokenClass RegisterUser(UserInfo user);
 
         [WebInvoke(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST", UriTemplate = "/games")]
         string JoinGame(GameJoin info);

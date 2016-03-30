@@ -41,6 +41,14 @@ namespace Boggle
 
     }
 
+    [DataContract]
+
+    public class UserTokenClass
+    {
+        [DataMember]
+        public string UserToken { get; set; }
+    }
+
     public class GameJoin
     {
         public string UserToken { get; set; }

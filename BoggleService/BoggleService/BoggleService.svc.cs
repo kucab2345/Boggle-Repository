@@ -25,7 +25,7 @@ namespace Boggle
         private static readonly object sync = new object();
         private static int gameID = 0;
         private static BoggleBoard board = new BoggleBoard();
-        //string dictionaryContents = File.ReadAllText(HttpContext.Current.Server.MapPath("dictionary.txt"));
+        string dictionaryContents = File.ReadAllText(HttpContext.Current.Server.MapPath("dictionary.txt"));
 
         private static void SetStatus(HttpStatusCode status)
         {
@@ -187,7 +187,7 @@ namespace Boggle
                         }
                     }
                 }
-
+                dynamic var = new ExpandoObject();
                 foreach (KeyValuePair<string, GameStatus> game in AllGames)
                 {
                     if (game.Value.GameState == "pending")
@@ -195,16 +195,24 @@ namespace Boggle
                         game.Value.Player2 = AllPlayers[info.UserToken];
                         SetStatus(Created);
                         setupGame(info.TimeLimit, game.Key);
-                        return game.Key;
+                        
+                        var.GameID = game.Key;
+
+                        return JsonConvert.SerializeObject(var);
                     }
                 }
 
                 SetStatus(Accepted);
                 gameID += 1;
+                
                 AllGames.Add(gameID.ToString(), new GameStatus());
+                SetStatus(Accepted);
                 AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
                 AllGames[gameID.ToString()].GameState = "pending";
-                return gameID.ToString();
+       
+                var.GameID = gameID;
+
+                return JsonConvert.SerializeObject(var);
             }
         }
 
@@ -302,15 +310,14 @@ namespace Boggle
 
         private bool searchDictionary(string key)
         {
-            //if (dictionaryContents.Contains(key))
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    return false;
-            //}
-            return true;
+            if (dictionaryContents.Contains(key))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public string RegisterUser(UserInfo user)

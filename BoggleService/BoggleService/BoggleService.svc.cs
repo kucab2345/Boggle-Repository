@@ -199,6 +199,7 @@ namespace Boggle
                     }
                 }
 
+                SetStatus(Accepted);
                 gameID += 1;
                 AllGames.Add(gameID.ToString(), new GameStatus());
                 AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];

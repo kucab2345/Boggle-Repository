@@ -25,7 +25,7 @@ namespace Boggle
         private static readonly object sync = new object();
         private static int gameID = 0;
         private static BoggleBoard board = new BoggleBoard();
-        //string dictionaryContents = File.ReadAllText(HttpContext.Current.Server.MapPath("dictionary.txt"));
+        string dictionaryContents = File.ReadAllText(HttpContext.Current.Server.MapPath("dictionary.txt"));
 
         private static void SetStatus(HttpStatusCode status)
         {
@@ -203,7 +203,7 @@ namespace Boggle
                 }
 
                 gameID += 1;
-                SetStatus(Accepted);
+                
                 AllGames.Add(gameID.ToString(), new GameStatus());
                 SetStatus(Accepted);
                 AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
@@ -309,15 +309,14 @@ namespace Boggle
 
         private bool searchDictionary(string key)
         {
-            //if (dictionaryContents.Contains(key))
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    return false;
-            //}
-            return true;
+            if (dictionaryContents.Contains(key))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public string RegisterUser(UserInfo user)

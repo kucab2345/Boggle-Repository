@@ -201,6 +201,7 @@ namespace Boggle
 
                 gameID += 1;
                 AllGames.Add(gameID.ToString(), new GameStatus());
+                SetStatus(Accepted);
                 AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
                 AllGames[gameID.ToString()].GameState = "pending";
                 return gameID.ToString();

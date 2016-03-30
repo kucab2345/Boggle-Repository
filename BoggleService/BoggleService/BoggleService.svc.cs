@@ -95,10 +95,14 @@ namespace Boggle
                     AllGames[GameID].TimeLeft = "0";
                 }
 
-                if (times <= 0)
+                int.TryParse(AllGames[GameID].TimeLeft, out times);
+
+                if (times == 0)
                 {
                     AllGames[GameID].GameState = "completed";
+
                 }
+                
 
                 dynamic var = new ExpandoObject();
                 var.GameState = AllGames[GameID].GameState;
@@ -136,9 +140,12 @@ namespace Boggle
                     AllGames[GameID].TimeLeft = "0";
                 }
 
-                if (times <= 0)
+                int.TryParse(AllGames[GameID].TimeLeft, out times);
+
+                if (times == 0)
                 {
                     AllGames[GameID].GameState = "completed";
+                    
                 }
                 string stringResult;
                 if (AllGames[GameID].GameState == "completed")
@@ -232,8 +239,17 @@ namespace Boggle
             int.TryParse(AllGames[gameID].TimeLimit, out time1);
             int.TryParse(timeLimit, out time2);
 
-            AllGames[gameID].TimeLimit = ((time1 + time2) / 2).ToString();
-
+            if(time1 > time2)
+            {
+                time2 = (time2 - time1)/2;
+            }
+            else
+            {
+                time1 = (time1 - time2) / 2;
+            }
+            
+            AllGames[gameID].TimeLimit = (time1 + time2).ToString();
+            AllGames[gameID].TimeLeft = AllGames[gameID].TimeLimit;
             AllGames[gameID].GameState = "active";
 
             AllGames[gameID].Board = board.ToString();

@@ -6,6 +6,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,50 +14,7 @@ using System.Threading.Tasks;
 
 namespace BoggleAPIClient
 {
-    public class userTokenResult
-    {
-        public string UserToken { get; set; }
-    }
-
-    public class GameIDResult
-    {
-        public string GameID { get; set; }
-    }
-
-    public class ScoreResult
-    {
-        public string Score { get; set; }
-    }
-
-    public class GameStateResult
-    {
-        public string GameState { get; set; }
-
-        public string Board { get; set; }
-
-        public string TimeLimit { get; set; }
-
-        public string TimeLeft { get; set; }
-
-        public userInfo Player1 { get; set; }
-
-        public userInfo Player2 { get; set; }
-    }
-
-    public class userInfo
-    {
-        public string Nickname { get; set; }
-
-        public string Score { get; set; }
-
-        public List<WordScore> WordsPlayed { get; set; }
-    }
-
-    public class WordScore
-    {
-        public string Word { get; set; }
-        public string Score { get; set; }
-    }
+   
     /// <summary>
     /// This is the model class for the Boggle Client.  This will handle all primary server interactions and data that is received/submitted to the server.
     /// </summary>
@@ -170,11 +128,12 @@ namespace BoggleAPIClient
                 try
                 {
                     HttpResponseMessage response = client.GetAsync(url, ct).Result;
+                    response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
                     if (response.IsSuccessStatusCode)
                     {
                         string result = response.Content.ReadAsStringAsync().Result;
-                        dynamic deserResult = JsonConvert.DeserializeObject<GameStateResult>(result);
+                        dynamic deserResult = JsonConvert.DeserializeObject(result);
 
                         if (GamePending && deserResult.GameState == "active")
                         {
@@ -240,11 +199,12 @@ namespace BoggleAPIClient
                 String url = String.Format("games/{0}", gameID);
 
                 HttpResponseMessage response = client.GetAsync(url).Result;
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
                 if (response.IsSuccessStatusCode)
                 {
                     string result = response.Content.ReadAsStringAsync().Result;
-                    dynamic deserResult = JsonConvert.DeserializeObject<GameStateResult>(result);
+                    dynamic deserResult = JsonConvert.DeserializeObject(result);
                     int generalInt;
                     string parsedResult = deserResult.TimeLeft;
                     if (int.TryParse(parsedResult, out generalInt))
@@ -301,11 +261,11 @@ namespace BoggleAPIClient
                 String url = String.Format("games/{0}", gameID);
 
                 HttpResponseMessage response = client.GetAsync(url).Result;
-
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 if (response.IsSuccessStatusCode)
                 {
                     string result = response.Content.ReadAsStringAsync().Result;
-                    dynamic deserResult = JsonConvert.DeserializeObject<GameStateResult>(result);
+                    dynamic deserResult = JsonConvert.DeserializeObject(result);
                     int generalInt;
                     string parsedResult = deserResult.Board;
                     boardState = parsedResult.ToCharArray();
@@ -370,14 +330,14 @@ namespace BoggleAPIClient
                 try
                 {
                     HttpResponseMessage response = client.PostAsync("users", content, ct).Result;
-
+                    response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                     //HttpResponseMessage response = responseResult;
 
                     if (response.IsSuccessStatusCode)
                     {
                         // The deserialized response value is an object that describes the new repository.
                         string result = response.Content.ReadAsStringAsync().Result;
-                        dynamic deserResult = JsonConvert.DeserializeObject<userTokenResult>(result);
+                        dynamic deserResult = JsonConvert.DeserializeObject(result);
                         userToken = deserResult.UserToken;
                         Console.WriteLine(userToken);
                     }
@@ -420,11 +380,12 @@ namespace BoggleAPIClient
                 try
                 {
                     HttpResponseMessage response = client.PostAsync("games", content, ct).Result;
+                    response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
                     if (response.IsSuccessStatusCode)
                     {
                         string result = response.Content.ReadAsStringAsync().Result;
-                        dynamic deserResult = JsonConvert.DeserializeObject<GameIDResult>(result);
+                        dynamic deserResult = JsonConvert.DeserializeObject(result);
                         gameID = deserResult.GameID;
                         if (response.StatusCode == HttpStatusCode.Accepted)
                         {   

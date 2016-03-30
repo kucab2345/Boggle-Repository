@@ -187,7 +187,7 @@ namespace Boggle
                         }
                     }
                 }
-
+                dynamic var = new ExpandoObject();
                 foreach (KeyValuePair<string, GameStatus> game in AllGames)
                 {
                     if (game.Value.GameState == "pending")
@@ -195,16 +195,23 @@ namespace Boggle
                         game.Value.Player2 = AllPlayers[info.UserToken];
                         SetStatus(Created);
                         setupGame(info.TimeLimit, game.Key);
-                        return game.Key;
+                        
+                        var.GameID = game.Key;
+
+                        return JsonConvert.SerializeObject(var);
                     }
                 }
 
                 gameID += 1;
+                SetStatus(Accepted);
                 AllGames.Add(gameID.ToString(), new GameStatus());
                 SetStatus(Accepted);
                 AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
                 AllGames[gameID.ToString()].GameState = "pending";
-                return gameID.ToString();
+       
+                var.GameID = gameID;
+
+                return JsonConvert.SerializeObject(var);
             }
         }
 

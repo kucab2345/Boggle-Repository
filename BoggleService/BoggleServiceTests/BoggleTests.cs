@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-
+using System.Net.Http;
 namespace Boggle
 {
     /// <summary>
@@ -116,17 +116,12 @@ namespace Boggle
         {
             dynamic p1 = new ExpandoObject();
             dynamic p2 = new ExpandoObject();
+            dynamic game = new ExpandoObject();
             p1.Nickname = "Mark";
             p2.Nickname = "Bob";
 
-            string p1Result = JsonConvert.SerializeObject(p1);
-            string p2Result = JsonConvert.SerializeObject(p2);
-
-            Response r1 = client.DoPostAsync("/users",p1Result).Result;
-            Response r2 = client.DoPostAsync("/users",p2Result).Result;
-
-            string p1Des = JsonConvert.DeserializeObject(r1.Data);
-            string p2Des = JsonConvert.DeserializeObject(r2.Data);
+            Response r1 = client.DoPostAsync("/users", p1).Result;
+            Response r2 = client.DoPostAsync("/users", p2).Result;
 
             p1.UserToken = r1.Data.UserToken;
             p2.UserToken = r2.Data.UserToken;
@@ -134,16 +129,18 @@ namespace Boggle
             p1.TimeLimit = "30";
             p2.TimeLimit = "40";
 
-            p1Result = JsonConvert.SerializeObject(p1);
-            p2Result = JsonConvert.SerializeObject(p2);
-
-            r1 = client.DoPostAsync("/games", p1Result).Result;
-            r2 = client.DoPostAsync("/games", p2Result).Result;
-
+            r1 = client.DoPostAsync("/games", p1).Result;
+            r2 = client.DoPostAsync("/games", p2).Result;
+            
             Assert.AreEqual(Accepted, r1.Status);
             Assert.AreEqual(Created, r2.Status);
 
-            BoggleBoard board = new BoggleBoard();
+            p1.GameID = r1.Data.GameID;
+            p2.GameID = r2.Data.GameID;
+
+            game = client.DoGetAsync("/games/" + p1.GameID).Result;
+            BoggleBoard board = new BoggleBoard(game.Data.Board.ToString());
+
             HashSet<string> testDictionary = new HashSet<string>();
             List<string> potentialWords = new List<string>();
             foreach (string i in File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "../../../\\dictionary.txt"))
@@ -156,11 +153,17 @@ namespace Boggle
             }
             Random rand = new Random();
 
+            dynamic p1words = new ExpandoObject();
+            dynamic p2words = new ExpandoObject();
+
+            p1words.UserToken = p1.UserToken;
             
+
             for (int i = 0; i < 5; i++)
             {
-                p1.Word = potentialWords[rand.Next(potentialWords.Count)];
-                r1 = client.DoPutAsync(p1, "/games/{p1.GameID}").Result;
+                p1.Word = potentialWords[rand.Next(0,potentialWords.Count)];
+                p1words.Word = p1.Word;
+                r1 = client.DoPutAsync(p1words, "/games/" + p1.GameID).Result;
                 Assert.AreEqual(OK, r1.Status);
             }
         }

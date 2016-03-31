@@ -26,7 +26,7 @@ namespace Boggle
         private static readonly object sync = new object();
         private static int gameID = 0;
         private static BoggleBoard board = new BoggleBoard();
-        string dictionaryContents = File.ReadAllText(HttpContext.Current.Server.MapPath("dictionary.txt"));
+        private static string dictionaryContents = File.ReadAllText(HttpContext.Current.Server.MapPath("dictionary.txt"));
 
         private static void SetStatus(HttpStatusCode status)
         {
@@ -156,6 +156,15 @@ namespace Boggle
                 {
                     AllGames[GameID].Player1.WordsPlayed = AllGames[GameID].Player1.personalList;
                     AllGames[GameID].Player2.WordsPlayed = AllGames[GameID].Player2.personalList;
+                    if(AllGames[GameID].Player1.WordsPlayed == null)
+                    {
+                        AllGames[GameID].Player1.WordsPlayed = new List<WordScore>();
+                    }
+
+                    if (AllGames[GameID].Player2.WordsPlayed == null)
+                    {
+                        AllGames[GameID].Player2.WordsPlayed = new List<WordScore>();
+                    }
                     return AllGames[GameID];
                 }
 
@@ -237,13 +246,13 @@ namespace Boggle
             int.TryParse(AllGames[gameID].TimeLimit, out time1);
             int.TryParse(timeLimit, out time2);
 
-            if(time1 > time2)
+            if(time1 < time2)
             {
-                time2 = (time2 - time1)/2;
+                time2 = ((time2 - time1)/2);
             }
             else
             {
-                time1 = (time1 - time2) / 2;
+                time1 = ((time1 - time2) / 2);
             }
             
             AllGames[gameID].TimeLimit = (time1 + time2).ToString();

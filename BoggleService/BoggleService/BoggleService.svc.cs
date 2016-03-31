@@ -203,7 +203,7 @@ namespace Boggle
                 }
 
                 gameID += 1;
-                
+                SetStatus(Accepted);
                 AllGames.Add(gameID.ToString(), new GameStatus());
                 SetStatus(Accepted);
                 AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
@@ -309,14 +309,15 @@ namespace Boggle
 
         private bool searchDictionary(string key)
         {
-            if (dictionaryContents.Contains(key))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            //if (dictionaryContents.Contains(key))
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
+            return true;
         }
 
         public string RegisterUser(UserInfo user)

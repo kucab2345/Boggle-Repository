@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using static System.Net.HttpStatusCode;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Boggle
 {
@@ -89,16 +90,29 @@ namespace Boggle
         [TestMethod]
         public void TestMethod3()
         {
-            dynamic p1 = new ExpandoObject();
-            dynamic p2 = new ExpandoObject();
+            UserInfo p1 = new UserInfo();
+            UserInfo p2 = new UserInfo();
             p1.Nickname = "Mark";
             p2.Nickname = "Bob";
-            Response p1r = client.DoPostAsync("/users",p1).Result;
-            Response p2r = client.DoPostAsync("/users",p2).Result;
+            Response r1 = client.DoPostAsync("/users",p1).Result;
+            Response r2 = client.DoPostAsync("/users",p2).Result;
 
-            Assert.AreEqual(Created, p1r.Status);
-            Assert.AreEqual(Created, p2r.Status);
+            p1.UserToken = r1.Data.UserToken;
+            p2.UserToken = r2.Data.UserToken;
 
+            dynamic g1 = new GameJoin();
+            dynamic g2 = new GameJoin();
+
+            g1.UserToken = p1.UserToken;
+            g2.UserToken = p2.UserToken;
+            g1.TimeLimit = "30";
+            g2.TimeLimit = "40";
+            
+            r1 = client.DoPostAsync("/games", g1).Result;
+            r2 = client.DoPostAsync("/games", g2).Result;
+
+            Assert.AreEqual(Accepted, r1.Status);
+            Assert.AreEqual(Created, r2.Status);
         }
     }
 }

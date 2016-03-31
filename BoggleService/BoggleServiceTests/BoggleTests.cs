@@ -93,8 +93,12 @@ namespace Boggle
             dynamic p2 = new ExpandoObject();
             p1.Nickname = "Mark";
             p2.Nickname = "Bob";
-            Response p1token = client.DoPostAsync("/users",p1).Result;
-            Response p2token = client.DoPostAsync("/users",p2).Result;
+            Response p1r = client.DoPostAsync("/users",p1).Result;
+            Response p2r = client.DoPostAsync("/users",p2).Result;
+
+            Assert.AreEqual(Created, p1r.Status);
+            Assert.AreEqual(Created, p2r.Status);
+
         }
     }
 }

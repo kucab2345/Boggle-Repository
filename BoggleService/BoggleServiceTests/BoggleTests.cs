@@ -88,6 +88,28 @@ namespace Boggle
         }
         */
         [TestMethod]
+        public void TestMethod0()
+        {
+            dynamic p1 = new ExpandoObject();
+            p1.Nickname = "    ";
+
+            Response r1 = client.DoPostAsync("/users", p1).Result;
+
+            Assert.AreEqual(Forbidden, r1.Status);
+
+        }
+        [TestMethod]
+        public void TestMethod1()
+        {
+            dynamic p1 = new ExpandoObject();
+            p1.Nickname = "\t\t\n";
+
+            Response r1 = client.DoPostAsync("/users", p1).Result;
+
+            Assert.AreEqual(Forbidden, r1.Status);
+
+        }
+        [TestMethod]
         public void TestMethod3()
         {
             dynamic p1 = new ExpandoObject();

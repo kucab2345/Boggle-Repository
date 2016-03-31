@@ -22,7 +22,7 @@ namespace Boggle
         [DataMember(EmitDefaultValue = false)]
         public UserInfo Player2 { get; set; }
 
-        public TimeSpan StartGameTime;
+        public DateTime StartGameTime;
     }
 
 

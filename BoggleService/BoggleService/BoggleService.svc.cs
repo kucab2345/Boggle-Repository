@@ -80,15 +80,16 @@ namespace Boggle
                 SetStatus(OK);
                 if (AllGames[GameID].GameState != "pending")
                 {
-                    TimeSpan current = DateTime.Now.TimeOfDay;
-                    double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
+                    
+                    double result = (DateTime.Now - AllGames[GameID].StartGameTime).TotalSeconds;
                     int times = Convert.ToInt32(result);
 
                     int TimeRemaining;
+                    int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining);
 
-
-                    if (AllGames[GameID].GameState == "active" && int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining) && (TimeRemaining - times >= 0))
+                    if (AllGames[GameID].GameState == "active" && (TimeRemaining - times > 0))
                     {
+                        int.TryParse(AllGames[GameID].TimeLimit, out TimeRemaining);
                         AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
 
                     }
@@ -103,10 +104,6 @@ namespace Boggle
                     if (times == 0)
                     {
                         AllGames[GameID].GameState = "completed";
-
-                    }
-                    if (AllGames[GameID].GameState == "pending")
-                    {
 
                     }
 
@@ -133,14 +130,17 @@ namespace Boggle
                 SetStatus(OK);
                 if (AllGames[GameID].GameState != "pending")
                 {
-                    TimeSpan current = DateTime.Now.TimeOfDay;
-                    double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
+                    double result = (DateTime.Now - AllGames[GameID].StartGameTime).TotalSeconds;
                     int times = Convert.ToInt32(result);
-                    int TimeRemaining;
 
-                    if (AllGames[GameID].GameState == "active" && int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining) && (TimeRemaining - times >= 0))
+                    int TimeRemaining;
+                    int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining);
+
+                    if (AllGames[GameID].GameState == "active" && (TimeRemaining - times > 0))
                     {
+                        int.TryParse(AllGames[GameID].TimeLimit, out TimeRemaining);
                         AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
+
                     }
 
                     else
@@ -269,7 +269,7 @@ namespace Boggle
             AllGames[gameID].GameState = "active";
 
             AllGames[gameID].Board = board.ToString();
-            AllGames[gameID].StartGameTime = DateTime.Now.TimeOfDay;
+            AllGames[gameID].StartGameTime = DateTime.Now;
         }
 
         public TokenScoreGameIDReturn playWord(UserGame words, string GameID)
@@ -322,7 +322,7 @@ namespace Boggle
 
             if (legalWord == true)
             {
-                if (currentWord.Length < 3 || AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord))
+                if (currentWord.Length < 3 || (AllPlayers[userToken].WordsPlayed != null && AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord)))
                 {
                     return 0;
                 }

@@ -26,20 +26,14 @@ namespace Boggle
         private static readonly object sync = new object();
         private static int gameID = 0;
         private static BoggleBoard board = new BoggleBoard();
-        private static HashSet<string> dictionaryContents = new HashSet<string>();
+        private static HashSet<string> dictionaryContents = new HashSet<string>(File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\dictionary.txt"));
+        
         //private static string dictionaryContents = File.ReadAllText(HttpContext.Current.Server.MapPath("dictionary.txt"));
         private static void SetStatus(HttpStatusCode status)
         {
             WebOperationContext.Current.OutgoingResponse.StatusCode = status;
         }
 
-        public BoggleService()
-        {
-            foreach (string i in File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\dictionary.txt"))
-            {
-                dictionaryContents.Add(i);
-            }
-        }
 
         /// <summary>
         /// Returns a Stream version of index.html.

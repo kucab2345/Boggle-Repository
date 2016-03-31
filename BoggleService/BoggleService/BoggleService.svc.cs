@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 
 using static System.Net.HttpStatusCode;
 using System.Linq;
+using System.Text;
 
 namespace Boggle
 {
@@ -25,7 +26,7 @@ namespace Boggle
         private static readonly object sync = new object();
         private static int gameID = 0;
         private static BoggleBoard board = new BoggleBoard();
-        string dictionaryContents = File.ReadAllText(HttpContext.Current.Server.MapPath("dictionary.txt"));
+        private static string dictionaryContents = File.ReadAllText(HttpContext.Current.Server.MapPath("dictionary.txt"));
 
         private static void SetStatus(HttpStatusCode status)
         {
@@ -67,7 +68,7 @@ namespace Boggle
             }
         }
 
-        public string GetBriefGamestatus(string GameID)
+        public GameStatus GetBriefGamestatus(string GameID)
         {
             lock (sync)
             {
@@ -77,7 +78,7 @@ namespace Boggle
                     return null;
                 }
                 SetStatus(OK);
-
+                
                 TimeSpan current = DateTime.Now.TimeOfDay;
                 double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
                 int times = Convert.ToInt32(result);
@@ -85,9 +86,10 @@ namespace Boggle
                 int TimeRemaining;
 
 
-                if (int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining) && (TimeRemaining - times >= 0))
+                if (AllGames[GameID].GameState == "active" && int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining) && (TimeRemaining - times >= 0))
                 {
                     AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
+                    
                 }
 
                 else
@@ -95,22 +97,28 @@ namespace Boggle
                     AllGames[GameID].TimeLeft = "0";
                 }
 
-                if (times <= 0)
+                int.TryParse(AllGames[GameID].TimeLeft, out times);
+
+                if (times == 0)
                 {
                     AllGames[GameID].GameState = "completed";
+
+                }
+                if(AllGames[GameID].GameState == "pending")
+                {
+
                 }
 
-                dynamic var = new ExpandoObject();
+                GameStatus var = new GameStatus();
                 var.GameState = AllGames[GameID].GameState;
                 var.TimeLeft = AllGames[GameID].TimeLeft;
                 var.Player1 = AllGames[GameID].Player1;
                 var.Player2 = AllGames[GameID].Player2;
-                string stringResult = JsonConvert.SerializeObject(var);
-                return stringResult;
+                return var;
             }
         }
 
-        public string GetFullGameStatus(string GameID)
+        public GameStatus GetFullGameStatus(string GameID)
         {
             lock (sync)
             {
@@ -126,7 +134,7 @@ namespace Boggle
                 int times = Convert.ToInt32(result);
                 int TimeRemaining;
 
-                if (int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining) && (TimeRemaining - times >= 0))
+                if (AllGames[GameID].GameState == "active" && int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining) && (TimeRemaining - times >= 0))
                 {
                     AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
                 }
@@ -136,26 +144,41 @@ namespace Boggle
                     AllGames[GameID].TimeLeft = "0";
                 }
 
-                if (times <= 0)
+                int.TryParse(AllGames[GameID].TimeLeft, out times);
+
+                if (times == 0)
                 {
                     AllGames[GameID].GameState = "completed";
+                    
                 }
-                string stringResult;
+                
                 if (AllGames[GameID].GameState == "completed")
                 {
-                    dynamic var = new ExpandoObject();
-                    var = AllGames[GameID];
-                    var.Player1.WordsPlayed = AllGames[GameID].Player1.WordsPlayed;
-                    var.Player2.WordsPlayed = AllGames[GameID].Player2.WordsPlayed;
-                    stringResult = JsonConvert.SerializeObject(var);
-                    return stringResult;
+                    AllGames[GameID].Player1.WordsPlayed = AllGames[GameID].Player1.personalList;
+                    AllGames[GameID].Player2.WordsPlayed = AllGames[GameID].Player2.personalList;
+                    if(AllGames[GameID].Player1.WordsPlayed == null)
+                    {
+                        AllGames[GameID].Player1.WordsPlayed = new List<WordScore>();
+                    }
+
+                    if (AllGames[GameID].Player2.WordsPlayed == null)
+                    {
+                        AllGames[GameID].Player2.WordsPlayed = new List<WordScore>();
+                    }
+                    return AllGames[GameID];
                 }
-                stringResult = JsonConvert.SerializeObject(AllGames[GameID]);
-                return stringResult;
+
+                if (AllGames[GameID].GameState == "pending")
+                {
+                    GameStatus resultGame = new GameStatus();
+                    resultGame.GameState = "pending";
+                    return resultGame;   
+                }
+                return AllGames[GameID];
             }
         }
 
-        public string JoinGame(GameJoin info)
+        public TokenScoreGameIDReturn JoinGame(GameJoin info)
         {
             lock(sync){
                 if (info.UserToken == null || info.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(info.UserToken))
@@ -187,7 +210,7 @@ namespace Boggle
                         }
                     }
                 }
-                dynamic var = new ExpandoObject();
+                TokenScoreGameIDReturn var = new TokenScoreGameIDReturn();
                 foreach (KeyValuePair<string, GameStatus> game in AllGames)
                 {
                     if (game.Value.GameState == "pending")
@@ -198,10 +221,11 @@ namespace Boggle
                         
                         var.GameID = game.Key;
 
-                        return JsonConvert.SerializeObject(var);
+                        return var;
                     }
                 }
 
+                
                 gameID += 1;
                 SetStatus(Accepted);
                 AllGames.Add(gameID.ToString(), new GameStatus());
@@ -209,9 +233,9 @@ namespace Boggle
                 AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
                 AllGames[gameID.ToString()].GameState = "pending";
        
-                var.GameID = gameID;
+                var.GameID = gameID.ToString();
 
-                return JsonConvert.SerializeObject(var);
+                return var;
             }
         }
 
@@ -222,15 +246,24 @@ namespace Boggle
             int.TryParse(AllGames[gameID].TimeLimit, out time1);
             int.TryParse(timeLimit, out time2);
 
-            AllGames[gameID].TimeLimit = ((time1 + time2) / 2).ToString();
-
+            if(time1 < time2)
+            {
+                time2 = ((time2 - time1)/2);
+            }
+            else
+            {
+                time1 = ((time1 - time2) / 2);
+            }
+            
+            AllGames[gameID].TimeLimit = (time1 + time2).ToString();
+            AllGames[gameID].TimeLeft = AllGames[gameID].TimeLimit;
             AllGames[gameID].GameState = "active";
 
             AllGames[gameID].Board = board.ToString();
             AllGames[gameID].StartGameTime = DateTime.Now.TimeOfDay;
         }
 
-        public string playWord(UserGame words, string GameID)
+        public TokenScoreGameIDReturn playWord(UserGame words, string GameID)
         {
             lock (sync)
             {
@@ -253,19 +286,23 @@ namespace Boggle
                 }
 
 
-                if (AllPlayers[words.UserToken].WordsPlayed == null)
+                if (AllPlayers[words.UserToken].personalList == null)
                 {
-                    AllPlayers[words.UserToken].WordsPlayed = new List<WordScore>();
+                    AllPlayers[words.UserToken].personalList = new List<WordScore>();
                 }
-
+            
                 int userScore;
                 int.TryParse(AllPlayers[words.UserToken].Score, out userScore);
                 int WordScoreResult = ScoreWord(words.Word, words.UserToken);
+                WordScore totalResult = new WordScore();
+                totalResult.Word = words.Word;
+                totalResult.Score = WordScoreResult;
+                AllPlayers[words.UserToken].personalList.Add(totalResult);
                 AllPlayers[words.UserToken].Score = (userScore + WordScoreResult).ToString();
-                dynamic var = new ExpandoObject();
-                var.Score = WordScoreResult;
+                TokenScoreGameIDReturn var = new TokenScoreGameIDReturn();
+                var.Score = WordScoreResult.ToString();
                 SetStatus(OK);
-                return JsonConvert.SerializeObject(var);
+                return var;
 
             }
         }
@@ -320,7 +357,7 @@ namespace Boggle
             return true;
         }
 
-        public string RegisterUser(UserInfo user)
+        public TokenScoreGameIDReturn RegisterUser(UserInfo user)
         {
             lock (sync)
             {
@@ -337,9 +374,9 @@ namespace Boggle
                     AllPlayers.Add(userID, user);
                     AllPlayers[userID].UserToken = userID;
                     AllPlayers[userID].Nickname = user.Nickname;
-                    dynamic var = new ExpandoObject();
-                    var.UserToken = userID;
-                    return JsonConvert.SerializeObject(var) ;
+                    TokenScoreGameIDReturn result = new TokenScoreGameIDReturn();
+                    result.UserToken = userID;
+                    return result;
                 }
             }
         }

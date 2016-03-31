@@ -36,9 +36,26 @@ namespace Boggle
         public string Score { get; set; }
 
         public string UserToken { get; set; }
-        
+        [DataMember(EmitDefaultValue = false)]
         public List<WordScore> WordsPlayed { get; set; }
 
+        public List<WordScore> personalList { get; set; }
+
+    }
+
+    [DataContract]
+
+    public class TokenScoreGameIDReturn
+    {
+        [DataMember(EmitDefaultValue = false)]
+        public string UserToken { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+
+        public string GameID { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public string Score { get; set; }
     }
 
     public class GameJoin

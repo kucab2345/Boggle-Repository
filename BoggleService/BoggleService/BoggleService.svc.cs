@@ -172,10 +172,8 @@ namespace Boggle
                         return AllGames[GameID];
                     }
                 }
-                
-                GameStatus resultGame = new GameStatus();
-                resultGame.GameState = "pending";
-                return resultGame;   
+
+                return AllGames[GameID];
             }
         }
 
@@ -243,7 +241,7 @@ namespace Boggle
                 SetStatus(Accepted);
                 AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
                 AllGames[gameID.ToString()].GameState = "pending";
-       
+                AllGames[gameID.ToString()].TimeLimit = info.TimeLimit;
                 var.GameID = gameID.ToString();
 
                 return var;

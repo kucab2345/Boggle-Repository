@@ -163,7 +163,7 @@ namespace Boggle
             {
                 p1.Word = potentialWords[rand.Next(0,potentialWords.Count)];
                 p1words.Word = p1.Word;
-                r1 = client.DoPutAsync(p1words, "/games/{p1.GameID}").Result;
+                r1 = client.DoPutAsync(p1words, "games/" + p1.GameID).Result;
                 Assert.AreEqual(OK, r1.Status);
             }
         }

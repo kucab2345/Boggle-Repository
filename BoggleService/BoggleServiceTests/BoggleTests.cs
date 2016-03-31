@@ -65,8 +65,7 @@ namespace Boggle
         }
 
         private RestTestClient client = new RestTestClient("http://localhost:60000/");
-        private BoggleService boggleClient = new BoggleService();//What is the address? There's no constructor for this?
-
+        /*
         [TestMethod]
         public void TestMethod1()
         {
@@ -86,18 +85,16 @@ namespace Boggle
             Assert.AreEqual(OK, r.Status);
             Assert.AreEqual(15, r.Data);
         }
-
+        */
         [TestMethod]
         public void TestMethod3()
         {
-            UserInfo p1 = new UserInfo();
-            UserInfo p2 = new UserInfo();
+            dynamic p1 = new ExpandoObject();
+            dynamic p2 = new ExpandoObject();
             p1.Nickname = "Mark";
             p2.Nickname = "Bob";
-            TokenScoreGameIDReturn p1token = boggleClient.RegisterUser(p1);
-            TokenScoreGameIDReturn p2token = boggleClient.RegisterUser(p2);
-
-
+            Response p1token = client.DoPostAsync("/users",p1).Result;
+            Response p2token = client.DoPostAsync("/users",p2).Result;
         }
     }
 }

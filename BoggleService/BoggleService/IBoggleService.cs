@@ -15,21 +15,21 @@ namespace Boggle
         Stream API();
 
         [WebInvoke(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST", UriTemplate = "/users")]
-        UserTokenClass RegisterUser(UserInfo user);
+        TokenScoreGameIDReturn RegisterUser(UserInfo user);
 
         [WebInvoke(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST", UriTemplate = "/games")]
-        string JoinGame(GameJoin info);
+        TokenScoreGameIDReturn JoinGame(GameJoin info);
 
         [WebInvoke(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "PUT", UriTemplate = "/games")]
         void CancelGame(string userToken);
 
         [WebInvoke(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "PUT", UriTemplate = "/games/{GameID}")]
-        string playWord(UserGame words, string GameID);
+        TokenScoreGameIDReturn playWord(UserGame words, string GameID);
 
         [WebGet(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "/games/{GameID}?Brief=yes")]
-        string GetBriefGamestatus(string GameID);
+        GameStatus GetBriefGamestatus(string GameID);
 
         [WebGet(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "/games/{GameID}")]
-        string GetFullGameStatus(string GameID);
+        GameStatus GetFullGameStatus(string GameID);
     }
 }

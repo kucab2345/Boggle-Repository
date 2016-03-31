@@ -131,8 +131,8 @@ namespace Boggle
             p1.UserToken = r1.Data.UserToken;
             p2.UserToken = r2.Data.UserToken;
 
-            p1.TimeLimit = "30";
-            p2.TimeLimit = "40";
+            p1.TimeLimit = "120";
+            p2.TimeLimit = "120";
 
             p1Result = JsonConvert.SerializeObject(p1);
             p2Result = JsonConvert.SerializeObject(p2);

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using static System.Net.HttpStatusCode;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Boggle
@@ -131,6 +132,15 @@ namespace Boggle
 
             Assert.AreEqual(Accepted, r1.Status);
             Assert.AreEqual(Created, r2.Status);
+        }
+        [TestMethod]
+        public void TestMethod3a()
+        {
+            HashSet<string> testDictionary = new HashSet<string>();
+            foreach (string i in File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "../../../\\dictionary.txt"))
+            {
+                testDictionary.Add(i);
+            }
         }
     }
 }

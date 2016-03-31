@@ -52,14 +52,14 @@ namespace Boggle
             return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
         }
 
-        public void CancelGame(string userToken)
+        public void CancelGame(UserGame endUser)
         {
             lock (sync)
             {
                 string cancelGameID = null;
                 foreach (KeyValuePair<string, GameStatus> games in AllGames)
                 {
-                    if (games.Value.GameState == "pending" && games.Value.Player1.UserToken == userToken)
+                    if (games.Value.GameState == "pending" && games.Value.Player1.UserToken == endUser.UserToken)
                     {
                         cancelGameID = games.Key;
                     }
@@ -67,7 +67,7 @@ namespace Boggle
                 if (cancelGameID != null)
                 {
                     SetStatus(OK);
-                    AllGames[cancelGameID].GameState = "completed";
+                    AllGames[cancelGameID].Player1 = null;
                 }
                 else
                 {
@@ -86,43 +86,46 @@ namespace Boggle
                     return null;
                 }
                 SetStatus(OK);
-                
-                TimeSpan current = DateTime.Now.TimeOfDay;
-                double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
-                int times = Convert.ToInt32(result);
-
-                int TimeRemaining;
-
-
-                if (AllGames[GameID].GameState == "active" && int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining) && (TimeRemaining - times >= 0))
+                if (AllGames[GameID].GameState != "pending")
                 {
-                    AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
-                    
+                    TimeSpan current = DateTime.Now.TimeOfDay;
+                    double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
+                    int times = Convert.ToInt32(result);
+
+                    int TimeRemaining;
+
+
+                    if (AllGames[GameID].GameState == "active" && int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining) && (TimeRemaining - times >= 0))
+                    {
+                        AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
+
+                    }
+
+                    else
+                    {
+                        AllGames[GameID].TimeLeft = "0";
+                    }
+
+                    int.TryParse(AllGames[GameID].TimeLeft, out times);
+
+                    if (times == 0)
+                    {
+                        AllGames[GameID].GameState = "completed";
+
+                    }
+                    if (AllGames[GameID].GameState == "pending")
+                    {
+
+                    }
+
+                    GameStatus var = new GameStatus();
+                    var.GameState = AllGames[GameID].GameState;
+                    var.TimeLeft = AllGames[GameID].TimeLeft;
+                    var.Player1 = AllGames[GameID].Player1;
+                    var.Player2 = AllGames[GameID].Player2;
+                    return var;
                 }
-
-                else
-                {
-                    AllGames[GameID].TimeLeft = "0";
-                }
-
-                int.TryParse(AllGames[GameID].TimeLeft, out times);
-
-                if (times == 0)
-                {
-                    AllGames[GameID].GameState = "completed";
-
-                }
-                if(AllGames[GameID].GameState == "pending")
-                {
-
-                }
-
-                GameStatus var = new GameStatus();
-                var.GameState = AllGames[GameID].GameState;
-                var.TimeLeft = AllGames[GameID].TimeLeft;
-                var.Player1 = AllGames[GameID].Player1;
-                var.Player2 = AllGames[GameID].Player2;
-                return var;
+                return AllGames[GameID];
             }
         }
 
@@ -136,53 +139,51 @@ namespace Boggle
                     return null;
                 }
                 SetStatus(OK);
-
-                TimeSpan current = DateTime.Now.TimeOfDay;
-                double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
-                int times = Convert.ToInt32(result);
-                int TimeRemaining;
-
-                if (AllGames[GameID].GameState == "active" && int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining) && (TimeRemaining - times >= 0))
+                if (AllGames[GameID].GameState != "pending")
                 {
-                    AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
-                }
+                    TimeSpan current = DateTime.Now.TimeOfDay;
+                    double result = current.Subtract(AllGames[GameID].StartGameTime).TotalSeconds;
+                    int times = Convert.ToInt32(result);
+                    int TimeRemaining;
 
-                else
-                {
-                    AllGames[GameID].TimeLeft = "0";
-                }
+                    if (AllGames[GameID].GameState == "active" && int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining) && (TimeRemaining - times >= 0))
+                    {
+                        AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
+                    }
 
-                int.TryParse(AllGames[GameID].TimeLeft, out times);
+                    else
+                    {
+                        AllGames[GameID].TimeLeft = "0";
+                    }
 
-                if (times == 0)
-                {
-                    AllGames[GameID].GameState = "completed";
-                    
+                    int.TryParse(AllGames[GameID].TimeLeft, out times);
+
+                    if (times == 0)
+                    {
+                        AllGames[GameID].GameState = "completed";
+
+                    }
+
+                    if (AllGames[GameID].GameState == "completed")
+                    {
+                        AllGames[GameID].Player1.WordsPlayed = AllGames[GameID].Player1.personalList;
+                        AllGames[GameID].Player2.WordsPlayed = AllGames[GameID].Player2.personalList;
+                        if (AllGames[GameID].Player1.WordsPlayed == null)
+                        {
+                            AllGames[GameID].Player1.WordsPlayed = new List<WordScore>();
+                        }
+
+                        if (AllGames[GameID].Player2.WordsPlayed == null)
+                        {
+                            AllGames[GameID].Player2.WordsPlayed = new List<WordScore>();
+                        }
+                        return AllGames[GameID];
+                    }
                 }
                 
-                if (AllGames[GameID].GameState == "completed")
-                {
-                    AllGames[GameID].Player1.WordsPlayed = AllGames[GameID].Player1.personalList;
-                    AllGames[GameID].Player2.WordsPlayed = AllGames[GameID].Player2.personalList;
-                    if(AllGames[GameID].Player1.WordsPlayed == null)
-                    {
-                        AllGames[GameID].Player1.WordsPlayed = new List<WordScore>();
-                    }
-
-                    if (AllGames[GameID].Player2.WordsPlayed == null)
-                    {
-                        AllGames[GameID].Player2.WordsPlayed = new List<WordScore>();
-                    }
-                    return AllGames[GameID];
-                }
-
-                if (AllGames[GameID].GameState == "pending")
-                {
-                    GameStatus resultGame = new GameStatus();
-                    resultGame.GameState = "pending";
-                    return resultGame;   
-                }
-                return AllGames[GameID];
+                GameStatus resultGame = new GameStatus();
+                resultGame.GameState = "pending";
+                return resultGame;   
             }
         }
 
@@ -223,13 +224,23 @@ namespace Boggle
                 {
                     if (game.Value.GameState == "pending")
                     {
-                        game.Value.Player2 = AllPlayers[info.UserToken];
-                        SetStatus(Created);
-                        setupGame(info.TimeLimit, game.Key);
-                        
-                        var.GameID = game.Key;
+                        if (game.Value.Player1 != null)
+                        {
+                            game.Value.Player2 = AllPlayers[info.UserToken];
+                            SetStatus(Created);
+                            setupGame(info.TimeLimit, game.Key);
 
-                        return var;
+                            var.GameID = game.Key;
+
+                            return var;
+                        }
+                        else
+                        {
+                            game.Value.Player1 = AllPlayers[info.UserToken];
+                            SetStatus(Accepted);
+                            var.GameID = game.Key;
+                            return var;
+                        }
                     }
                 }
 

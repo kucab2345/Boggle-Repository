@@ -21,7 +21,7 @@ namespace Boggle
         TokenScoreGameIDReturn JoinGame(GameJoin info);
 
         [WebInvoke(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "PUT", UriTemplate = "/games")]
-        void CancelGame(string userToken);
+        void CancelGame(UserGame userToken);
 
         [WebInvoke(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "PUT", UriTemplate = "/games/{GameID}")]
         TokenScoreGameIDReturn playWord(UserGame words, string GameID);

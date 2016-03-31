@@ -25,15 +25,13 @@ namespace Boggle
         private static Dictionary<string, UserInfo> AllPlayers = new Dictionary<string, UserInfo>();
         private static readonly object sync = new object();
         private static int gameID = 0;
-        private static BoggleBoard board = new BoggleBoard();
         private static HashSet<string> dictionaryContents = new HashSet<string>(File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\dictionary.txt"));
-        
-        //private static string dictionaryContents = File.ReadAllText(HttpContext.Current.Server.MapPath("dictionary.txt"));
+        private static BoggleBoard board = new BoggleBoard();
+       
         private static void SetStatus(HttpStatusCode status)
         {
             WebOperationContext.Current.OutgoingResponse.StatusCode = status;
         }
-
 
         /// <summary>
         /// Returns a Stream version of index.html.

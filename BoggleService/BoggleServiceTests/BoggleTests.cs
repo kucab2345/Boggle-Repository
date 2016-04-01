@@ -97,7 +97,67 @@ namespace Boggle
             Response r1 = client.DoPostAsync("/users", p1).Result;
 
             Assert.AreEqual(Forbidden, r1.Status);
+        }
+        [TestMethod]
+        public void TestMethod4()
+        {
+            IISAgent.Start(@"/site:""BoggleService"" /apppool:""Clr4IntegratedAppPool"" /config:""..\..\..\.vs\config\applicationhost.config""");
 
+            dynamic p3 = new ExpandoObject();
+            dynamic p4 = new ExpandoObject();
+            dynamic game2 = new ExpandoObject();
+            p3.Nickname = "John";
+            p4.Nickname = "June";
+
+            Response r3 = client.DoPostAsync("/users", p3).Result;
+            Response r4 = client.DoPostAsync("/users", p4).Result;
+
+            p3.UserToken = r3.Data.UserToken;
+            p4.UserToken = r4.Data.UserToken;
+
+            p3.TimeLimit = "20";
+            p4.TimeLimit = "20";
+
+            r3 = client.DoPostAsync("/games", p3).Result;
+            r4 = client.DoPostAsync("/games", p4).Result;
+
+            Assert.AreEqual(Accepted, r3.Status);
+            Assert.AreEqual(Created, r4.Status);
+
+            p3.GameID = r3.Data.GameID;
+            p4.GameID = r4.Data.GameID;
+
+            game2 = client.DoGetAsync("/games/" + p3.GameID).Result;
+            BoggleBoard board2 = new BoggleBoard(game2.Data.Board.ToString());
+
+            /////////////////////////////////////////////////////////////////////////////////////////////
+
+            dynamic p5 = new ExpandoObject();
+            dynamic p6 = new ExpandoObject();
+            dynamic game3 = new ExpandoObject();
+            p5.Nickname = "Jack";
+            p6.Nickname = "Jill";
+
+            Response r5 = client.DoPostAsync("/users", p5).Result;
+            Response r6 = client.DoPostAsync("/users", p6).Result;
+
+            p5.UserToken = r5.Data.UserToken;
+            p6.UserToken = r6.Data.UserToken;
+
+            p5.TimeLimit = "10";
+            p6.TimeLimit = "10";
+
+            r5 = client.DoPostAsync("/games", p5).Result;
+            r6 = client.DoPostAsync("/games", p6).Result;
+
+            Assert.AreEqual(Accepted, r5.Status);
+            Assert.AreEqual(Created, r6.Status);
+
+            p5.GameID = r5.Data.GameID;
+            p6.GameID = r6.Data.GameID;
+
+            game3 = client.DoGetAsync("/games/" + p3.GameID).Result;
+            BoggleBoard board3 = new BoggleBoard(game2.Data.Board.ToString());
         }
         /// <summary>
         /// Master Test. Creates two users, pits them in a game, has them play all possible words, as well as repeats, and invalids,

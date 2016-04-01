@@ -98,6 +98,10 @@ namespace Boggle
 
             Assert.AreEqual(Forbidden, r1.Status);
         }
+        /// <summary>
+        /// Creates two games and runs them simulatenously on the server. Similar to TestMethod3, but with 2 concurrent games
+        /// MUST WAIT 10 SECONDS FOR GAMETIMER TO RUN OUT! DELAY IN EXECUTION IS EXPECTED
+        /// </summary>
         [TestMethod]
         public void TestMethod4()
         {
@@ -115,8 +119,8 @@ namespace Boggle
             p3.UserToken = r3.Data.UserToken;
             p4.UserToken = r4.Data.UserToken;
 
-            p3.TimeLimit = "20";
-            p4.TimeLimit = "20";
+            p3.TimeLimit = "10";
+            p4.TimeLimit = "10";
 
             r3 = client.DoPostAsync("/games", p3).Result;
             r4 = client.DoPostAsync("/games", p4).Result;
@@ -144,8 +148,8 @@ namespace Boggle
             p5.UserToken = r5.Data.UserToken;
             p6.UserToken = r6.Data.UserToken;
 
-            p5.TimeLimit = "10";
-            p6.TimeLimit = "10";
+            p5.TimeLimit = "8";
+            p6.TimeLimit = "8";
 
             r5 = client.DoPostAsync("/games", p5).Result;
             r6 = client.DoPostAsync("/games", p6).Result;
@@ -156,14 +160,76 @@ namespace Boggle
             p5.GameID = r5.Data.GameID;
             p6.GameID = r6.Data.GameID;
 
-            game3 = client.DoGetAsync("/games/" + p3.GameID).Result;
-            BoggleBoard board3 = new BoggleBoard(game2.Data.Board.ToString());
+            game3 = client.DoGetAsync("/games/" + p5.GameID).Result;
+
+            
+            HashSet<string> testDictionary = new HashSet<string>();
+            List<string> potentialWords = new List<string>();
+            foreach (string i in File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "../../../\\dictionary.txt"))
+            {
+                testDictionary.Add(i);
+                if (board2.CanBeFormed(i))
+                {
+                    potentialWords.Add(i);
+                }
+            }
+            Random rand = new Random();
+            dynamic p3words = new ExpandoObject();
+            dynamic p4words = new ExpandoObject();
+            dynamic p5words = new ExpandoObject();
+            dynamic p6words = new ExpandoObject();
+
+            p3words.UserToken = p3.UserToken;
+            p4words.UserToken = p4.UserToken;
+            p5words.UserToken = p5.UserToken;
+            p6words.UserToken = p6.UserToken;
+
+            for (int i = 0; i < potentialWords.Count + 4; i++)
+            {
+                p3.Word = potentialWords[rand.Next(0, potentialWords.Count)];
+                p4.Word = potentialWords[rand.Next(0, potentialWords.Count)];
+                p5.Word = potentialWords[rand.Next(0, potentialWords.Count)];
+                p6.Word = potentialWords[rand.Next(0, potentialWords.Count)];
+                p3words.Word = p3.Word;
+                p4words.Word = p4.Word;
+                p5words.Word = p5.Word;
+                p6words.Word = p6.Word;
+                r3 = client.DoPutAsync(p3words, "games/" + p3.GameID).Result;
+                r4 = client.DoPutAsync(p4words, "games/" + p4.GameID).Result;
+                r5 = client.DoPutAsync(p5words, "games/" + p5.GameID).Result;
+                r6 = client.DoPutAsync(p6words, "games/" + p6.GameID).Result;
+                Assert.AreEqual(OK, r3.Status);
+                Assert.AreEqual(OK, r4.Status);
+                Assert.AreEqual(OK, r5.Status);
+                Assert.AreEqual(OK, r6.Status);
+            }
+
+            /////////////////////////////////////////////
+            dynamic gameBrief2 = new ExpandoObject();
+
+            gameBrief2 = client.DoGetAsync("/games/" + p3.GameID + "?Brief=yes").Result;
+            Assert.AreEqual(OK, gameBrief2.Status);
+
+            Thread.Sleep(11000);
+            
+            gameBrief2 = client.DoGetAsync("/games/" + p3.GameID).Result;
+            Assert.AreEqual("completed", (string)gameBrief2.Data.GameState);
+            ////////////////////////////////////////////////
+            dynamic gameBrief3 = new ExpandoObject();
+
+            gameBrief3 = client.DoGetAsync("/games/" + p5.GameID + "?Brief=yes").Result;
+            Assert.AreEqual(OK, gameBrief3.Status);
+            
+            gameBrief3 = client.DoGetAsync("/games/" + p5.GameID).Result;
+            Assert.AreEqual("completed", (string)gameBrief3.Data.GameState);
+
         }
         /// <summary>
         /// Master Test. Creates two users, pits them in a game, has them play all possible words, as well as repeats, and invalids,
         /// waits 11 seconds to ensure the 10 second game infact ends, and checks to see that the GameState is actually completed.
         /// Mimics a full game, and code coverage can vary depending on the board that gets created. Possible words change per test run
         /// and as a result, code coverage can vary slightly. Multiple asserts throughout the code to ensure correct status codes are being handed back.
+        /// MUST WAIT FOR GAMETIMER TO END! 10 SECOND DELAY IS EXPECTED AT RUNTIME!!!
         /// </summary>
         [TestMethod]
         public void TestMethod3()

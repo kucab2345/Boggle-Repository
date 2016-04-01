@@ -160,8 +160,17 @@ namespace Boggle
 
             p1words.UserToken = p1.UserToken;
             p2words.UserToken = p2.UserToken;
-            
-            for (int i = 0; i < 5; i++)
+
+            p1words.Word = " ";
+            r1 = client.DoPutAsync(p1words, "games/" + p1.GameID).Result;
+            p1words.Word = null;
+            r1 = client.DoPutAsync(p1words, "games/" + p1.GameID).Result;
+            p1words.Word = "kkkkkkkkkkkkk";
+            r1 = client.DoPutAsync(p1words, "games/" + p1.GameID).Result;
+            p1words.Word = "kkkkkkkkkkkkk";
+            r1 = client.DoPutAsync(p1words, "games/" + p1.GameID).Result;
+
+            for (int i = 0; i < potentialWords.Count + 4; i++)
             {
                 p1.Word = potentialWords[rand.Next(0,potentialWords.Count)];
                 p2.Word = potentialWords[rand.Next(0, potentialWords.Count)];
@@ -181,10 +190,8 @@ namespace Boggle
             Thread.Sleep(11000);
 
             dynamic endResult = new ExpandoObject();
-            gameBrief = client.DoGetAsync("/games/" + p1.GameID + "?Brief=yes").Result;
-            //endResult.GameState = gameBrief.Data.GameState;
+            gameBrief = client.DoGetAsync("/games/" + p1.GameID).Result;
             Assert.AreEqual("completed", (string)gameBrief.Data.GameState);
-
         }
 
         [TestMethod]
@@ -202,6 +209,16 @@ namespace Boggle
             r1 = client.DoPutAsync(p1, "/games").Result;
             Assert.AreEqual(OK, r1.Status);
 
+            p1.TimeLimit = "-2";
+            r1 = client.DoPostAsync("/games", p1).Result;
+            Assert.AreEqual(Forbidden, r1.Status);
+
+            p1.TimeLimit = null;
+            r1 = client.DoPostAsync("/games", p1).Result;
+            Assert.AreEqual(Forbidden, r1.Status);
+            p1.TimeLimit = "";
+            r1 = client.DoPostAsync("/games", p1).Result;
+            Assert.AreEqual(Forbidden, r1.Status);
         }
     }
 }

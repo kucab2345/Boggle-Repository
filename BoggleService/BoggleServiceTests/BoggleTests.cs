@@ -70,27 +70,10 @@ namespace Boggle
         }
 
         private RestTestClient client = new RestTestClient("http://localhost:60000/");
-        /*
-        [TestMethod]
-        public void TestMethod1()
-        {
-            Response r = client.DoGetAsync("/numbers?length={0}", "5").Result;
-            Assert.AreEqual(OK, r.Status);
-            Assert.AreEqual(5, r.Data.Count);
-            r = client.DoGetAsync("/numbers?length={0}", "-5").Result;
-            Assert.AreEqual(Forbidden, r.Status);
-        }
-
-        [TestMethod]
-        public void TestMethod2()
-        {
-            List<int> list = new List<int>();
-            list.Add(15);
-            Response r = client.DoPostAsync("/first", list).Result;
-            Assert.AreEqual(OK, r.Status);
-            Assert.AreEqual(15, r.Data);
-        }
-        */
+        
+        /// <summary>
+        /// Attempts to create users with invalid name. Expects forbidden stats
+        /// </summary>
         [TestMethod]
         public void TestMethod0()
         {
@@ -102,6 +85,9 @@ namespace Boggle
             Assert.AreEqual(Forbidden, r1.Status);
 
         }
+        /// <summary>
+        /// More invalid types of names. Expects Forbidden Status 
+        /// </summary>
         [TestMethod]
         public void TestMethod1()
         {
@@ -113,6 +99,12 @@ namespace Boggle
             Assert.AreEqual(Forbidden, r1.Status);
 
         }
+        /// <summary>
+        /// Master Test. Creates two users, pits them in a game, has them play all possible words, as well as repeats, and invalids,
+        /// waits 11 seconds to ensure the 10 second game infact ends, and checks to see that the GameState is actually completed.
+        /// Mimics a full game, and code coverage can vary depending on the board that gets created. Possible words change per test run
+        /// and as a result, code coverage can vary slightly. Multiple asserts throughout the code to ensure correct status codes are being handed back.
+        /// </summary>
         [TestMethod]
         public void TestMethod3()
         {
@@ -193,7 +185,10 @@ namespace Boggle
             gameBrief = client.DoGetAsync("/games/" + p1.GameID).Result;
             Assert.AreEqual("completed", (string)gameBrief.Data.GameState);
         }
-
+        /// <summary>
+        /// Creates a player, puts him into a pending game, and cancels the game.
+        /// Attempts to create a new game with more invalid parameters, such as negative timelimits and such.
+        /// </summary>
         [TestMethod]
         public void TestMethod2()
         {

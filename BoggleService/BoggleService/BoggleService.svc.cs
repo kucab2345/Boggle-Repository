@@ -325,7 +325,7 @@ namespace Boggle
             
                 int userScore;
                 int.TryParse(AllPlayers[words.UserToken].Score, out userScore);
-                int WordScoreResult = ScoreWord(words.Word, GameID, words.UserToken);
+                int WordScoreResult = ScoreWord(words.Word, words.UserToken, GameID);
                 WordScore totalResult = new WordScore();
                 totalResult.Word = words.Word;
                 totalResult.Score = WordScoreResult;
@@ -345,7 +345,8 @@ namespace Boggle
 
             if (legalWord == true)
             {
-                if (currentWord.Length < 3 || !AllGames[GameID].RelevantBoard.CanBeFormed(word) || (AllPlayers[userToken].WordsPlayed != null && AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord)))
+                if (currentWord.Length < 3 || !AllGames[GameID].RelevantBoard.CanBeFormed(currentWord) || (AllPlayers[userToken].WordsPlayed != null 
+                    && AllPlayers[userToken].WordsPlayed.Count > 0 && AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord)))
                 {
                     return 0;
                 }

@@ -8,6 +8,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net.Http;
+using System.Threading;
+
 namespace Boggle
 {
     /// <summary>
@@ -126,8 +128,8 @@ namespace Boggle
             p1.UserToken = r1.Data.UserToken;
             p2.UserToken = r2.Data.UserToken;
 
-            p1.TimeLimit = "120";
-            p2.TimeLimit = "120";
+            p1.TimeLimit = "10";
+            p2.TimeLimit = "10";
 
             r1 = client.DoPostAsync("/games", p1).Result;
             r2 = client.DoPostAsync("/games", p2).Result;
@@ -157,15 +159,49 @@ namespace Boggle
             dynamic p2words = new ExpandoObject();
 
             p1words.UserToken = p1.UserToken;
+            p2words.UserToken = p2.UserToken;
             
-
             for (int i = 0; i < 5; i++)
             {
                 p1.Word = potentialWords[rand.Next(0,potentialWords.Count)];
+                p2.Word = potentialWords[rand.Next(0, potentialWords.Count)];
                 p1words.Word = p1.Word;
+                p2words.Word = p2.Word;
                 r1 = client.DoPutAsync(p1words, "games/" + p1.GameID).Result;
+                r2 = client.DoPutAsync(p2words, "games/" + p2.GameID).Result;
                 Assert.AreEqual(OK, r1.Status);
+                Assert.AreEqual(OK, r2.Status);
             }
+
+            dynamic gameBrief = new ExpandoObject();
+
+            gameBrief = client.DoGetAsync("/games/" + p1.GameID + "?Brief=yes").Result;
+            Assert.AreEqual(OK, gameBrief.Status);
+
+            Thread.Sleep(11000);
+
+            dynamic endResult = new ExpandoObject();
+            gameBrief = client.DoGetAsync("/games/" + p1.GameID + "?Brief=yes").Result;
+            //endResult.GameState = gameBrief.Data.GameState;
+            Assert.AreEqual("completed", (string)gameBrief.Data.GameState);
+
+        }
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+            dynamic p1 = new ExpandoObject();
+            p1.Nickname = "cancelGuy";
+
+            Response r1 = client.DoPostAsync("/users", p1).Result;
+            p1.UserToken = r1.Data.UserToken;
+            p1.TimeLimit = "10";
+            r1 = client.DoPostAsync("/games", p1).Result;
+            Assert.AreEqual(Accepted, r1.Status);
+
+            r1 = client.DoPutAsync(p1, "/games").Result;
+            Assert.AreEqual(OK, r1.Status);
+
         }
     }
 }

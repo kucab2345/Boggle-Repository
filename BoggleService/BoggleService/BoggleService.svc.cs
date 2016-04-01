@@ -66,6 +66,10 @@ namespace Boggle
             return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
         }
 
+        /// <summary>
+        /// If the requesting player is in a pending game, removes them from the pending game.
+        /// </summary>
+        /// <param name="endUser"></param>
         public void CancelGame(UserGame endUser)
         {
             lock (sync)
@@ -90,6 +94,11 @@ namespace Boggle
             }
         }
 
+        /// <summary>
+        /// Return the brief status of the game
+        /// </summary>
+        /// <param name="GameID">ID of the game that the client is requesting from the server</param>
+        /// <returns></returns>
         public GameStatus GetBriefGamestatus(string GameID)
         {
             lock (sync)
@@ -140,6 +149,11 @@ namespace Boggle
             }
         }
 
+        /// <summary>
+        /// Gets the full game status from the server
+        /// </summary>
+        /// <param name="GameID">ID of the game from the server</param>
+        /// <returns></returns>
         public GameStatus GetFullGameStatus(string GameID)
         {
             lock (sync)
@@ -199,6 +213,11 @@ namespace Boggle
             }
         }
 
+        /// <summary>
+        /// Allows the client to join a game, or create one if needed
+        /// </summary>
+        /// <param name="info">Class that contains the UserToken and TimeLimit</param>
+        /// <returns></returns>
         public TokenScoreGameIDReturn JoinGame(GameJoin info)
         {
             lock(sync){
@@ -270,6 +289,11 @@ namespace Boggle
             }
         }
 
+        /// <summary>
+        /// Private method that fully creates a game, called after two players enter a game.
+        /// </summary>
+        /// <param name="timeLimit">TimeLimit of second user</param>
+        /// <param name="gameID">ID of game to be created</param>
         private void setupGame(string timeLimit, string gameID)
         {
             BoggleBoard board = new BoggleBoard();
@@ -295,6 +319,12 @@ namespace Boggle
             AllGames[gameID].StartGameTime = DateTime.Now;
         }
 
+        /// <summary>
+        /// Takes the word submitted by the client and scores it for the client, returning it to them.
+        /// </summary>
+        /// <param name="words">class that containes the userToken and word that the client is submitting</param>
+        /// <param name="GameID">ID of the game that the word is being submitted for</param>
+        /// <returns></returns>
         public TokenScoreGameIDReturn playWord(UserGame words, string GameID)
         {
             lock (sync)
@@ -338,14 +368,22 @@ namespace Boggle
 
             }
         }
+
+        /// <summary>
+        /// Scores the word submitted, returning the approriate int value.
+        /// </summary>
+        /// <param name="word">word to be scored</param>
+        /// <param name="userToken">userToken to check whether the user played the word before</param>
+        /// <param name="GameID">ID of the game to be checked</param>
+        /// <returns></returns>
         private int ScoreWord(string word, string userToken, string GameID)
         {
-            bool legalWord = searchDictionary(word.Trim().ToUpper());
+            bool legalWord = searchDictionary(word.Trim().ToUpper(),GameID);
             string currentWord = word.Trim();
 
             if (legalWord == true)
             {
-                if (currentWord.Length < 3 || !AllGames[GameID].RelevantBoard.CanBeFormed(currentWord) || (AllPlayers[userToken].WordsPlayed != null 
+                if (currentWord.Length < 3 || (AllPlayers[userToken].WordsPlayed != null 
                     && AllPlayers[userToken].WordsPlayed.Count > 0 && AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord)))
                 {
                     return 0;
@@ -377,9 +415,15 @@ namespace Boggle
             }
         }
 
-        private bool searchDictionary(string key)
+        /// <summary>
+        /// Searches the dictionary and sees if it is a legal word.  Also checks to see if the word can be formed on the board.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="GameID"></param>
+        /// <returns></returns>
+        private bool searchDictionary(string key, string GameID)
         {
-            if (dictionaryContents.Contains(key))
+            if (dictionaryContents.Contains(key) && AllGames[GameID].RelevantBoard.CanBeFormed(key))
             {
                 return true;
             }
@@ -389,6 +433,11 @@ namespace Boggle
             }
         }
 
+        /// <summary>
+        /// Registers the client to a userToken.  Creates them in AllPlayer as well.
+        /// </summary>
+        /// <param name="user">Class that contains the nickname they want to be known as</param>
+        /// <returns></returns>
         public TokenScoreGameIDReturn RegisterUser(UserInfo user)
         {
             lock (sync)

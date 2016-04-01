@@ -15,19 +15,41 @@ namespace Boggle
 {
     public class BoggleService : IBoggleService
     {
+        
+        /// <summary>
+        /// Dictionary used to store all games.  Key is relevant GameID, and key is Relevant GameStatus
+        /// </summary>
+        private static Dictionary<string, GameStatus> AllGames = new Dictionary<string, GameStatus>();
+
+        /// <summary>
+        /// Dictionary used to store all players.  Key is UserToken, and value is relevant UserInfo
+        /// </summary>
+        private static Dictionary<string, UserInfo> AllPlayers = new Dictionary<string, UserInfo>();
+
+        /// <summary>
+        /// object used to sync the methods, ensuring that all happen at the right rate.
+        /// </summary>
+        private static readonly object sync = new object();
+
+        /// <summary>
+        /// Private int used to create GameIDs for the games.  Incremented by the code as more games were made.
+        /// </summary>
+        private static int gameID = 0;
+
+        /// <summary>
+        /// Hashset that is used to store the contens of the dictionary.txt file.  Used to verify whether a word is a word or not.
+        /// </summary>
+        private static HashSet<string> dictionaryContents = new HashSet<string>(File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\dictionary.txt"));
+
+
+        
+
+
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when
         /// an http response is sent.
         /// </summary>
         /// <param name="status"></param>
-        /// 
-        private static Dictionary<string, GameStatus> AllGames = new Dictionary<string, GameStatus>();
-        private static Dictionary<string, UserInfo> AllPlayers = new Dictionary<string, UserInfo>();
-        private static readonly object sync = new object();
-        private static int gameID = 0;
-        private static HashSet<string> dictionaryContents = new HashSet<string>(File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\dictionary.txt"));
-        private static BoggleBoard board = new BoggleBoard();
-       
         private static void SetStatus(HttpStatusCode status)
         {
             WebOperationContext.Current.OutgoingResponse.StatusCode = status;
@@ -250,11 +272,12 @@ namespace Boggle
 
         private void setupGame(string timeLimit, string gameID)
         {
+            BoggleBoard board = new BoggleBoard();
             int time1;
             int time2;
             int.TryParse(AllGames[gameID].TimeLimit, out time1);
             int.TryParse(timeLimit, out time2);
-
+            
             if(time1 < time2)
             {
                 time2 = ((time2 - time1)/2);
@@ -267,8 +290,8 @@ namespace Boggle
             AllGames[gameID].TimeLimit = (time1 + time2).ToString();
             AllGames[gameID].TimeLeft = AllGames[gameID].TimeLimit;
             AllGames[gameID].GameState = "active";
-
-            AllGames[gameID].Board = board.ToString();
+            AllGames[gameID].RelevantBoard = board;
+            AllGames[gameID].Board = AllGames[gameID].RelevantBoard.ToString();
             AllGames[gameID].StartGameTime = DateTime.Now;
         }
 
@@ -302,7 +325,7 @@ namespace Boggle
             
                 int userScore;
                 int.TryParse(AllPlayers[words.UserToken].Score, out userScore);
-                int WordScoreResult = ScoreWord(words.Word, words.UserToken);
+                int WordScoreResult = ScoreWord(words.Word, GameID, words.UserToken);
                 WordScore totalResult = new WordScore();
                 totalResult.Word = words.Word;
                 totalResult.Score = WordScoreResult;
@@ -315,14 +338,14 @@ namespace Boggle
 
             }
         }
-        private int ScoreWord(string word, string userToken)
+        private int ScoreWord(string word, string userToken, string GameID)
         {
             bool legalWord = searchDictionary(word.Trim().ToUpper());
             string currentWord = word.Trim();
 
             if (legalWord == true)
             {
-                if (currentWord.Length < 3 || (AllPlayers[userToken].WordsPlayed != null && AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord)))
+                if (currentWord.Length < 3 || !AllGames[GameID].RelevantBoard.CanBeFormed(word) || (AllPlayers[userToken].WordsPlayed != null && AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord)))
                 {
                     return 0;
                 }

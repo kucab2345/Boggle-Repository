@@ -345,7 +345,7 @@ namespace Boggle
 
             if (legalWord == true)
             {
-                if (currentWord.Length < 3 || !AllGames[GameID].RelevantBoard.CanBeFormed(word) || (AllPlayers[userToken].WordsPlayed != null && AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord)))
+                if (currentWord.Length < 3 || !AllGames[GameID].RelevantBoard.CanBeFormed(currentWord) || (AllPlayers[userToken].WordsPlayed != null && AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord)))
                 {
                     return 0;
                 }

@@ -6,6 +6,9 @@ using System.Web;
 
 namespace Boggle
 {
+    /// <summary>
+    /// Class that holds all the data related to games.  This will be stored in a dicationary and searchable by the relevant GameID.
+    /// </summary>
     [DataContract]
     public class GameStatus
     {
@@ -25,7 +28,9 @@ namespace Boggle
         public DateTime StartGameTime;
     }
 
-
+    /// <summary>
+    /// Class used to store relevant information about the player.  Referenced by the GameStatus class.
+    /// </summary>
     [DataContract]
     public class UserInfo
     {
@@ -43,8 +48,11 @@ namespace Boggle
 
     }
 
+    /// <summary>
+    /// Class that is used to return data results from the server to the clients.  Primarily only one property will have data added per instance, and then it will be
+    /// returned to the client.
+    /// </summary>
     [DataContract]
-
     public class TokenScoreGameIDReturn
     {
         [DataMember(EmitDefaultValue = false)]
@@ -58,18 +66,28 @@ namespace Boggle
         public string Score { get; set; }
     }
 
+    /// <summary>
+    /// Class that is used to take the data from the user for when they are joining a game or creating one
+    /// </summary>
     public class GameJoin
     {
         public string UserToken { get; set; }
         public string TimeLimit { get; set; }
         
     }
+
+    /// <summary>
+    /// Class that is used to take data from the user when they are submitting a word to the server for a game.
+    /// </summary>
     public class UserGame
     {
         public string Word { get; set; }
         public string UserToken { get; set; }
     }
 
+    /// <summary>
+    /// Class that is used for a list so it can be attached to a specific user.
+    /// </summary>
     public class WordScore
     {
         public string Word { get; set; }

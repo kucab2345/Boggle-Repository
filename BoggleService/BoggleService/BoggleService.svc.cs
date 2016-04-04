@@ -23,7 +23,6 @@ namespace Boggle
         /// <summary>
         /// object used to sync the methods, ensuring that all happen at the right rate.
         /// </summary>
-        private static readonly object sync = new object();
        
         private static HashSet<string> dictionaryContents = new HashSet<string>(File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\dictionary.txt"));
 
@@ -62,9 +61,7 @@ namespace Boggle
         /// <param name="endUser"></param>
         public void CancelGame(UserGame endUser)
         {
-            lock (sync)
-            {
-                string cancelGameID = null;
+                
                 foreach (KeyValuePair<string, GameStatus> games in AllGames)
                 {
                     if (games.Value.GameState == "pending" && games.Value.Player1.UserToken == endUser.UserToken)
@@ -81,7 +78,7 @@ namespace Boggle
                 {
                     SetStatus(Forbidden);
                 }
-            }
+            
         }
 
         /// <summary>

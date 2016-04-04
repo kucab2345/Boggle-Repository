@@ -6,43 +6,33 @@ using System.Net;
 using System.Web;
 using System.ServiceModel.Web;
 using Newtonsoft.Json;
+using System.Configuration;
 
 using static System.Net.HttpStatusCode;
 using System.Linq;
 using System.Text;
+using System.Data.SqlClient;
 
 namespace Boggle
 {
     public class BoggleService : IBoggleService
     {
         
-        /// <summary>
-        /// Dictionary used to store all games.  Key is relevant GameID, and key is Relevant GameStatus
-        /// </summary>
-        private static Dictionary<string, GameStatus> AllGames = new Dictionary<string, GameStatus>();
-
-        /// <summary>
-        /// Dictionary used to store all players.  Key is UserToken, and value is relevant UserInfo
-        /// </summary>
-        private static Dictionary<string, UserInfo> AllPlayers = new Dictionary<string, UserInfo>();
+        
 
         /// <summary>
         /// object used to sync the methods, ensuring that all happen at the right rate.
         /// </summary>
         private static readonly object sync = new object();
-
-        /// <summary>
-        /// Private int used to create GameIDs for the games.  Incremented by the code as more games were made.
-        /// </summary>
-        private static int gameID = 0;
-
-        /// <summary>
-        /// Hashset that is used to store the contens of the dictionary.txt file.  Used to verify whether a word is a word or not.
-        /// </summary>
+       
         private static HashSet<string> dictionaryContents = new HashSet<string>(File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\dictionary.txt"));
 
+        private static string BoggleDB;
 
-        
+        static BoggleService()
+        {
+            BoggleDB = ConfigurationManager.ConnectionStrings["BoggleDB"].ConnectionString;
+        }
 
 
         /// <summary>
@@ -220,8 +210,8 @@ namespace Boggle
         /// <returns></returns>
         public TokenScoreGameIDReturn JoinGame(GameJoin info)
         {
-            lock(sync){
-                if (info.UserToken == null || info.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(info.UserToken))
+            
+                if (info.UserToken == null || info.UserToken.Trim().Length == 0)
                 {
                     SetStatus(Forbidden);
                     return null;
@@ -239,6 +229,10 @@ namespace Boggle
                     return null;
                 }
 
+            using (SqlConnection conn = new SqlConnection(BoggleDB))
+            {
+
+            }
                 foreach (KeyValuePair<string, GameStatus> game in AllGames)
                 {
                     if (game.Value.GameState == "pending")
@@ -286,7 +280,7 @@ namespace Boggle
                 var.GameID = gameID.ToString();
 
                 return var;
-            }
+            
         }
 
         /// <summary>
@@ -440,8 +434,7 @@ namespace Boggle
         /// <returns></returns>
         public TokenScoreGameIDReturn RegisterUser(UserInfo user)
         {
-            lock (sync)
-            {
+
                 
                 if (user.Nickname == null || user.Nickname.Trim().Length == 0)
                 {
@@ -450,15 +443,28 @@ namespace Boggle
                 }
                 else
                 {
-                    SetStatus(Created);
-                    string userID = Guid.NewGuid().ToString();
-                    AllPlayers.Add(userID, user);
-                    AllPlayers[userID].UserToken = userID;
-                    AllPlayers[userID].Nickname = user.Nickname;
-                    TokenScoreGameIDReturn result = new TokenScoreGameIDReturn();
-                    result.UserToken = userID;
-                    return result;
-                }
+                    using(SqlConnection conn = new SqlConnection(BoggleDB))
+                    {
+                        using(SqlTransaction trans = conn.BeginTransaction())
+                        {
+                            using (SqlCommand command = new SqlCommand("insert into Users (UserID, Nickname) values(@UserID, @Nickname)", conn, trans))
+                            {
+                                string userID = Guid.NewGuid().ToString();
+
+                                command.Parameters.AddWithValue("@UserID", userID);
+                                command.Parameters.AddWithValue("@Nickname", user.Nickname.Trim());
+
+                                command.ExecuteNonQuery();
+                                SetStatus(Created);
+
+                                trans.Commit();
+                                TokenScoreGameIDReturn result = new TokenScoreGameIDReturn();
+                                result.UserToken = userID;
+                                return result;
+                            }
+                        }
+                    }
+                
             }
         }
     }

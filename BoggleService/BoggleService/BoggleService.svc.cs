@@ -17,9 +17,6 @@ namespace Boggle
 {
     public class BoggleService : IBoggleService
     {
-        
-        
-
         /// <summary>
         /// object used to sync the methods, ensuring that all happen at the right rate.
         /// </summary>
@@ -431,8 +428,6 @@ namespace Boggle
         /// <returns></returns>
         public TokenScoreGameIDReturn RegisterUser(UserInfo user)
         {
-
-                
                 if (user.Nickname == null || user.Nickname.Trim().Length == 0)
                 {
                     SetStatus(Forbidden);

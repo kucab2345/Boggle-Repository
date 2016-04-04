@@ -437,6 +437,7 @@ namespace Boggle
                 {
                     using(SqlConnection conn = new SqlConnection(BoggleDB))
                     {
+                        conn.Open();
                         using(SqlTransaction trans = conn.BeginTransaction())
                         {
                             using (SqlCommand command = new SqlCommand("insert into Users (UserID, Nickname) values(@UserID, @Nickname)", conn, trans))

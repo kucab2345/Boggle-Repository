@@ -6,7 +6,6 @@ using System.Net;
 using System.Web;
 using System.ServiceModel.Web;
 using System.Configuration;
-
 using static System.Net.HttpStatusCode;
 using System.Linq;
 using System.Text;
@@ -249,9 +248,10 @@ namespace Boggle
                 return null;
             }
             string boardState = null;
-            string currentPlayerToken = null;
+            string currentPlayerToken = words.UserToken;
             string currentGameID = null;
             string gameState = null;
+            List<string> playedWords = new List<string>();
             using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
                 conn.Open();
@@ -259,14 +259,31 @@ namespace Boggle
                 using (SqlTransaction trans = conn.BeginTransaction())
                 {
                     //Command to retrieve boardState
-                    using (SqlCommand command = new SqlCommand("select * from Games where GameID = @GameID", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select * from Games where GameID = @GameID and (Player1 = @Token or Player2 = @Token)", conn, trans))
                     {
+                        command.Parameters.AddWithValue("@Token", currentPlayerToken);
                         command.Parameters.AddWithValue("@GameID", GameID);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
+                            if(!reader.HasRows)
+                            {
+                                SetStatus(Forbidden);
+                                trans.Commit();
+                                return null;
+                            }
                             reader.Read();
-                            boardState = (string)reader["Board"];
-                            currentGameID = (string)reader["GameID"];
+                            if(DBNull.Value.Equals(reader["Board"]))
+                            {
+                                SetStatus(Conflict);
+                                trans.Commit();
+                                return null;
+                            }
+                            if(DBNull.Value.Equals(reader["GameID"]))
+                            {
+                                SetStatus(Forbidden);
+                                trans.Commit();
+                                return null;
+                            }
                             if ((string)reader["Player2"] == null)
                             {
                                 gameState = "pending";
@@ -275,41 +292,30 @@ namespace Boggle
                             {
                                 gameState = "active";
                             }
+                            boardState = (string)reader["Board"];
+                            currentGameID = (string)reader["GameID"];
                         }
                     }
-                    //Command to retrieve current player's token
-
-                    ///CHECK FOR TIMELEFT HERE!!!
-                    //Command that checks if Time
-                    /*
-                    using (SqlCommand command = new SqlCommand("select from Games where GameID = @GameID", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select Word from Words where GameID = @GameID and (Player1 = @Token or Player2 = @Token)", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", GameID);
+                        command.Parameters.AddWithValue("@Token", currentPlayerToken);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            reader.Read();
-                            if ((string)reader["GameID"] == null)
+                            if(!DBNull.Value.Equals(reader["Word"]))
                             {
-                                gameState = "pending";
-                            }
-                            else
-                            {
-                                gameState = "active";
+                                playedWords.Add((string)reader["Word"]);//////THIS CANNOT BE RIGHT
                             }
                         }
-                    }*/
+                    }
                 }
             }
-
-
-            
-
             if (gameState != "active")
             {
                 SetStatus(Conflict);
                 return null;
             }
-
+            UserInfo currentUserInfo = new UserInfo() { UserToken = currentPlayerToken };
             /*
             if (AllPlayers[words.UserToken].personalList == null)
             {
@@ -317,16 +323,18 @@ namespace Boggle
             }
             */
 
+
             int userScore;
-            int.TryParse(AllPlayers[words.UserToken].Score, out userScore);
+            int.TryParse(currentUserInfo.Score, out userScore);
 
             int WordScoreResult = ScoreWord(boardState, words.Word, words.UserToken, GameID);
 
             WordScore totalResult = new WordScore();
             totalResult.Word = words.Word;
             totalResult.Score = WordScoreResult;
-            AllPlayers[words.UserToken].personalList.Add(totalResult);
-            AllPlayers[words.UserToken].Score = (userScore + WordScoreResult).ToString();
+
+            currentUserInfo.personalList.Add(totalResult);
+            currentUserInfo.Score = (userScore + WordScoreResult).ToString();
             TokenScoreGameIDReturn var = new TokenScoreGameIDReturn();
             var.Score = WordScoreResult.ToString();
             SetStatus(OK);

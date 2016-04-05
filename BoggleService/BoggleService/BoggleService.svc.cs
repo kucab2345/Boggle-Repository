@@ -249,7 +249,7 @@ namespace Boggle
                 return null;
             }
             string boardState = null;
-            string currentPlayerToken = null;
+            string currentPlayerToken = words.UserToken;
             string currentGameID = null;
             string gameState = null;
             using (SqlConnection conn = new SqlConnection(BoggleDB))
@@ -259,12 +259,31 @@ namespace Boggle
                 using (SqlTransaction trans = conn.BeginTransaction())
                 {
                     //Command to retrieve boardState
-                    using (SqlCommand command = new SqlCommand("select * from Games where GameID = @GameID", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select * from Games where GameID = @GameID and (Player1 = @Token or Player2 = @Token)", conn, trans))
                     {
+                        command.Parameters.AddWithValue("@Token", currentPlayerToken);
                         command.Parameters.AddWithValue("@GameID", GameID);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
+                            if(!reader.HasRows)
+                            {
+                                SetStatus(Forbidden);
+                                trans.Commit();
+                                return null;
+                            }
                             reader.Read();
+                            if(DBNull.Value.Equals(reader["Board"]))
+                            {
+                                SetStatus(Conflict);
+                                trans.Commit();
+                                return null;
+                            }
+                            if(DBNull.Value.Equals(reader["GameID"]))
+                            {
+                                SetStatus(Forbidden);
+                                trans.Commit();
+                                return null;
+                            }
                             boardState = (string)reader["Board"];
                             currentGameID = (string)reader["GameID"];
                             if ((string)reader["Player2"] == null)
@@ -300,10 +319,6 @@ namespace Boggle
                     }*/
                 }
             }
-
-
-            
-
             if (gameState != "active")
             {
                 SetStatus(Conflict);
@@ -316,7 +331,7 @@ namespace Boggle
                 AllPlayers[words.UserToken].personalList = new List<WordScore>();
             }
             */
-
+            
             int userScore;
             int.TryParse(AllPlayers[words.UserToken].Score, out userScore);
 
@@ -325,6 +340,7 @@ namespace Boggle
             WordScore totalResult = new WordScore();
             totalResult.Word = words.Word;
             totalResult.Score = WordScoreResult;
+
             AllPlayers[words.UserToken].personalList.Add(totalResult);
             AllPlayers[words.UserToken].Score = (userScore + WordScoreResult).ToString();
             TokenScoreGameIDReturn var = new TokenScoreGameIDReturn();

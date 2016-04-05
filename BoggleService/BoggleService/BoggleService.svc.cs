@@ -239,6 +239,7 @@ namespace Boggle
         {
             string boardState = null;
             string currentPlayerToken = null;
+            string currentGameID = null;
             using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
                 conn.Open();
@@ -247,22 +248,39 @@ namespace Boggle
                     using (SqlCommand command = new SqlCommand("select board from Games where GameID = @GameID", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", GameID);
-
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             reader.Read();
                             boardState = (string)reader["Board"];
                         }
                     }
+                    using (SqlCommand command = new SqlCommand("select UserID from Users where UserID = @UserID", conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@UserID", words.UserToken);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                            currentPlayerToken = (string)reader["UserID"];
+                        }
+                    }
+                    using (SqlCommand command = new SqlCommand("select GameID from Games where GameID = @GameID", conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@GameID", GameID);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                            currentGameID = (string)reader["GameID"];
+                        }
+                    }
                 }
             }
-                if (words.UserToken == null || words.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(words.UserToken))
+                if (words.UserToken == null || words.UserToken.Trim().Length == 0 || currentPlayerToken == null)
                 {
                     SetStatus(Forbidden);
                     return null;
                 }
 
-                if (words.Word == null || words.Word.Trim().Length == 0 || !AllGames.ContainsKey(GameID))
+                if (words.Word == null || words.Word.Trim().Length == 0 || currentGameID == null)
                 {
                     SetStatus(Forbidden);
                     return null;

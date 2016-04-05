@@ -137,6 +137,7 @@ namespace Boggle
         /// <returns></returns>
         public GameStatus GetFullGameStatus(string GameID)
         {
+            GameStatus game = new GameStatus();
             using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
                 conn.Open();
@@ -148,12 +149,24 @@ namespace Boggle
                         command.Parameters.AddWithValue("@GameID", GameID);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            if(!reader.HasRows())
+                            if(!reader.HasRows)
                             {
                                 SetStatus(Forbidden);
                                 return null;
                             }
                             SetStatus(OK);
+                            reader.Read();
+                            if(DBNull.Value.Equals(reader["Board"]))
+                            {
+                                SetStatus(Forbidden);
+                                return null;
+                            }
+                            if(DBNull.Value.Equals(reader["Player1"]) || DBNull.Value.Equals(reader["Player2"]))
+                            {
+                                SetStatus(Forbidden);
+                                return null;
+                            }
+                            game.Board = (string)reader["Board"];
 
                         }
                     }

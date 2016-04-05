@@ -477,6 +477,7 @@ namespace Boggle
             TokenScoreGameIDReturn result = null;
             using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
+                conn.Open();
                 using (SqlTransaction trans = conn.BeginTransaction())
                 {
                     // Here, the SqlCommand is a select query.  We are interested in whether item.UserID exists in
@@ -544,35 +545,28 @@ namespace Boggle
                                 return result;
                             }
                         }
-                        // We execute the command with the ExecuteScalar method, which will return to
-                        // us the requested auto-generated ItemID.
-                    
-                        SetStatus(Created);
+                
+                    }
+
+                    using (SqlCommand command = new SqlCommand("insert into Games (Player1, TimeLimit) output inserted.GameID values(@Player,@Timelimit)"))
+                    {
+
+                        command.Parameters.AddWithValue("@Player", info.UserToken);
+                        command.Parameters.AddWithValue("@Timelimit", test);
+
+
                         result = new TokenScoreGameIDReturn();
                         result.GameID = command.ExecuteScalar().ToString();
+                        SetStatus(Created);
                         trans.Commit();
                         return result;
-                    }
 
-                    using (SqlCommand command = new SqlCommand("insert into Games (Player1) values(@Player)"))
-                    {
-                        command.Parameters.AddWithValue("@Player", info.UserToken);
-
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            if (reader.HasRows)
-                            {
-                                result = new TokenScoreGameIDReturn();
-                                result.GameID = reader["GameID"].ToString();
-                                SetStatus(Created);
-                                trans.Commit();
-                                return result;
-                            }
-                        }
                     }
                 }
-            }
 
+                
+            }
+            
         }
     }
 }

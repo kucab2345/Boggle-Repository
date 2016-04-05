@@ -5,7 +5,6 @@ using System.IO;
 using System.Net;
 using System.Web;
 using System.ServiceModel.Web;
-using Newtonsoft.Json;
 using System.Configuration;
 
 using static System.Net.HttpStatusCode;
@@ -58,6 +57,7 @@ namespace Boggle
         /// <param name="endUser"></param>
         public void CancelGame(UserGame endUser)
         {
+
 
             foreach (KeyValuePair<string, GameStatus> games in AllGames)
             {
@@ -237,6 +237,17 @@ namespace Boggle
         /// <returns></returns>
         public TokenScoreGameIDReturn playWord(UserGame words, string GameID)
         {
+            if (words.UserToken == null || words.UserToken.Trim().Length == 0)
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            if (words.Word == null || words.Word.Trim().Length == 0)
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
             string boardState = null;
             string currentPlayerToken = null;
             string currentGameID = null;
@@ -289,17 +300,9 @@ namespace Boggle
                     }*/
                 }
             }
-            if (words.UserToken == null || words.UserToken.Trim().Length == 0 || currentPlayerToken == null)
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
 
-            if (words.Word == null || words.Word.Trim().Length == 0 || currentGameID == null)
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
+
+            
 
             if (gameState != "active")
             {
@@ -463,14 +466,13 @@ namespace Boggle
                 return null;
             }
 
+            string player1ID = null;
+            string player1Name = null;
+            TokenScoreGameIDReturn result = null;
             using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
                 using (SqlTransaction trans = conn.BeginTransaction())
                 {
-
-                    bool setplayer1;
-                    bool setplayer2;
-
                     // Here, the SqlCommand is a select query.  We are interested in whether item.UserID exists in
                     // the Users table.
                     using (SqlCommand command = new SqlCommand("select UserID from Users where UserID = @UserID", conn, trans))
@@ -492,10 +494,12 @@ namespace Boggle
                         }
                     }
 
-                    using (SqlCommand command = new SqlCommand("select Player, Player2 from Games where Player = @Player", conn, trans))
+                   
+
+                    using (SqlCommand command = new SqlCommand("select Player1 from Games where Player1 = @Player", conn, trans))
                     {
                         command.Parameters.AddWithValue("@Player", info.UserToken);
-
+                        
                         // This executes a query (i.e. a select statement).  The result is an
                         // SqlDataReader that you can use to iterate through the rows in the response.
                         using (SqlDataReader reader = command.ExecuteReader())
@@ -504,53 +508,29 @@ namespace Boggle
                             // to know whether a row was returned.
                             if (reader.HasRows)
                             {
+                                SetStatus(Forbidden);
+                                trans.Commit();
+                                return null;
                                 while (reader.Read())
                                 {
-                                    if (!DBNull.Value.Equals(reader["Player2"]))
+
+                                    if ((string)reader["Player1"] == info.UserToken)
                                     {
                                         SetStatus(Forbidden);
                                         trans.Commit();
                                         return null;
                                     }
-                                }
+                                        if (DBNull.Value.Equals(reader["Player1"]))
+                                        {
 
+                                        }
+                                            string player1 = (string)reader["Player1"];
 
-                            }
-                        }
-
-
-                    }
-
-                    using (SqlCommand command = new SqlCommand("select GameID from Games", conn, trans))
-                    {
-
-
-                        // This executes a query (i.e. a select statement).  The result is an
-                        // SqlDataReader that you can use to iterate through the rows in the response.
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            // In this we don't actually need to read any data; we only need
-                            // to know whether a row was returned.
-                            if (reader.HasRows)
-                            {
-                                while (reader.Read())
-                                {
-
-                                    if (DBNull.Value.Equals(reader["Player2"]))
-                                    {
-                                        string player1 = (string)reader["Player1"];
-
-                                        SetStatus(Created);
-                                        trans.Commit();
-                                        TokenScoreGameIDReturn result = new TokenScoreGameIDReturn();
-                                        result.GameID = reader["GameID"].ToString();
-                                        setupGame(info.TimeLimit, result.GameID);
-                                        return result;
-                                    }
-                                    else if (DBNull.Value.Equals(reader["Player1"]))
-                                    {
-                                        setplayer1 = true;
-                                    }
+                                            SetStatus(Created);
+                                            trans.Commit();
+                                            result = new TokenScoreGameIDReturn();
+                                            result.GameID = reader["GameID"].ToString();
+                                            setupGame(info.TimeLimit, result.GameID);
                                 }
                             }
                         }
@@ -569,7 +549,7 @@ namespace Boggle
                         // us the requested auto-generated ItemID.
 
                         SetStatus(Created);
-                        TokenScoreGameIDReturn result = new TokenScoreGameIDReturn();
+                        result = new TokenScoreGameIDReturn();
                         result.GameID = command.ExecuteScalar().ToString();
                         trans.Commit();
                         return result;

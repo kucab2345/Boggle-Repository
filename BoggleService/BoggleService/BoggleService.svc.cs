@@ -356,8 +356,7 @@ namespace Boggle
 
             if (legalWord == true)
             {
-                if (currentWord.Length < 3 || (AllPlayers[userToken].WordsPlayed != null
-                    && AllPlayers[userToken].WordsPlayed.Count > 0 && AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord)))
+                if (currentWord.Length < 3)
                 {
                     return 0;
                 }

@@ -394,6 +394,7 @@ namespace Boggle
                         }
                     }
                 }
+                conn.Close();
             }
             if (gameState != "active")
             {
@@ -416,8 +417,25 @@ namespace Boggle
             TokenScoreGameIDReturn var = new TokenScoreGameIDReturn();
             var.Score = WordScoreResult.ToString();
             SetStatus(OK);
-            return var;
 
+            using (SqlConnection conn = new SqlConnection(BoggleDB))
+            {
+                conn.Open();
+
+                using (SqlTransaction trans = conn.BeginTransaction())
+                {
+                    //Command to retrieve boardState
+                    using (SqlCommand command = new SqlCommand("insert into Words (Word, GameID, Player, Score) values (@Word, @GameID, @Player, @Score)", conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@Word", words.Word);
+                        command.Parameters.AddWithValue("@GameID", GameID);
+                        command.Parameters.AddWithValue("@Player", currentPlayerToken);
+                        command.Parameters.AddWithValue("@Score", WordScoreResult.ToString());
+                    }
+                    trans.Commit();
+                }
+            } 
+            return var;
         }
 
         /// <summary>

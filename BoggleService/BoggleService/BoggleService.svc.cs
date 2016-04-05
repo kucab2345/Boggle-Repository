@@ -238,6 +238,7 @@ namespace Boggle
         public TokenScoreGameIDReturn playWord(UserGame words, string GameID)
         {
             string boardState = null;
+            string currentPlayerToken = null;
             using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
                 conn.Open();

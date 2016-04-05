@@ -410,7 +410,7 @@ namespace Boggle
         /// <returns></returns>
         public TokenScoreGameIDReturn JoinGame(GameJoin info)
         {
-
+            
             if (info.UserToken == null || info.UserToken.Trim().Length == 0)
             {
                 SetStatus(Forbidden);
@@ -433,6 +433,9 @@ namespace Boggle
             {
                 using (SqlTransaction trans = conn.BeginTransaction())
                 {
+
+                    bool setplayer1;
+                    bool setplayer2;
 
                     // Here, the SqlCommand is a select query.  We are interested in whether item.UserID exists in
                     // the Users table.
@@ -469,7 +472,7 @@ namespace Boggle
                             {
                                 while (reader.Read())
                                 {
-                                    if ((string)reader["Player2"] != null)
+                                    if (!DBNull.Value.Equals(reader["Player2"]))
                                     {
                                         SetStatus(Forbidden);
                                         trans.Commit();
@@ -484,7 +487,7 @@ namespace Boggle
 
                     }
 
-                    using (SqlCommand command = new SqlCommand("select Player1 from Games", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select GameID from Games", conn, trans))
                     {
                         
 
@@ -498,8 +501,11 @@ namespace Boggle
                             {
                                 while (reader.Read())
                                 {
-                                    if ((string)reader["Player2"] == null)
+
+                                    if (DBNull.Value.Equals(reader["Player2"]))
                                     {
+                                        string player1 = (string)reader["Player1"];
+
                                         SetStatus(Created);
                                         trans.Commit();
                                         TokenScoreGameIDReturn result = new TokenScoreGameIDReturn();
@@ -507,80 +513,36 @@ namespace Boggle
                                         setupGame(info.TimeLimit, result.GameID);
                                         return result;
                                     }
+                                    else if(DBNull.Value.Equals(reader["Player1"]))
+                                    {
+                                        setplayer1 = true;
+                                    }
                                 }
-
-
                             }
                         }
-
-
                     }
+
+                    
 
                     // Here we are executing an insert command, but notice the "output inserted.ItemID" portion.  
                     // We are asking the DB to send back the auto-generated ItemID.
-                    using (SqlCommand command = new SqlCommand("insert into Games (UserID, Description, Completed) output inserted.ItemID values(@UserID, @Desc, @Completed)", conn, trans))
+                    using (SqlCommand command = new SqlCommand("insert into Games (Player) output inserted.GameID values(@Player)", conn, trans))
                     {
-                        command.Parameters.AddWithValue("@UserID", item.UserID);
-                        command.Parameters.AddWithValue("@Desc", item.Description.Trim());
-                        command.Parameters.AddWithValue("@Completed", item.Completed);
+                        command.Parameters.AddWithValue("@Player", info.UserToken);
+                        
 
                         // We execute the command with the ExecuteScalar method, which will return to
                         // us the requested auto-generated ItemID.
-                        string itemID = command.ExecuteScalar().ToString();
+                        
                         SetStatus(Created);
+                        TokenScoreGameIDReturn result = new TokenScoreGameIDReturn();
+                        result.GameID =  command.ExecuteScalar().ToString();
                         trans.Commit();
-                        return itemID;
+                        return result;
                     }
                 }
             }
-            foreach (KeyValuePair<string, GameStatus> game in AllGames)
-            {
-                if (game.Value.GameState == "pending")
-                {
-                    if (game.Value.Player1.UserToken == info.UserToken)
-                    {
-                        SetStatus(Conflict);
-                        return null;
-                    }
-                }
-            }
-            TokenScoreGameIDReturn var = new TokenScoreGameIDReturn();
-            foreach (KeyValuePair<string, GameStatus> game in AllGames)
-            {
-                if (game.Value.GameState == "pending")
-                {
-                    if (game.Value.Player1 != null)
-                    {
-                        game.Value.Player2 = AllPlayers[info.UserToken];
-                        SetStatus(Created);
-                        setupGame(info.TimeLimit, game.Key);
-
-                        var.GameID = game.Key;
-
-                        return var;
-                    }
-                    else
-                    {
-                        game.Value.Player1 = AllPlayers[info.UserToken];
-                        SetStatus(Accepted);
-                        var.GameID = game.Key;
-                        return var;
-                    }
-                }
-            }
-
-
-            gameID += 1;
-            SetStatus(Accepted);
-            AllGames.Add(gameID.ToString(), new GameStatus());
-            SetStatus(Accepted);
-            AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
-            AllGames[gameID.ToString()].GameState = "pending";
-            AllGames[gameID.ToString()].TimeLimit = info.TimeLimit;
-            var.GameID = gameID.ToString();
-
-            return var;
-
+            
         }
     }
 }

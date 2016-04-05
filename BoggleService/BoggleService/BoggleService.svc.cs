@@ -56,8 +56,6 @@ namespace Boggle
         /// <param name="endUser"></param>
         public void CancelGame(UserGame endUser)
         {
-
-
             foreach (KeyValuePair<string, GameStatus> games in AllGames)
             {
                 if (games.Value.GameState == "pending" && games.Value.Player1.UserToken == endUser.UserToken)
@@ -139,14 +137,30 @@ namespace Boggle
         /// <returns></returns>
         public GameStatus GetFullGameStatus(string GameID)
         {
+            using (SqlConnection conn = new SqlConnection(BoggleDB))
+            {
+                conn.Open();
+                using (SqlTransaction trans = conn.BeginTransaction())
+                {
+                    //Command to retrieve boardState
+                    using (SqlCommand command = new SqlCommand("select * from Games where GameID = @GameID", conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@GameID", GameID);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if(!reader.HasRows())
+                            {
+                                SetStatus(Forbidden);
+                                return null;
+                            }
+                            SetStatus(OK);
+
+                        }
+                    }
+                }
+
             lock (sync)
             {
-                if (!AllGames.ContainsKey(GameID))
-                {
-                    SetStatus(Forbidden);
-                    return null;
-                }
-                SetStatus(OK);
                 if (AllGames[GameID].GameState != "pending")
                 {
                     double result = (DateTime.Now - AllGames[GameID].StartGameTime).TotalSeconds;

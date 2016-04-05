@@ -252,6 +252,8 @@ namespace Boggle
             string currentGameID = null;
             string gameState = null;
             List<string> playedWords = new List<string>();
+            int WordScoreResult;
+
             using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
                 conn.Open();
@@ -296,15 +298,20 @@ namespace Boggle
                             currentGameID = (string)reader["GameID"];
                         }
                     }
-                    using (SqlCommand command = new SqlCommand("select Word from Words where GameID = @GameID and (Player1 = @Token or Player2 = @Token)", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select Word from Words where Word = @Word and GameID = @GameID and (Player1 = @Token or Player2 = @Token)", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", GameID);
                         command.Parameters.AddWithValue("@Token", currentPlayerToken);
+                        command.Parameters.AddWithValue("@Word", words.Word);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             if(!DBNull.Value.Equals(reader["Word"]))
                             {
-                                playedWords.Add((string)reader["Word"]);//////THIS CANNOT BE RIGHT
+                                WordScoreResult = ScoreWord(boardState, words.Word, words.UserToken, GameID);
+                                TokenScoreGameIDReturn zeroScore = new TokenScoreGameIDReturn();
+                                zeroScore.Score = WordScoreResult.ToString();
+                                SetStatus(OK);
+                                return zeroScore;
                             }
                         }
                     }
@@ -316,18 +323,11 @@ namespace Boggle
                 return null;
             }
             UserInfo currentUserInfo = new UserInfo() { UserToken = currentPlayerToken };
-            /*
-            if (AllPlayers[words.UserToken].personalList == null)
-            {
-                AllPlayers[words.UserToken].personalList = new List<WordScore>();
-            }
-            */
-
 
             int userScore;
             int.TryParse(currentUserInfo.Score, out userScore);
 
-            int WordScoreResult = ScoreWord(boardState, words.Word, words.UserToken, GameID);
+            WordScoreResult = ScoreWord(boardState, words.Word, words.UserToken, GameID);
 
             WordScore totalResult = new WordScore();
             totalResult.Word = words.Word;
@@ -356,8 +356,7 @@ namespace Boggle
 
             if (legalWord == true)
             {
-                if (currentWord.Length < 3 || (AllPlayers[userToken].WordsPlayed != null
-                    && AllPlayers[userToken].WordsPlayed.Count > 0 && AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord)))
+                if (currentWord.Length < 3)
                 {
                     return 0;
                 }

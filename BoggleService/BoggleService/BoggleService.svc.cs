@@ -175,11 +175,8 @@ namespace Boggle
                             {
                                 game.GameState = "pending";
                             }
-                            //Get board
                             game.Board = (string)reader["Board"];
-                            //Get TimeLimit
                             game.TimeLimit = (string)reader["TimeLimit"];
-                            //Get StartTime
                             game.StartGameTime = (DateTime)reader["StartTime"];
 
                             double result = (DateTime.Now - game.StartGameTime).TotalSeconds;
@@ -188,7 +185,6 @@ namespace Boggle
                             int TimeRemaining;
                             int.TryParse(game.TimeLeft, out TimeRemaining);
 
-                            //Get TimeLeft
                             if (game.GameState == "active" && (TimeRemaining - times > 0))
                             {
                                 int.TryParse(game.TimeLimit, out TimeRemaining);
@@ -221,24 +217,6 @@ namespace Boggle
                                 }
                                 return game;
                             }
-                        }
-                    }
-                    //Get Player1 Nickname
-                    using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID)", conn, trans))
-                    {
-                        command.Parameters.AddWithValue("@UserID", game.Player1);
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            game.Player1.Nickname = (string)reader["Nickname"];
-                        }
-                    }
-                    //Get Player2 Nickname
-                    using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID)", conn, trans))
-                    {
-                        command.Parameters.AddWithValue("@UserID", game.Player2);
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            game.Player2.Nickname = (string)reader["Nickname"];
                         }
                     }
                 }

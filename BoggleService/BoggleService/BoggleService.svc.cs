@@ -502,6 +502,38 @@ namespace Boggle
 
                     }
 
+                    using (SqlCommand command = new SqlCommand("select Player1 from Games", conn, trans))
+                    {
+                        
+
+                        // This executes a query (i.e. a select statement).  The result is an
+                        // SqlDataReader that you can use to iterate through the rows in the response.
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            // In this we don't actually need to read any data; we only need
+                            // to know whether a row was returned.
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    if ((string)reader["Player2"] == null)
+                                    {
+                                        SetStatus(Created);
+                                        trans.Commit();
+                                        TokenScoreGameIDReturn result = new TokenScoreGameIDReturn();
+                                        result.GameID = reader["GameID"].ToString();
+                                        setupGame(info.TimeLimit, result.GameID);
+                                        return result;
+                                    }
+                                }
+
+
+                            }
+                        }
+
+
+                    }
+
                     // Here we are executing an insert command, but notice the "output inserted.ItemID" portion.  
                     // We are asking the DB to send back the auto-generated ItemID.
                     using (SqlCommand command = new SqlCommand("insert into Games (UserID, Description, Completed) output inserted.ItemID values(@UserID, @Desc, @Completed)", conn, trans))

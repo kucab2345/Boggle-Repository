@@ -466,8 +466,6 @@ namespace Boggle
                 return null;
             }
 
-            string player1ID = null;
-            string player1Name = null;
             TokenScoreGameIDReturn result = null;
             using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
@@ -496,7 +494,7 @@ namespace Boggle
 
                    
 
-                    using (SqlCommand command = new SqlCommand("select Player1 from Games where Player1 = @Player", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select Player1 from Games where Player1 = @Player AND Player2 IS NULL" , conn, trans))
                     {
                         command.Parameters.AddWithValue("@Player", info.UserToken);
                         
@@ -511,27 +509,7 @@ namespace Boggle
                                 SetStatus(Forbidden);
                                 trans.Commit();
                                 return null;
-                                while (reader.Read())
-                                {
-
-                                    if ((string)reader["Player1"] == info.UserToken)
-                                    {
-                                        SetStatus(Forbidden);
-                                        trans.Commit();
-                                        return null;
-                                    }
-                                        if (DBNull.Value.Equals(reader["Player1"]))
-                                        {
-
-                                        }
-                                            string player1 = (string)reader["Player1"];
-
-                                            SetStatus(Created);
-                                            trans.Commit();
-                                            result = new TokenScoreGameIDReturn();
-                                            result.GameID = reader["GameID"].ToString();
-                                            setupGame(info.TimeLimit, result.GameID);
-                                }
+                                
                             }
                         }
                     }
@@ -540,19 +518,49 @@ namespace Boggle
 
                     // Here we are executing an insert command, but notice the "output inserted.ItemID" portion.  
                     // We are asking the DB to send back the auto-generated ItemID.
-                    using (SqlCommand command = new SqlCommand("insert into Games (Player) output inserted.GameID values(@Player)", conn, trans))
+                    using (SqlCommand command = new SqlCommand("Update Top (1) Games Set Player2 = @Player, TimeLimit = @TimeLimit, StartTime = @Time where Player2 is Null and Player1 is not null", conn, trans))
                     {
+                        
                         command.Parameters.AddWithValue("@Player", info.UserToken);
+                        command.Parameters.AddWithValue("@Time", DateTime.Now);
 
-
+                        
+                        using(SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.HasRows)
+                            {
+                                result = new TokenScoreGameIDReturn();
+                                result.GameID = reader["GameID"].ToString();
+                                SetStatus(Created);
+                                trans.Commit();
+                                return result;
+                            }
+                        }
                         // We execute the command with the ExecuteScalar method, which will return to
                         // us the requested auto-generated ItemID.
-
+                    
                         SetStatus(Created);
                         result = new TokenScoreGameIDReturn();
                         result.GameID = command.ExecuteScalar().ToString();
                         trans.Commit();
                         return result;
+                    }
+
+                    using (SqlCommand command = new SqlCommand("insert into Games (Player1) values(@Player)"))
+                    {
+                        command.Parameters.AddWithValue("@Player", info.UserToken);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.HasRows)
+                            {
+                                result = new TokenScoreGameIDReturn();
+                                result.GameID = reader["GameID"].ToString();
+                                SetStatus(Created);
+                                trans.Commit();
+                                return result;
+                            }
+                        }
                     }
                 }
             }

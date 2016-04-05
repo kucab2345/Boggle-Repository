@@ -298,6 +298,7 @@ namespace Boggle
                             currentGameID = (string)reader["GameID"];
                         }
                     }
+                    //If word being played equals current word, 
                     using (SqlCommand command = new SqlCommand("select Word from Words where Word = @Word and GameID = @GameID and (Player1 = @Token or Player2 = @Token)", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", GameID);
@@ -309,7 +310,7 @@ namespace Boggle
                             {
                                 WordScoreResult = ScoreWord(boardState, words.Word, words.UserToken, GameID);
                                 TokenScoreGameIDReturn zeroScore = new TokenScoreGameIDReturn();
-                                zeroScore.Score = WordScoreResult.ToString();
+                                zeroScore.Score = 0.ToString();
                                 SetStatus(OK);
                                 return zeroScore;
                             }

@@ -240,11 +240,14 @@ namespace Boggle
             string boardState = null;
             string currentPlayerToken = null;
             string currentGameID = null;
+            string gameState = null;
             using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
                 conn.Open();
+                
                 using (SqlTransaction trans = conn.BeginTransaction())
                 {
+                    //Command to retrieve boardState
                     using (SqlCommand command = new SqlCommand("select board from Games where GameID = @GameID", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", GameID);
@@ -254,6 +257,7 @@ namespace Boggle
                             boardState = (string)reader["Board"];
                         }
                     }
+                    //Command to retrieve current player's token
                     using (SqlCommand command = new SqlCommand("select UserID from Users where UserID = @UserID", conn, trans))
                     {
                         command.Parameters.AddWithValue("@UserID", words.UserToken);
@@ -263,6 +267,7 @@ namespace Boggle
                             currentPlayerToken = (string)reader["UserID"];
                         }
                     }
+                    //command to retrieve current GameID
                     using (SqlCommand command = new SqlCommand("select GameID from Games where GameID = @GameID", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", GameID);
@@ -270,6 +275,40 @@ namespace Boggle
                         {
                             reader.Read();
                             currentGameID = (string)reader["GameID"];
+                        }
+                    }
+                    //Command that checks if Player2 is null. If null, gameState = pending. Else, gameState = "active"
+                    using (SqlCommand command = new SqlCommand("select Player2 from Games where GameID = @GameID", conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@GameID", GameID);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                            if((string)reader["GameID"] == null)
+                            {
+                                gameState = "pending";
+                            }
+                            else
+                            {
+                                gameState = "active";
+                            }
+                        }
+                    }
+                    //Command that checks if Time
+                    using (SqlCommand command = new SqlCommand("select  from Games where GameID = @GameID", conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@GameID", GameID);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                            if ((string)reader["GameID"] == null)
+                            {
+                                gameState = "pending";
+                            }
+                            else
+                            {
+                                gameState = "active";
+                            }
                         }
                     }
                 }
@@ -286,7 +325,7 @@ namespace Boggle
                     return null;
                 }
 
-                if (AllGames[GameID].GameState != "active")
+                if (gameState != "active")
                 {
                     SetStatus(Conflict);
                     return null;

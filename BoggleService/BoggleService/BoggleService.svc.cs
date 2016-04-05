@@ -143,86 +143,136 @@ namespace Boggle
                 conn.Open();
                 using (SqlTransaction trans = conn.BeginTransaction())
                 {
-                    //Command to retrieve boardState
                     using (SqlCommand command = new SqlCommand("select * from Games where GameID = @GameID", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", GameID);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            if(!reader.HasRows)
+                            if (!reader.HasRows)
                             {
                                 SetStatus(Forbidden);
                                 return null;
                             }
                             SetStatus(OK);
                             reader.Read();
-                            if(DBNull.Value.Equals(reader["Board"]))
+                            game.GameState = "active";
+                            if (DBNull.Value.Equals(reader["Board"]))
                             {
                                 SetStatus(Forbidden);
                                 return null;
                             }
-                            if(DBNull.Value.Equals(reader["Player1"]) || DBNull.Value.Equals(reader["Player2"]))
+                            if(DBNull.Value.Equals(reader["TimeLimit"]))
                             {
                                 SetStatus(Forbidden);
                                 return null;
+                            }
+                            if (DBNull.Value.Equals(reader["StartTime"]))
+                            {
+                                SetStatus(Forbidden);
+                                return null;
+                            }
+                            if (DBNull.Value.Equals(reader["Player2"]))
+                            {
+                                game.GameState = "pending";
                             }
                             game.Board = (string)reader["Board"];
+                            game.TimeLimit = (string)reader["TimeLimit"];
+                            game.StartGameTime = (DateTime)reader["StartTime"];
 
+                            double result = (DateTime.Now - game.StartGameTime).TotalSeconds;
+                            int times = Convert.ToInt32(result);
+
+                            int TimeRemaining;
+                            int.TryParse(game.TimeLeft, out TimeRemaining);
+
+                            if (game.GameState == "active" && (TimeRemaining - times > 0))
+                            {
+                                int.TryParse(game.TimeLimit, out TimeRemaining);
+                                game.TimeLeft = (TimeRemaining - times).ToString();
+                            }
+
+                            else
+                            {
+                                game.TimeLeft = "0";
+                            }
+
+                            int.TryParse(game.TimeLeft, out times);
+
+                            if (times == 0)
+                            {
+                                game.GameState = "completed";
+                            }
+                            if (game.GameState == "completed")
+                            {
+                                game.Player1.WordsPlayed = game.Player1.personalList;
+                                game.Player2.WordsPlayed = game.Player2.personalList;
+                                if (game.Player1.WordsPlayed == null)
+                                {
+                                    game.Player1.WordsPlayed = new List<WordScore>();
+                                }
+
+                                if (game.Player2.WordsPlayed == null)
+                                {
+                                    game.Player2.WordsPlayed = new List<WordScore>();
+                                }
+                                return game;
+                            }
                         }
                     }
                 }
-
-            lock (sync)
-            {
-                if (AllGames[GameID].GameState != "pending")
+                return game;
+                /*
+                lock (sync)
                 {
-                    double result = (DateTime.Now - AllGames[GameID].StartGameTime).TotalSeconds;
-                    int times = Convert.ToInt32(result);
-
-                    int TimeRemaining;
-                    int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining);
-
-                    if (AllGames[GameID].GameState == "active" && (TimeRemaining - times > 0))
+                    if (AllGames[GameID].GameState != "pending")
                     {
-                        int.TryParse(AllGames[GameID].TimeLimit, out TimeRemaining);
-                        AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
+                        double result = (DateTime.Now - AllGames[GameID].StartGameTime).TotalSeconds;
+                        int times = Convert.ToInt32(result);
 
-                    }
+                        int TimeRemaining;
+                        int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining);
 
-                    else
-                    {
-                        AllGames[GameID].TimeLeft = "0";
-                    }
-
-                    int.TryParse(AllGames[GameID].TimeLeft, out times);
-
-                    if (times == 0)
-                    {
-                        AllGames[GameID].GameState = "completed";
-
-                    }
-
-                    if (AllGames[GameID].GameState == "completed")
-                    {
-                        AllGames[GameID].Player1.WordsPlayed = AllGames[GameID].Player1.personalList;
-                        AllGames[GameID].Player2.WordsPlayed = AllGames[GameID].Player2.personalList;
-                        if (AllGames[GameID].Player1.WordsPlayed == null)
+                        if (AllGames[GameID].GameState == "active" && (TimeRemaining - times > 0))
                         {
-                            AllGames[GameID].Player1.WordsPlayed = new List<WordScore>();
+                            int.TryParse(AllGames[GameID].TimeLimit, out TimeRemaining);
+                            AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
+
                         }
 
-                        if (AllGames[GameID].Player2.WordsPlayed == null)
+                        else
                         {
-                            AllGames[GameID].Player2.WordsPlayed = new List<WordScore>();
+                            AllGames[GameID].TimeLeft = "0";
                         }
-                        return AllGames[GameID];
-                    }
-                }
 
-                return AllGames[GameID];
+                        int.TryParse(AllGames[GameID].TimeLeft, out times);
+
+                        if (times == 0)
+                        {
+                            AllGames[GameID].GameState = "completed";
+
+                        }
+
+                        if (AllGames[GameID].GameState == "completed")
+                        {
+                            AllGames[GameID].Player1.WordsPlayed = AllGames[GameID].Player1.personalList;
+                            AllGames[GameID].Player2.WordsPlayed = AllGames[GameID].Player2.personalList;
+                            if (AllGames[GameID].Player1.WordsPlayed == null)
+                            {
+                                AllGames[GameID].Player1.WordsPlayed = new List<WordScore>();
+                            }
+
+                            if (AllGames[GameID].Player2.WordsPlayed == null)
+                            {
+                                AllGames[GameID].Player2.WordsPlayed = new List<WordScore>();
+                            }
+                            return AllGames[GameID];
+                        }
+                    }
+
+                    return AllGames[GameID];
+                }*/
             }
         }
-
 
 
         /// <summary>

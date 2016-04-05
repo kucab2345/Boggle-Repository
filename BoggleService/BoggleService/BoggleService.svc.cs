@@ -20,7 +20,7 @@ namespace Boggle
         /// <summary>
         /// object used to sync the methods, ensuring that all happen at the right rate.
         /// </summary>
-       
+
         private static HashSet<string> dictionaryContents = new HashSet<string>(File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\dictionary.txt"));
 
         private static string BoggleDB;
@@ -58,24 +58,24 @@ namespace Boggle
         /// <param name="endUser"></param>
         public void CancelGame(UserGame endUser)
         {
-                
-                foreach (KeyValuePair<string, GameStatus> games in AllGames)
+
+            foreach (KeyValuePair<string, GameStatus> games in AllGames)
+            {
+                if (games.Value.GameState == "pending" && games.Value.Player1.UserToken == endUser.UserToken)
                 {
-                    if (games.Value.GameState == "pending" && games.Value.Player1.UserToken == endUser.UserToken)
-                    {
-                        cancelGameID = games.Key;
-                    }
+                    cancelGameID = games.Key;
                 }
-                if (cancelGameID != null)
-                {
-                    SetStatus(OK);
-                    AllGames[cancelGameID].Player1 = null;
-                }
-                else
-                {
-                    SetStatus(Forbidden);
-                }
-            
+            }
+            if (cancelGameID != null)
+            {
+                SetStatus(OK);
+                AllGames[cancelGameID].Player1 = null;
+            }
+            else
+            {
+                SetStatus(Forbidden);
+            }
+
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Boggle
                 SetStatus(OK);
                 if (AllGames[GameID].GameState != "pending")
                 {
-                    
+
                     double result = (DateTime.Now - AllGames[GameID].StartGameTime).TotalSeconds;
                     int times = Convert.ToInt32(result);
 
@@ -204,77 +204,77 @@ namespace Boggle
         /// <returns></returns>
         public TokenScoreGameIDReturn JoinGame(GameJoin info)
         {
-            
-                if (info.UserToken == null || info.UserToken.Trim().Length == 0)
-                {
-                    SetStatus(Forbidden);
-                    return null;
-                }
-                int test;
-                if (!int.TryParse(info.TimeLimit, out test))
-                {
-                    SetStatus(Forbidden);
-                    return null;
-                }
 
-                if (test < 5 || test > 120)
-                {
-                    SetStatus(Forbidden);
-                    return null;
-                }
+            if (info.UserToken == null || info.UserToken.Trim().Length == 0)
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+            int test;
+            if (!int.TryParse(info.TimeLimit, out test))
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            if (test < 5 || test > 120)
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
 
             using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
 
             }
-                foreach (KeyValuePair<string, GameStatus> game in AllGames)
+            foreach (KeyValuePair<string, GameStatus> game in AllGames)
+            {
+                if (game.Value.GameState == "pending")
                 {
-                    if (game.Value.GameState == "pending")
+                    if (game.Value.Player1.UserToken == info.UserToken)
                     {
-                        if (game.Value.Player1.UserToken == info.UserToken)
-                        {
-                            SetStatus(Conflict);
-                            return null;
-                        }
+                        SetStatus(Conflict);
+                        return null;
                     }
                 }
-                TokenScoreGameIDReturn var = new TokenScoreGameIDReturn();
-                foreach (KeyValuePair<string, GameStatus> game in AllGames)
+            }
+            TokenScoreGameIDReturn var = new TokenScoreGameIDReturn();
+            foreach (KeyValuePair<string, GameStatus> game in AllGames)
+            {
+                if (game.Value.GameState == "pending")
                 {
-                    if (game.Value.GameState == "pending")
+                    if (game.Value.Player1 != null)
                     {
-                        if (game.Value.Player1 != null)
-                        {
-                            game.Value.Player2 = AllPlayers[info.UserToken];
-                            SetStatus(Created);
-                            setupGame(info.TimeLimit, game.Key);
+                        game.Value.Player2 = AllPlayers[info.UserToken];
+                        SetStatus(Created);
+                        setupGame(info.TimeLimit, game.Key);
 
-                            var.GameID = game.Key;
+                        var.GameID = game.Key;
 
-                            return var;
-                        }
-                        else
-                        {
-                            game.Value.Player1 = AllPlayers[info.UserToken];
-                            SetStatus(Accepted);
-                            var.GameID = game.Key;
-                            return var;
-                        }
+                        return var;
+                    }
+                    else
+                    {
+                        game.Value.Player1 = AllPlayers[info.UserToken];
+                        SetStatus(Accepted);
+                        var.GameID = game.Key;
+                        return var;
                     }
                 }
+            }
 
-                
-                gameID += 1;
-                SetStatus(Accepted);
-                AllGames.Add(gameID.ToString(), new GameStatus());
-                SetStatus(Accepted);
-                AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
-                AllGames[gameID.ToString()].GameState = "pending";
-                AllGames[gameID.ToString()].TimeLimit = info.TimeLimit;
-                var.GameID = gameID.ToString();
 
-                return var;
-            
+            gameID += 1;
+            SetStatus(Accepted);
+            AllGames.Add(gameID.ToString(), new GameStatus());
+            SetStatus(Accepted);
+            AllGames[gameID.ToString()].Player1 = AllPlayers[info.UserToken];
+            AllGames[gameID.ToString()].GameState = "pending";
+            AllGames[gameID.ToString()].TimeLimit = info.TimeLimit;
+            var.GameID = gameID.ToString();
+
+            return var;
+
         }
 
         /// <summary>
@@ -289,16 +289,16 @@ namespace Boggle
             int time2;
             int.TryParse(AllGames[gameID].TimeLimit, out time1);
             int.TryParse(timeLimit, out time2);
-            
-            if(time1 < time2)
+
+            if (time1 < time2)
             {
-                time2 = ((time2 - time1)/2);
+                time2 = ((time2 - time1) / 2);
             }
             else
             {
                 time1 = ((time1 - time2) / 2);
             }
-            
+
             AllGames[gameID].TimeLimit = (time1 + time2).ToString();
             AllGames[gameID].TimeLeft = AllGames[gameID].TimeLimit;
             AllGames[gameID].GameState = "active";
@@ -315,46 +315,63 @@ namespace Boggle
         /// <returns></returns>
         public TokenScoreGameIDReturn playWord(UserGame words, string GameID)
         {
-            lock (sync)
+            string boardState = null;
+            using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
-                if (words.UserToken == null || words.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(words.UserToken))
+                conn.Open();
+                using (SqlTransaction trans = conn.BeginTransaction())
                 {
-                    SetStatus(Forbidden);
-                    return null;
+                    using (SqlCommand command = new SqlCommand("select board from Games where GameID = @GameID", conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@GameID", GameID);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                            boardState = (string)reader["Board"];
+                        }
+                    }
                 }
-
-                if (words.Word == null || words.Word.Trim().Length == 0 || !AllGames.ContainsKey(GameID))
-                {
-                    SetStatus(Forbidden);
-                    return null;
-                }
-
-                if (AllGames[GameID].GameState != "active")
-                {
-                    SetStatus(Conflict);
-                    return null;
-                }
-
-
-                if (AllPlayers[words.UserToken].personalList == null)
-                {
-                    AllPlayers[words.UserToken].personalList = new List<WordScore>();
-                }
-            
-                int userScore;
-                int.TryParse(AllPlayers[words.UserToken].Score, out userScore);
-                int WordScoreResult = ScoreWord(words.Word, words.UserToken, GameID);
-                WordScore totalResult = new WordScore();
-                totalResult.Word = words.Word;
-                totalResult.Score = WordScoreResult;
-                AllPlayers[words.UserToken].personalList.Add(totalResult);
-                AllPlayers[words.UserToken].Score = (userScore + WordScoreResult).ToString();
-                TokenScoreGameIDReturn var = new TokenScoreGameIDReturn();
-                var.Score = WordScoreResult.ToString();
-                SetStatus(OK);
-                return var;
-
             }
+            if (words.UserToken == null || words.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(words.UserToken))
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            if (words.Word == null || words.Word.Trim().Length == 0 || !AllGames.ContainsKey(GameID))
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            if (AllGames[GameID].GameState != "active")
+            {
+                SetStatus(Conflict);
+                return null;
+            }
+
+
+            if (AllPlayers[words.UserToken].personalList == null)
+            {
+                AllPlayers[words.UserToken].personalList = new List<WordScore>();
+            }
+
+            int userScore;
+            int.TryParse(AllPlayers[words.UserToken].Score, out userScore);
+
+            int WordScoreResult = ScoreWord(boardState, words.Word, words.UserToken, GameID);
+
+            WordScore totalResult = new WordScore();
+            totalResult.Word = words.Word;
+            totalResult.Score = WordScoreResult;
+            AllPlayers[words.UserToken].personalList.Add(totalResult);
+            AllPlayers[words.UserToken].Score = (userScore + WordScoreResult).ToString();
+            TokenScoreGameIDReturn var = new TokenScoreGameIDReturn();
+            var.Score = WordScoreResult.ToString();
+            SetStatus(OK);
+            return var;
+
         }
 
         /// <summary>
@@ -364,14 +381,14 @@ namespace Boggle
         /// <param name="userToken">userToken to check whether the user played the word before</param>
         /// <param name="GameID">ID of the game to be checked</param>
         /// <returns></returns>
-        private int ScoreWord(string word, string userToken, string GameID)
+        private int ScoreWord(string boardState, string word, string userToken, string GameID)
         {
-            bool legalWord = searchDictionary(word.Trim().ToUpper(),GameID);
+            bool legalWord = searchDictionary(boardState, word.Trim().ToUpper());
             string currentWord = word.Trim();
 
             if (legalWord == true)
             {
-                if (currentWord.Length < 3 || (AllPlayers[userToken].WordsPlayed != null 
+                if (currentWord.Length < 3 || (AllPlayers[userToken].WordsPlayed != null
                     && AllPlayers[userToken].WordsPlayed.Count > 0 && AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord)))
                 {
                     return 0;
@@ -409,9 +426,10 @@ namespace Boggle
         /// <param name="key"></param>
         /// <param name="GameID"></param>
         /// <returns></returns>
-        private bool searchDictionary(string key, string GameID)
+        private bool searchDictionary(string boardState, string key)
         {
-            if (dictionaryContents.Contains(key) && AllGames[GameID].RelevantBoard.CanBeFormed(key))
+            BoggleBoard curBoard = new BoggleBoard(boardState);
+            if (dictionaryContents.Contains(key) && curBoard.CanBeFormed(key))
             {
                 return true;
             }
@@ -428,36 +446,36 @@ namespace Boggle
         /// <returns></returns>
         public TokenScoreGameIDReturn RegisterUser(UserInfo user)
         {
-                if (user.Nickname == null || user.Nickname.Trim().Length == 0)
+            if (user.Nickname == null || user.Nickname.Trim().Length == 0)
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+            else
+            {
+                using (SqlConnection conn = new SqlConnection(BoggleDB))
                 {
-                    SetStatus(Forbidden);
-                    return null;
-                }
-                else
-                {
-                    using(SqlConnection conn = new SqlConnection(BoggleDB))
+                    conn.Open();
+                    using (SqlTransaction trans = conn.BeginTransaction())
                     {
-                        conn.Open();
-                        using(SqlTransaction trans = conn.BeginTransaction())
+                        using (SqlCommand command = new SqlCommand("insert into Users (UserID, Nickname) values(@UserID, @Nickname)", conn, trans))
                         {
-                            using (SqlCommand command = new SqlCommand("insert into Users (UserID, Nickname) values(@UserID, @Nickname)", conn, trans))
-                            {
-                                string userID = Guid.NewGuid().ToString();
+                            string userID = Guid.NewGuid().ToString();
 
-                                command.Parameters.AddWithValue("@UserID", userID);
-                                command.Parameters.AddWithValue("@Nickname", user.Nickname.Trim());
+                            command.Parameters.AddWithValue("@UserID", userID);
+                            command.Parameters.AddWithValue("@Nickname", user.Nickname.Trim());
 
-                                command.ExecuteNonQuery();
-                                SetStatus(Created);
+                            command.ExecuteNonQuery();
+                            SetStatus(Created);
 
-                                trans.Commit();
-                                TokenScoreGameIDReturn result = new TokenScoreGameIDReturn();
-                                result.UserToken = userID;
-                                return result;
-                            }
+                            trans.Commit();
+                            TokenScoreGameIDReturn result = new TokenScoreGameIDReturn();
+                            result.UserToken = userID;
+                            return result;
                         }
                     }
-                
+                }
+
             }
         }
     }

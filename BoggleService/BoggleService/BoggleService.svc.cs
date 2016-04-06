@@ -282,14 +282,19 @@ namespace Boggle
 
                             game.Player1.UserToken = reader["Player1"].ToString();
                             game.Player2.UserToken = reader["Player2"].ToString();
-                        }
-                    } 
+
+                           
+                                }
+                                }
+
+
                     //Get Player1 Nickname
                     using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
                     {
                         command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
+                                    reader.Read();
                             game.Player1.Nickname = reader["Nickname"].ToString();
                         }
                     }
@@ -299,11 +304,12 @@ namespace Boggle
                         command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
+                                    reader.Read();
                             game.Player2.Nickname = reader["Nickname"].ToString();
                         }
                     }
                     //Get Player1 Word List
-                    using (SqlCommand command = new SqlCommand("select Word, Score from Words where UserID = @UserID and GameID = @GameID", conn, trans))
+                            using (SqlCommand command = new SqlCommand("select Word, Score from Words where Player = @UserID and GameID = @GameID", conn, trans))
                     {
                         command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
                         command.Parameters.AddWithValue("@GameID", GameID);
@@ -316,7 +322,7 @@ namespace Boggle
                         }
                     }
                     //Get Player2 Word List
-                    using (SqlCommand command = new SqlCommand("select Word, Score from Words where UserID = @UserID and GameID = @GameID", conn, trans))
+                            using (SqlCommand command = new SqlCommand("select Word, Score from Words where Player = @UserID and GameID = @GameID", conn, trans))
                     {
                         command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
                         command.Parameters.AddWithValue("@GameID", GameID);
@@ -332,6 +338,15 @@ namespace Boggle
                 return game;
             }
         }
+
+
+
+        /// <summary>
+        /// Private method that fully creates a game, called after two players enter a game.
+        /// </summary>
+        /// <param name="timeLimit">TimeLimit of second user</param>
+        /// <param name="gameID">ID of game to be created</param>
+   
 
         /// <summary>
         /// Takes the word submitted by the client and scores it for the client, returning it to them.

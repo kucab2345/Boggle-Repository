@@ -96,7 +96,7 @@ namespace Boggle
                        
 
         }
-
+        
         /// <summary>
         /// Return the brief status of the game
         /// </summary>
@@ -104,6 +104,8 @@ namespace Boggle
         /// <returns></returns>
         public GameStatus GetBriefGamestatus(string GameID)
         {
+            return null;
+            /*
             lock (sync)
             {
                 if (!AllGames.ContainsKey(GameID))
@@ -148,10 +150,11 @@ namespace Boggle
                     var.Player2 = AllGames[GameID].Player2;
                     return var;
                 }
+                
                 return AllGames[GameID];
-            }
+             
+            }*/
         }
-
         /// <summary>
         /// Gets the full game status from the server
         /// </summary>
@@ -261,6 +264,32 @@ namespace Boggle
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             game.Player2.Nickname = (string)reader["Nickname"];
+                        }
+                    }
+                    //Get Player1 Word List
+                    using (SqlCommand command = new SqlCommand("select Word, Score from Words where UserID = @UserID and GameID = @GameID)", conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@UserID", game.Player1);
+                        command.Parameters.AddWithValue("@GameID", GameID);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                game.Player1.personalList.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
+                            }
+                        }
+                    }
+                    //Get Player2 Word List
+                    using (SqlCommand command = new SqlCommand("select Word, Score from Words where UserID = @UserID and GameID = @GameID)", conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@UserID", game.Player2);
+                        command.Parameters.AddWithValue("@GameID", GameID);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                game.Player2.personalList.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
+                            }
                         }
                     }
                 }

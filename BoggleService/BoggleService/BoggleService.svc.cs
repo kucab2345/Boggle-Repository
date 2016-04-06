@@ -231,6 +231,7 @@ namespace Boggle
                             {
                                 game.GameState = "completed";
                             }
+                            /*
                             if (game.GameState == "completed")
                             {
                                 game.Player1.WordsPlayed = game.Player1.personalList;
@@ -244,8 +245,8 @@ namespace Boggle
                                 {
                                     game.Player2.WordsPlayed = new List<WordScore>();
                                 }
-                                return game;
-                            }
+                                //return game;
+                            }*/
                         }
                     }
                     //Get Player1 Nickname
@@ -275,7 +276,7 @@ namespace Boggle
                         {
                             while (reader.Read())
                             {
-                                game.Player1.personalList.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
+                                game.Player1.WordsPlayed.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
                             }
                         }
                     }
@@ -288,7 +289,7 @@ namespace Boggle
                         {
                             while (reader.Read())
                             {
-                                game.Player2.personalList.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
+                                game.Player2.WordsPlayed.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
                             }
                         }
                     }

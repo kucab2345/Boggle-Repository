@@ -26,10 +26,7 @@ namespace Boggle
         static BoggleService()
         {
             BoggleDB = ConfigurationManager.ConnectionStrings["BoggleDB"].ConnectionString;
-
         }
-
-
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when
         /// an http response is sent.
@@ -39,7 +36,6 @@ namespace Boggle
         {
             WebOperationContext.Current.OutgoingResponse.StatusCode = status;
         }
-
         /// <summary>
         /// Returns a Stream version of index.html.
         /// </summary>
@@ -50,7 +46,6 @@ namespace Boggle
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
             return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
         }
-
         /// <summary>
         /// If the requesting player is in a pending game, removes them from the pending game.
         /// </summary>
@@ -60,7 +55,6 @@ namespace Boggle
             if (endUser == null || endUser.UserToken == null || endUser.UserToken.Trim().Length == 0)
             {
                 SetStatus(Forbidden);
-
             }
             else
             {
@@ -80,8 +74,6 @@ namespace Boggle
                             if(id <= 0)
                             {
                                 SetStatus(Forbidden);
-                            
-
                             }
                             else
                             {
@@ -89,15 +81,10 @@ namespace Boggle
                             }
                             trans.Commit();
                         }
-
-
                     }
                 }
             }
-                       
-
         }
-
         /// <summary>
         /// Return the brief status of the game
         /// </summary>
@@ -162,18 +149,9 @@ namespace Boggle
                                     game.TimeLeft = "0";
                                     game.GameState = "completed";
                                 }
-
-
                             }
-
-                            
-
-
-
-
                         }
                     }
-
                     using(SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player", conn, trans))
                     {
                         command.Parameters.AddWithValue("@Game", GameID);
@@ -193,7 +171,6 @@ namespace Boggle
                                 
                             }
                         }
-
                     }
 
                     using (SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player", conn, trans))
@@ -222,59 +199,7 @@ namespace Boggle
                     return game;
                 }
             }
-           
-            
         }
-
-            /*
-            lock (sync)
-            {
-                if (!AllGames.ContainsKey(GameID))
-                {
-                    SetStatus(Forbidden);
-                    return null;
-                }
-                SetStatus(OK);
-                if (AllGames[GameID].GameState != "pending")
-                {
-
-                    double result = (DateTime.Now - AllGames[GameID].StartGameTime).TotalSeconds;
-                    int times = Convert.ToInt32(result);
-
-                    int TimeRemaining;
-                    int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining);
-
-                    if (AllGames[GameID].GameState == "active" && (TimeRemaining - times > 0))
-                    {
-                        int.TryParse(AllGames[GameID].TimeLimit, out TimeRemaining);
-                        AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
-
-                    }
-
-                    else
-                    {
-                        AllGames[GameID].TimeLeft = "0";
-                    }
-
-                    int.TryParse(AllGames[GameID].TimeLeft, out times);
-
-                    if (times == 0)
-                    {
-                        AllGames[GameID].GameState = "completed";
-
-                    }
-
-                    GameStatus var = new GameStatus();
-                    var.GameState = AllGames[GameID].GameState;
-                    var.TimeLeft = AllGames[GameID].TimeLeft;
-                    var.Player1 = AllGames[GameID].Player1;
-                    var.Player2 = AllGames[GameID].Player2;
-                    return var;
-                }
-                
-                return AllGames[GameID];
-             
-            }*/
         
         /// <summary>
         /// Gets the full game status from the server
@@ -697,8 +622,6 @@ namespace Boggle
                                 trans.Commit();
                                 return null;
                             }
-
-                            
                         }
                     }
 
@@ -755,18 +678,11 @@ namespace Boggle
                             command.Parameters.AddWithValue("@Time", info.TimeLimit);
                             command.Parameters.AddWithValue("@Board", board.ToString());
                             command.Parameters.AddWithValue("@StartTime", DateTime.Now);
-
-
-                            
-                                result = new TokenScoreGameIDReturn();
-                                result.GameID = command.ExecuteScalar().ToString();
-                                SetStatus(Created);
-                                trans.Commit();
-                                return result;
-                            
-
-
-
+                            result = new TokenScoreGameIDReturn();
+                            result.GameID = command.ExecuteScalar().ToString();
+                            SetStatus(Created);
+                            trans.Commit();
+                            return result;
                         }
                     }
                     using (SqlCommand command = new SqlCommand("insert into Games (Player1, TimeLimit) output inserted.GameID values(@Player,@Timelimit)", conn, trans))
@@ -774,8 +690,6 @@ namespace Boggle
 
                         command.Parameters.AddWithValue("@Player", info.UserToken);
                         command.Parameters.AddWithValue("@Timelimit", test);
-
-
                         result = new TokenScoreGameIDReturn();
                         result.GameID = command.ExecuteScalar().ToString();
                         SetStatus(Created);
@@ -784,10 +698,7 @@ namespace Boggle
 
                     }
                 }
-
-
             }
-
         }
     }
 }

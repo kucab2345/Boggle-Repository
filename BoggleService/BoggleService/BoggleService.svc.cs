@@ -340,7 +340,6 @@ namespace Boggle
                                 int.TryParse(game.TimeLimit, out TimeRemaining);
                                 game.TimeLeft = (TimeRemaining - times).ToString();
                             }
-
                             else
                             {
                                 game.TimeLeft = "0";
@@ -352,22 +351,6 @@ namespace Boggle
                             {
                                 game.GameState = "completed";
                             }
-                            /*
-                            if (game.GameState == "completed")
-                            {
-                                game.Player1.WordsPlayed = game.Player1.personalList;
-                                game.Player2.WordsPlayed = game.Player2.personalList;
-                                if (game.Player1.WordsPlayed == null)
-                                {
-                                    game.Player1.WordsPlayed = new List<WordScore>();
-                                }
-
-                                if (game.Player2.WordsPlayed == null)
-                                {
-                                    game.Player2.WordsPlayed = new List<WordScore>();
-                                }
-                                //return game;
-                            }*/
                         }
                     }
                     //Get Player1 Nickname
@@ -416,56 +399,6 @@ namespace Boggle
                     }
                 }
                 return game;
-                /*
-                lock (sync)
-                {
-                    if (AllGames[GameID].GameState != "pending")
-                    {
-                        double result = (DateTime.Now - AllGames[GameID].StartGameTime).TotalSeconds;
-                        int times = Convert.ToInt32(result);
-
-                        int TimeRemaining;
-                        int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining);
-
-                        if (AllGames[GameID].GameState == "active" && (TimeRemaining - times > 0))
-                        {
-                            int.TryParse(AllGames[GameID].TimeLimit, out TimeRemaining);
-                            AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
-
-                        }
-
-                        else
-                        {
-                            AllGames[GameID].TimeLeft = "0";
-                        }
-
-                        int.TryParse(AllGames[GameID].TimeLeft, out times);
-
-                        if (times == 0)
-                        {
-                            AllGames[GameID].GameState = "completed";
-
-                        }
-
-                        if (AllGames[GameID].GameState == "completed")
-                        {
-                            AllGames[GameID].Player1.WordsPlayed = AllGames[GameID].Player1.personalList;
-                            AllGames[GameID].Player2.WordsPlayed = AllGames[GameID].Player2.personalList;
-                            if (AllGames[GameID].Player1.WordsPlayed == null)
-                            {
-                                AllGames[GameID].Player1.WordsPlayed = new List<WordScore>();
-                            }
-
-                            if (AllGames[GameID].Player2.WordsPlayed == null)
-                            {
-                                AllGames[GameID].Player2.WordsPlayed = new List<WordScore>();
-                            }
-                            return AllGames[GameID];
-                        }
-                    }
-
-                    return AllGames[GameID];
-                }*/
             }
         }
 

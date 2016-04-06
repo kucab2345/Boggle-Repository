@@ -357,64 +357,63 @@ namespace Boggle
 
                             game.Player1.UserToken = reader["Player1"].ToString();
                             game.Player2.UserToken = reader["Player2"].ToString();
-                            /*
-                            if (game.GameState == "completed")
+
+                           
+                        }
+                    }
+
+
+                            //Get Player1 Nickname
+                            using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
                             {
-                                game.Player1.WordsPlayed = game.Player1.personalList;
-                                game.Player2.WordsPlayed = game.Player2.personalList;
-                                if (game.Player1.WordsPlayed == null)
+                                command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
+                                using (SqlDataReader reader = command.ExecuteReader())
                                 {
-                                    game.Player1.WordsPlayed = new List<WordScore>();
+                                    reader.Read();
+                                    game.Player1.Nickname = reader["Nickname"].ToString();
                                 }
-                                }
-                    //Get Player1 Nickname
-                    using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
-                    {
-                        command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            game.Player1.Nickname = reader["Nickname"].ToString();
-                        }
-                    }
-                    //Get Player2 Nickname
-                    using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
-                    {
-                        command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            game.Player2.Nickname = reader["Nickname"].ToString();
-                        }
-                    }
-                    //Get Player1 Word List
-                    using (SqlCommand command = new SqlCommand("select Word, Score from Words where UserID = @UserID and GameID = @GameID", conn, trans))
-                    {
-                        command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
-                        command.Parameters.AddWithValue("@GameID", GameID);
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
+                            }
+                            //Get Player2 Nickname
+                            using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
                             {
-                                game.Player1.WordsPlayed.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
+                                command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    reader.Read();
+                                    game.Player2.Nickname = reader["Nickname"].ToString();
+                                }
+                            }
+                            //Get Player1 Word List
+                            using (SqlCommand command = new SqlCommand("select Word, Score from Words where Player = @UserID and GameID = @GameID", conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
+                                command.Parameters.AddWithValue("@GameID", GameID);
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        game.Player1.WordsPlayed.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
+                                    }
+                                }
+                            }
+                            //Get Player2 Word List
+                            using (SqlCommand command = new SqlCommand("select Word, Score from Words where Player = @UserID and GameID = @GameID", conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
+                                command.Parameters.AddWithValue("@GameID", GameID);
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        game.Player2.WordsPlayed.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
+                                    }
+                                }
                             }
                         }
-                    }
-                    //Get Player2 Word List
-                    using (SqlCommand command = new SqlCommand("select Word, Score from Words where UserID = @UserID and GameID = @GameID", conn, trans))
-                    {
-                        command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
-                        command.Parameters.AddWithValue("@GameID", GameID);
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                game.Player2.WordsPlayed.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
-                            }
-                        }
+                        return game;
                     }
                 }
-                return game;
-            }
-        }
+            
 
 
         /// <summary>

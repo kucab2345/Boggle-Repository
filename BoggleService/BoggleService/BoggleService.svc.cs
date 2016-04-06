@@ -96,7 +96,7 @@ namespace Boggle
                        
 
         }
-        
+
         /// <summary>
         /// Return the brief status of the game
         /// </summary>
@@ -104,7 +104,127 @@ namespace Boggle
         /// <returns></returns>
         public GameStatus GetBriefGamestatus(string GameID)
         {
-            return null;
+            if (GameID == null || GameID.Trim().Length == 0)
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+            GameStatus game = new GameStatus();
+            using (SqlConnection conn = new SqlConnection(BoggleDB))
+            {
+                conn.Open();
+                using (SqlTransaction trans = conn.BeginTransaction())
+                {
+                    // Here, the SqlCommand is a select query.  We are interested in whether item.UserID exists in
+                    // the Users table.
+                    using (SqlCommand command = new SqlCommand("Select TimeLimit, Player1, Player2 from Games where GameID = @Game", conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@Game", GameID);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (!reader.HasRows)
+                            {
+                                SetStatus(Forbidden);
+                                trans.Commit();
+                                return null;
+                            }
+                            reader.Read();
+                            game.TimeLimit = reader["TimeLimit"].ToString();
+                            int TimeRemaining;
+                            int.TryParse(game.TimeLimit, out TimeRemaining);
+                            DateTime startTime = (DateTime)reader["StartTime"];
+
+                            double result = (DateTime.Now - startTime).TotalSeconds;
+                            int times = Convert.ToInt32(result);
+                            game.GameState = "active";
+                            if (DBNull.Value.Equals(reader["Player2"]))
+                            {
+                                game.GameState = "pending";
+                            }
+                            else {
+                                game.Player1 = new UserInfo();
+                                game.Player2 = new UserInfo();
+
+                                game.Player1.UserToken = reader["Player1"].ToString();
+                                game.Player1.UserToken = reader["Player2"].ToString();
+
+                                if (game.GameState == "active" && (TimeRemaining - times > 0))
+                                {
+                                    int.TryParse(game.TimeLimit, out TimeRemaining);
+                                    game.TimeLeft = (TimeRemaining - times).ToString();
+                                    game.GameState = "active";
+                                }
+
+                                else
+                                {
+                                    game.TimeLeft = "0";
+                                    game.GameState = "completed";
+                                }
+
+
+                            }
+
+                            
+
+
+
+
+                        }
+                    }
+
+                    using(SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player"))
+                    {
+                        command.Parameters.AddWithValue("@Game", GameID);
+                        command.Parameters.AddWithValue("@Player", game.Player1.UserToken);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (!reader.HasRows)
+                            {
+                                game.Player1.Score = "0";
+                                
+                            }
+
+                            while (reader.Read())
+                            {
+                                game.Player1.Score += (int)reader["Score"];
+                                
+                            }
+                        }
+
+                    }
+
+                    using (SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player"))
+                    {
+                        command.Parameters.AddWithValue("@Game", GameID);
+                        command.Parameters.AddWithValue("@Player", game.Player2.UserToken);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (!reader.HasRows)
+                            {
+                                
+                                game.Player2.Score = "0";
+                            }
+
+                            while (reader.Read())
+                            {
+                                game.Player2.Score += (int)reader["Score"];
+
+                            }
+                        }
+
+                    }
+
+                    SetStatus(OK);
+                    return game;
+                }
+            }
+           
+            
+        }
+
             /*
             lock (sync)
             {
@@ -154,7 +274,7 @@ namespace Boggle
                 return AllGames[GameID];
              
             }*/
-        }
+        
         /// <summary>
         /// Gets the full game status from the server
         /// </summary>
@@ -211,7 +331,7 @@ namespace Boggle
                             int times = Convert.ToInt32(result);
 
                             int TimeRemaining;
-                            int.TryParse(game.TimeLeft, out TimeRemaining);
+                            int.TryParse(game.TimeLimit, out TimeRemaining);
 
                             //Get TimeLeft
                             if (game.GameState == "active" && (TimeRemaining - times > 0))
@@ -643,6 +763,8 @@ namespace Boggle
                                 trans.Commit();
                                 return null;
                             }
+
+                            
                         }
                     }
 
@@ -686,6 +808,7 @@ namespace Boggle
                         {
                             if (reader.HasRows)
                             {
+                                reader.Read();
                                 result = new TokenScoreGameIDReturn();
                                 result.GameID = reader["GameID"].ToString();
                                 SetStatus(Created);

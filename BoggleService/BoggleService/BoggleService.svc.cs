@@ -800,8 +800,9 @@ namespace Boggle
                         ///This is another test
                         BoggleBoard board = new BoggleBoard();
                         command.Parameters.AddWithValue("@Player", info.UserToken);
-                        command.Parameters.AddWithValue("@Time", DateTime.Now);
+                        command.Parameters.AddWithValue("@Time", info.TimeLimit);
                         command.Parameters.AddWithValue("@Board", board.ToString());
+                        command.Parameters.AddWithValue("@StartTime", DateTime.Now);
 
 
                         using (SqlDataReader reader = command.ExecuteReader())

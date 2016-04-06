@@ -61,7 +61,8 @@ namespace Boggle
                 SetStatus(Forbidden);
 
             }
-            else {
+            else
+            {
                    using (SqlConnection conn = new SqlConnection(BoggleDB))
                    {
                         conn.Open();
@@ -92,22 +93,7 @@ namespace Boggle
                     }
                 }
             }
-                        foreach (KeyValuePair<string, GameStatus> games in AllGames)
-            {
-                if (games.Value.GameState == "pending" && games.Value.Player1.UserToken == endUser.UserToken)
-                {
-                    cancelGameID = games.Key;
-                }
-            }
-            if (cancelGameID != null)
-            {
-                SetStatus(OK);
-                AllGames[cancelGameID].Player1 = null;
-            }
-            else
-            {
-                SetStatus(Forbidden);
-            }
+                       
 
         }
 
@@ -338,30 +324,7 @@ namespace Boggle
         /// </summary>
         /// <param name="timeLimit">TimeLimit of second user</param>
         /// <param name="gameID">ID of game to be created</param>
-        private void setupGame(string timeLimit, string gameID)
-        {
-            BoggleBoard board = new BoggleBoard();
-            int time1;
-            int time2;
-            int.TryParse(AllGames[gameID].TimeLimit, out time1);
-            int.TryParse(timeLimit, out time2);
-
-            if (time1 < time2)
-            {
-                time2 = ((time2 - time1) / 2);
-            }
-            else
-            {
-                time1 = ((time1 - time2) / 2);
-            }
-
-            AllGames[gameID].TimeLimit = (time1 + time2).ToString();
-            AllGames[gameID].TimeLeft = AllGames[gameID].TimeLimit;
-            AllGames[gameID].GameState = "active";
-            AllGames[gameID].RelevantBoard = board;
-            AllGames[gameID].Board = AllGames[gameID].RelevantBoard.ToString();
-            AllGames[gameID].StartGameTime = DateTime.Now;
-        }
+   
 
         /// <summary>
         /// Takes the word submitted by the client and scores it for the client, returning it to them.

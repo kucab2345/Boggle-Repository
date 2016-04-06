@@ -589,7 +589,6 @@ namespace Boggle
                         }
                     }
                 }
-
             }
         }
 

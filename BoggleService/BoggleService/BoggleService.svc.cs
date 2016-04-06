@@ -322,9 +322,9 @@ namespace Boggle
                                 game.GameState = "pending";
                             }
                             //Get board
-                            game.Board = (string)reader["Board"];
+                            game.Board = reader["Board"].ToString();
                             //Get TimeLimit
-                            game.TimeLimit = (string)reader["TimeLimit"];
+                            game.TimeLimit = reader["TimeLimit"].ToString();
                             //Get StartTime
                             game.StartGameTime = (DateTime)reader["StartTime"];
 
@@ -376,7 +376,7 @@ namespace Boggle
                         command.Parameters.AddWithValue("@UserID", game.Player1);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            game.Player1.Nickname = (string)reader["Nickname"];
+                            game.Player1.Nickname = reader["Nickname"].ToString();
                         }
                     }
                     //Get Player2 Nickname
@@ -385,7 +385,7 @@ namespace Boggle
                         command.Parameters.AddWithValue("@UserID", game.Player2);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            game.Player2.Nickname = (string)reader["Nickname"];
+                            game.Player2.Nickname = reader["Nickname"].ToString();
                         }
                     }
                     //Get Player1 Word List

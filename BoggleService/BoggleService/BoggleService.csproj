@@ -138,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoggleBoard.cs" />
+    <Compile Include="BoggleService.svc.cs" />
     <Compile Include="DataModel.cs" />
     <Compile Include="IBoggleService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

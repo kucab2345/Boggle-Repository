@@ -56,7 +56,43 @@ namespace Boggle
         /// <param name="endUser"></param>
         public void CancelGame(UserGame endUser)
         {
-            foreach (KeyValuePair<string, GameStatus> games in AllGames)
+            if (endUser == null || endUser.UserToken == null || endUser.UserToken.Trim().Length == 0)
+            {
+                SetStatus(Forbidden);
+
+            }
+            else {
+                   using (SqlConnection conn = new SqlConnection(BoggleDB))
+                   {
+                        conn.Open();
+                        using (SqlTransaction trans = conn.BeginTransaction())
+                    {
+                        // Here, the SqlCommand is a select query.  We are interested in whether item.UserID exists in
+                        // the Users table.
+                        using (SqlCommand command = new SqlCommand("Delete from Games where Player1 = @Player AND Player2 is Null", conn, trans))
+                        {
+                            command.Parameters.AddWithValue("@Player", endUser.UserToken);
+
+                            int id = command.ExecuteNonQuery();
+
+                            if(id <= 0)
+                            {
+                                SetStatus(Forbidden);
+                            
+
+                            }
+                            else
+                            {
+                                SetStatus(OK);
+                            }
+                            trans.Commit();
+                        }
+
+
+                    }
+                }
+            }
+                        foreach (KeyValuePair<string, GameStatus> games in AllGames)
             {
                 if (games.Value.GameState == "pending" && games.Value.Player1.UserToken == endUser.UserToken)
                 {

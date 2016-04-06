@@ -680,8 +680,10 @@ namespace Boggle
 
                     // Here we are executing an insert command, but notice the "output inserted.ItemID" portion.  
                     // We are asking the DB to send back the auto-generated ItemID.
-                    using (SqlCommand command = new SqlCommand("Update Top (1) Games Set Player2 = @Player, TimeLimit = @TimeLimit, StartTime = @Time where Player2 is Null and Player1 is not null", conn, trans))
+                    using (SqlCommand command = new SqlCommand("Declare @id int Update Top (1) Games Set Player2 = 2, TimeLimit = 40, @id=GameID  where Player2 is Null and Player1 is not null select @id", conn, trans))
                     {
+                        ///test
+                        ///This is another test
 
                         command.Parameters.AddWithValue("@Player", info.UserToken);
                         command.Parameters.AddWithValue("@Time", DateTime.Now);

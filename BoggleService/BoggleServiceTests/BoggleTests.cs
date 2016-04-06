@@ -186,6 +186,132 @@ namespace Boggle
             Assert.AreEqual("completed", (string)gameBrief.Data.GameState);
         }
         /// <summary>
+        /// Creates two games and runs them simulatenously on the server. Similar to TestMethod3, but with 2 concurrent games
+        /// MUST WAIT 10 SECONDS FOR GAMETIMER TO RUN OUT! DELAY IN EXECUTION IS EXPECTED
+        /// </summary>
+        [TestMethod]
+        public void TestMethod4()
+        {
+            IISAgent.Start(@"/site:""BoggleService"" /apppool:""Clr4IntegratedAppPool"" /config:""..\..\..\.vs\config\applicationhost.config""");
+
+            dynamic p3 = new ExpandoObject();
+            dynamic p4 = new ExpandoObject();
+            dynamic game2 = new ExpandoObject();
+            p3.Nickname = "John";
+            p4.Nickname = "June";
+
+            Response r3 = client.DoPostAsync("/users", p3).Result;
+            Response r4 = client.DoPostAsync("/users", p4).Result;
+
+            p3.UserToken = r3.Data.UserToken;
+            p4.UserToken = r4.Data.UserToken;
+
+            p3.TimeLimit = "10";
+            p4.TimeLimit = "10";
+
+            r3 = client.DoPostAsync("/games", p3).Result;
+            r4 = client.DoPostAsync("/games", p4).Result;
+
+            Assert.AreEqual(Accepted, r3.Status);
+            Assert.AreEqual(Created, r4.Status);
+
+            p3.GameID = r3.Data.GameID;
+            p4.GameID = r4.Data.GameID;
+
+            game2 = client.DoGetAsync("/games/" + p3.GameID).Result;
+            BoggleBoard board2 = new BoggleBoard(game2.Data.Board.ToString());
+
+            /////////////////////////////////////////////////////////////////////////////////////////////
+
+            dynamic p5 = new ExpandoObject();
+            dynamic p6 = new ExpandoObject();
+            dynamic game3 = new ExpandoObject();
+            p5.Nickname = "Jack";
+            p6.Nickname = "Jill";
+
+            Response r5 = client.DoPostAsync("/users", p5).Result;
+            Response r6 = client.DoPostAsync("/users", p6).Result;
+
+            p5.UserToken = r5.Data.UserToken;
+            p6.UserToken = r6.Data.UserToken;
+
+            p5.TimeLimit = "8";
+            p6.TimeLimit = "8";
+
+            r5 = client.DoPostAsync("/games", p5).Result;
+            r6 = client.DoPostAsync("/games", p6).Result;
+
+            Assert.AreEqual(Accepted, r5.Status);
+            Assert.AreEqual(Created, r6.Status);
+
+            p5.GameID = r5.Data.GameID;
+            p6.GameID = r6.Data.GameID;
+
+            game3 = client.DoGetAsync("/games/" + p5.GameID).Result;
+
+
+            HashSet<string> testDictionary = new HashSet<string>();
+            List<string> potentialWords = new List<string>();
+            foreach (string i in File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "../../../\\dictionary.txt"))
+            {
+                testDictionary.Add(i);
+                if (board2.CanBeFormed(i))
+                {
+                    potentialWords.Add(i);
+                }
+            }
+            Random rand = new Random();
+            dynamic p3words = new ExpandoObject();
+            dynamic p4words = new ExpandoObject();
+            dynamic p5words = new ExpandoObject();
+            dynamic p6words = new ExpandoObject();
+
+            p3words.UserToken = p3.UserToken;
+            p4words.UserToken = p4.UserToken;
+            p5words.UserToken = p5.UserToken;
+            p6words.UserToken = p6.UserToken;
+
+            for (int i = 0; i < potentialWords.Count + 4; i++)
+            {
+                p3.Word = potentialWords[rand.Next(0, potentialWords.Count)];
+                p4.Word = potentialWords[rand.Next(0, potentialWords.Count)];
+                p5.Word = potentialWords[rand.Next(0, potentialWords.Count)];
+                p6.Word = potentialWords[rand.Next(0, potentialWords.Count)];
+                p3words.Word = p3.Word;
+                p4words.Word = p4.Word;
+                p5words.Word = p5.Word;
+                p6words.Word = p6.Word;
+                r3 = client.DoPutAsync(p3words, "games/" + p3.GameID).Result;
+                r4 = client.DoPutAsync(p4words, "games/" + p4.GameID).Result;
+                r5 = client.DoPutAsync(p5words, "games/" + p5.GameID).Result;
+                r6 = client.DoPutAsync(p6words, "games/" + p6.GameID).Result;
+                Assert.AreEqual(OK, r3.Status);
+                Assert.AreEqual(OK, r4.Status);
+                Assert.AreEqual(OK, r5.Status);
+                Assert.AreEqual(OK, r6.Status);
+            }
+
+            /////////////////////////////////////////////
+            dynamic gameBrief2 = new ExpandoObject();
+
+            gameBrief2 = client.DoGetAsync("/games/" + p3.GameID + "?Brief=yes").Result;
+            Assert.AreEqual(OK, gameBrief2.Status);
+
+            Thread.Sleep(11000);
+
+            gameBrief2 = client.DoGetAsync("/games/" + p3.GameID).Result;
+            Assert.AreEqual("completed", (string)gameBrief2.Data.GameState);
+            ////////////////////////////////////////////////
+            dynamic gameBrief3 = new ExpandoObject();
+
+            gameBrief3 = client.DoGetAsync("/games/" + p5.GameID + "?Brief=yes").Result;
+            Assert.AreEqual(OK, gameBrief3.Status);
+
+            gameBrief3 = client.DoGetAsync("/games/" + p5.GameID).Result;
+            Assert.AreEqual("completed", (string)gameBrief3.Data.GameState);
+
+        }
+        /// <summary>
         /// Creates a player, puts him into a pending game, and cancels the game.
         /// Attempts to create a new game with more invalid parameters, such as negative timelimits and such.
         /// </summary>

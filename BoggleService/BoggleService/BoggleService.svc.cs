@@ -276,30 +276,44 @@ namespace Boggle
                             {
                                 game.GameState = "completed";
                             }
-                        }
-                    }
+
+                            game.Player1 = new UserInfo();
+                            game.Player2 = new UserInfo();
+
+                            game.Player1.UserToken = reader["Player1"].ToString();
+                            game.Player2.UserToken = reader["Player2"].ToString();
+                            /*
+                            if (game.GameState == "completed")
+                            {
+                                game.Player1.WordsPlayed = game.Player1.personalList;
+                                game.Player2.WordsPlayed = game.Player2.personalList;
+                                if (game.Player1.WordsPlayed == null)
+                                {
+                                    game.Player1.WordsPlayed = new List<WordScore>();
+                                }
+                                }
                     //Get Player1 Nickname
-                    using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID)", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
                     {
-                        command.Parameters.AddWithValue("@UserID", game.Player1);
+                        command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             game.Player1.Nickname = reader["Nickname"].ToString();
                         }
                     }
                     //Get Player2 Nickname
-                    using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID)", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
                     {
-                        command.Parameters.AddWithValue("@UserID", game.Player2);
+                        command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             game.Player2.Nickname = reader["Nickname"].ToString();
                         }
                     }
                     //Get Player1 Word List
-                    using (SqlCommand command = new SqlCommand("select Word, Score from Words where UserID = @UserID and GameID = @GameID)", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select Word, Score from Words where UserID = @UserID and GameID = @GameID", conn, trans))
                     {
-                        command.Parameters.AddWithValue("@UserID", game.Player1);
+                        command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
                         command.Parameters.AddWithValue("@GameID", GameID);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
@@ -310,9 +324,9 @@ namespace Boggle
                         }
                     }
                     //Get Player2 Word List
-                    using (SqlCommand command = new SqlCommand("select Word, Score from Words where UserID = @UserID and GameID = @GameID)", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select Word, Score from Words where UserID = @UserID and GameID = @GameID", conn, trans))
                     {
-                        command.Parameters.AddWithValue("@UserID", game.Player2);
+                        command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
                         command.Parameters.AddWithValue("@GameID", GameID);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {

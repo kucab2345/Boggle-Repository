@@ -220,6 +220,7 @@ namespace Boggle
                         }
                     }
                 }
+                //GET LISTS OF THE WORDS BEFORE RETURNING!
                 return game;
                 /*
                 lock (sync)

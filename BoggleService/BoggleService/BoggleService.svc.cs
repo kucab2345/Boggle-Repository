@@ -26,6 +26,7 @@ namespace Boggle
         static BoggleService()
         {
             BoggleDB = ConfigurationManager.ConnectionStrings["BoggleDB"].ConnectionString;
+
         }
 
 
@@ -173,7 +174,7 @@ namespace Boggle
                         }
                     }
 
-                    using(SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player"))
+                    using(SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player", conn, trans))
                     {
                         command.Parameters.AddWithValue("@Game", GameID);
                         command.Parameters.AddWithValue("@Player", game.Player1.UserToken);
@@ -195,7 +196,7 @@ namespace Boggle
 
                     }
 
-                    using (SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player"))
+                    using (SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player", conn, trans))
                     {
                         command.Parameters.AddWithValue("@Game", GameID);
                         command.Parameters.AddWithValue("@Player", game.Player2.UserToken);
@@ -321,9 +322,9 @@ namespace Boggle
                                 game.GameState = "pending";
                             }
                             //Get board
-                            game.Board = (string)reader["Board"];
+                            game.Board = reader["Board"].ToString();
                             //Get TimeLimit
-                            game.TimeLimit = (string)reader["TimeLimit"];
+                            game.TimeLimit = reader["TimeLimit"].ToString();
                             //Get StartTime
                             game.StartGameTime = (DateTime)reader["StartTime"];
 
@@ -375,7 +376,7 @@ namespace Boggle
                         command.Parameters.AddWithValue("@UserID", game.Player1);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            game.Player1.Nickname = (string)reader["Nickname"];
+                            game.Player1.Nickname = reader["Nickname"].ToString();
                         }
                     }
                     //Get Player2 Nickname
@@ -384,7 +385,7 @@ namespace Boggle
                         command.Parameters.AddWithValue("@UserID", game.Player2);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            game.Player2.Nickname = (string)reader["Nickname"];
+                            game.Player2.Nickname = reader["Nickname"].ToString();
                         }
                     }
                     //Get Player1 Word List
@@ -738,7 +739,7 @@ namespace Boggle
                 SetStatus(Forbidden);
                 return null;
             }
-
+            bool gameExists = false;
             TokenScoreGameIDReturn result = null;
             using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
@@ -789,37 +790,53 @@ namespace Boggle
                             }
                         }
                     }
+                    
+                    using (SqlCommand command = new SqlCommand("select Player1 from Games where Player1 is not null AND Player2 IS NULL", conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@Player", info.UserToken);
 
+                        // This executes a query (i.e. a select statement).  The result is an
+                        // SqlDataReader that you can use to iterate through the rows in the response.
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            // In this we don't actually need to read any data; we only need
+                            // to know whether a row was returned.
+                            if (reader.HasRows)
+                            {
+                                gameExists = true;
 
+                            }
+                        }
+                    }
 
                     // Here we are executing an insert command, but notice the "output inserted.ItemID" portion.  
                     // We are asking the DB to send back the auto-generated ItemID.
-                    using (SqlCommand command = new SqlCommand("Declare @id int Update Top (1) Games Set Player2 = @Player, TimeLimit = @Time, Board = @Board,  StartTime = @StartTime, @id=GameID  where Player2 is Null and Player1 is not null select @id", conn, trans))
+                    if (gameExists)
                     {
-                        ///test
-                        ///This is another test
-                        BoggleBoard board = new BoggleBoard();
-                        command.Parameters.AddWithValue("@Player", info.UserToken);
-                        command.Parameters.AddWithValue("@Time", DateTime.Now);
-                        command.Parameters.AddWithValue("@Board", board.ToString());
-
-
-                        using (SqlDataReader reader = command.ExecuteReader())
+                        using (SqlCommand command = new SqlCommand("Update Top (1) Games Set Player2 = @Player, TimeLimit = @Time, Board = @Board,  StartTime = @StartTime output inserted.GameID where Player2 is Null and Player1 is not null ", conn, trans))
                         {
-                            if (reader.HasRows)
-                            {
-                                reader.Read();
+                            ///test
+                            ///This is another test
+                            BoggleBoard board = new BoggleBoard();
+                            command.Parameters.AddWithValue("@Player", info.UserToken);
+                            command.Parameters.AddWithValue("@Time", info.TimeLimit);
+                            command.Parameters.AddWithValue("@Board", board.ToString());
+                            command.Parameters.AddWithValue("@StartTime", DateTime.Now);
+
+
+                            
                                 result = new TokenScoreGameIDReturn();
-                                result.GameID = reader["GameID"].ToString();
+                                result.GameID = command.ExecuteScalar().ToString();
                                 SetStatus(Created);
                                 trans.Commit();
                                 return result;
-                            }
+                            
+
+
+
                         }
-
                     }
-
-                    using (SqlCommand command = new SqlCommand("insert into Games (Player1, TimeLimit) output inserted.GameID values(@Player,@Timelimit)"))
+                    using (SqlCommand command = new SqlCommand("insert into Games (Player1, TimeLimit) output inserted.GameID values(@Player,@Timelimit)", conn, trans))
                     {
 
                         command.Parameters.AddWithValue("@Player", info.UserToken);

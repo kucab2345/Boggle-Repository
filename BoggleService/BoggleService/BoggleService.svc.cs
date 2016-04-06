@@ -282,16 +282,8 @@ namespace Boggle
 
                             game.Player1.UserToken = reader["Player1"].ToString();
                             game.Player2.UserToken = reader["Player2"].ToString();
-                            /*
-                            if (game.GameState == "completed")
-                            {
-                                game.Player1.WordsPlayed = game.Player1.personalList;
-                                game.Player2.WordsPlayed = game.Player2.personalList;
-                                if (game.Player1.WordsPlayed == null)
-                                {
-                                    game.Player1.WordsPlayed = new List<WordScore>();
-                                }
-                                }
+                        }
+                    } 
                     //Get Player1 Nickname
                     using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
                     {
@@ -340,14 +332,6 @@ namespace Boggle
                 return game;
             }
         }
-
-
-        /// <summary>
-        /// Private method that fully creates a game, called after two players enter a game.
-        /// </summary>
-        /// <param name="timeLimit">TimeLimit of second user</param>
-        /// <param name="gameID">ID of game to be created</param>
-   
 
         /// <summary>
         /// Takes the word submitted by the client and scores it for the client, returning it to them.

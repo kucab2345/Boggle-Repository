@@ -151,57 +151,62 @@ namespace Boggle
                                     game.GameState = "completed";
                                 }
 
-                                using (SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player", conn, trans))
-                                {
-                                    command.Parameters.AddWithValue("@Game", GameID);
-                                    command.Parameters.AddWithValue("@Player", game.Player1.UserToken);
-                                    int result = 0;
-                                    using (SqlDataReader reader = command.ExecuteReader())
-                                    {
-                                        if (!reader.HasRows)
-                                        {
-                                            game.Player1.Score = "0";
-
-                                        }
-
-                                        while (reader.Read())
-                                        {
-                                            result += (int)reader["Score"];
-
-
-                                        }
-
-                                    }
-                                    game.Player1.Score = result.ToString();
-                                }
-
-                                using (SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player", conn, trans))
-                                {
-                                    command.Parameters.AddWithValue("@Game", GameID);
-                                    command.Parameters.AddWithValue("@Player", game.Player2.UserToken);
-                                    int result = 0;
-                                    using (SqlDataReader reader = command.ExecuteReader())
-                                    {
-                                        if (!reader.HasRows)
-                                        {
-
-                                            game.Player2.Score = "0";
-                                        }
-
-                                        while (reader.Read())
-                                        {
-                                            result += (int)reader["Score"];
-
-                                        }
-                                    }
-                                    game.Player2.Score = result.ToString();
-
-                                }
 
                             }
                         }
                     }
-                    
+
+                    if(game.GameState != "pending")
+                    {
+                        using (SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player", conn, trans))
+                        {
+                            command.Parameters.AddWithValue("@Game", GameID);
+                            command.Parameters.AddWithValue("@Player", game.Player1.UserToken);
+                            int result = 0;
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                if (!reader.HasRows)
+                                {
+                                    game.Player1.Score = "0";
+
+                                }
+
+                                while (reader.Read())
+                                {
+                                    result += (int)reader["Score"];
+
+
+                                }
+
+                            }
+                            game.Player1.Score = result.ToString();
+                        }
+
+                        using (SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player", conn, trans))
+                        {
+                            command.Parameters.AddWithValue("@Game", GameID);
+                            command.Parameters.AddWithValue("@Player", game.Player2.UserToken);
+                            int result = 0;
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                if (!reader.HasRows)
+                                {
+
+                                    game.Player2.Score = "0";
+                                }
+
+                                while (reader.Read())
+                                {
+                                    result += (int)reader["Score"];
+
+                                }
+                            }
+                            game.Player2.Score = result.ToString();
+
+                        }
+
+                    }
+
                     SetStatus(OK);
                     return game;
                 }

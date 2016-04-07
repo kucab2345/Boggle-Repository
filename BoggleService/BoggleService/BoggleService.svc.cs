@@ -328,6 +328,7 @@ namespace Boggle
                             command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
                             command.Parameters.AddWithValue("@GameID", GameID);
                             int result = 0;
+                            game.Player1.WordsPlayed = new List<WordScore>();
                             using (SqlDataReader reader = command.ExecuteReader())
                             {
                                 while (reader.Read())
@@ -344,6 +345,7 @@ namespace Boggle
                             command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
                             command.Parameters.AddWithValue("@GameID", GameID);
                             int result = 0;
+                            game.Player2.WordsPlayed = new List<WordScore>();
                             using (SqlDataReader reader = command.ExecuteReader())
                             {
                                 while (reader.Read())

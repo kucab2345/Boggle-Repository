@@ -105,7 +105,7 @@ namespace Boggle
                 {
                     // Here, the SqlCommand is a select query.  We are interested in whether item.UserID exists in
                     // the Users table.
-                    using (SqlCommand command = new SqlCommand("Select TimeLimit, Player1, Player2 from Games where GameID = @Game", conn, trans))
+                    using (SqlCommand command = new SqlCommand("Select TimeLimit, Player1, Player2, StartTime from Games where GameID = @Game", conn, trans))
                     {
                         command.Parameters.AddWithValue("@Game", GameID);
 
@@ -119,12 +119,7 @@ namespace Boggle
                             }
                             reader.Read();
                             game.TimeLimit = reader["TimeLimit"].ToString();
-                            int TimeRemaining;
-                            int.TryParse(game.TimeLimit, out TimeRemaining);
-                            game.StartGameTime =  (DateTime)reader["StartTime"];
-
-                            double result = (DateTime.Now - game.StartGameTime).TotalSeconds;
-                            int times = Convert.ToInt32(result);
+                            
                             game.GameState = "active";
                             if (DBNull.Value.Equals(reader["Player2"]))
                             {
@@ -133,9 +128,14 @@ namespace Boggle
                             else {
                                 game.Player1 = new UserInfo();
                                 game.Player2 = new UserInfo();
-
+                                game.StartGameTime = (DateTime)reader["StartTime"];
                                 game.Player1.UserToken = reader["Player1"].ToString();
                                 game.Player1.UserToken = reader["Player2"].ToString();
+
+                                int TimeRemaining;
+                                int.TryParse(game.TimeLimit, out TimeRemaining);
+                                double result = (DateTime.Now - game.StartGameTime).TotalSeconds;
+                                int times = Convert.ToInt32(result);
 
                                 if (game.GameState == "active" && (TimeRemaining - times > 0))
                                 {

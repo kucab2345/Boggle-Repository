@@ -491,6 +491,7 @@ namespace Boggle
                         command.Parameters.AddWithValue("@Player", currentPlayerToken);
                         command.Parameters.AddWithValue("@Score", numResult);
                         command.ExecuteNonQuery();
+                        ///Updated Service database
                     }
                     trans.Commit();
                 }

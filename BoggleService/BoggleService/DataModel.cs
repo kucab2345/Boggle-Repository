@@ -27,7 +27,7 @@ namespace Boggle
 
         public DateTime StartGameTime;
 
-        public BoggleBoard RelevantBoard { get; set; }
+        
     }
 
     /// <summary>

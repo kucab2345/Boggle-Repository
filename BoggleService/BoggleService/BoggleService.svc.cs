@@ -118,9 +118,9 @@ namespace Boggle
                                 return null;
                             }
                             reader.Read();
-                          
                             
 
+                            
                             
                             game.GameState = "active";
                             if (DBNull.Value.Equals(reader["Player2"]))
@@ -142,6 +142,11 @@ namespace Boggle
 
                                 game.Player1.UserToken = reader["Player1"].ToString();
                                 game.Player2.UserToken = reader["Player2"].ToString();
+
+                                int TimeRemaining;
+                                int.TryParse(game.TimeLimit, out TimeRemaining);
+                                double result = (DateTime.Now - game.StartGameTime).TotalSeconds;
+                                int times = Convert.ToInt32(result);
 
                                 if (game.GameState == "active" && (TimeRemaining - times > 0))
                                 {
@@ -255,109 +260,109 @@ namespace Boggle
                             }
 
                             else {
-                                //Get board
-                                game.Board = reader["Board"].ToString();
-                                //Get TimeLimit
-                                game.TimeLimit = reader["TimeLimit"].ToString();
-                                //Get StartTime
-                                game.StartGameTime = (DateTime)reader["StartTime"];
+                            //Get board
+                            game.Board = reader["Board"].ToString();
+                            //Get TimeLimit
+                            game.TimeLimit = reader["TimeLimit"].ToString();
+                            //Get StartTime
+                            game.StartGameTime = (DateTime)reader["StartTime"];
 
-                                double result = (DateTime.Now - game.StartGameTime).TotalSeconds;
-                                int times = Convert.ToInt32(result);
+                            double result = (DateTime.Now - game.StartGameTime).TotalSeconds;
+                            int times = Convert.ToInt32(result);
 
-                                int TimeRemaining;
+                            int TimeRemaining;
+                            int.TryParse(game.TimeLimit, out TimeRemaining);
+
+                            //Get TimeLeft
+                            if (game.GameState == "active" && (TimeRemaining - times > 0))
+                            {
                                 int.TryParse(game.TimeLimit, out TimeRemaining);
-
-                                //Get TimeLeft
-                                if (game.GameState == "active" && (TimeRemaining - times > 0))
-                                {
-                                    int.TryParse(game.TimeLimit, out TimeRemaining);
-                                    game.TimeLeft = (TimeRemaining - times).ToString();
-                                }
-                                else
-                                {
-                                    game.TimeLeft = "0";
-                                }
-
-                                int.TryParse(game.TimeLeft, out times);
-
-                                if (times == 0)
-                                {
-                                    game.GameState = "completed";
-                                }
-
-                                game.Player1 = new UserInfo();
-                                game.Player2 = new UserInfo();
-
-                                game.Player1.UserToken = reader["Player1"].ToString();
-                                game.Player2.UserToken = reader["Player2"].ToString();
-
-
+                                game.TimeLeft = (TimeRemaining - times).ToString();
                             }
+                            else
+                            {
+                                game.TimeLeft = "0";
+                            }
+
+                            int.TryParse(game.TimeLeft, out times);
+
+                            if (times == 0)
+                            {
+                                game.GameState = "completed";
+                            }
+
+                            game.Player1 = new UserInfo();
+                            game.Player2 = new UserInfo();
+
+                            game.Player1.UserToken = reader["Player1"].ToString();
+                            game.Player2.UserToken = reader["Player2"].ToString();
+
+                           
                         }
+                    }
                     }
 
                     if (game.GameState != "pending")
                     {
-                        //Get Player1 Nickname
-                        using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
-                        {
-                            command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
-                            using (SqlDataReader reader = command.ExecuteReader())
+                            //Get Player1 Nickname
+                            using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
                             {
-                                reader.Read();
-                                game.Player1.Nickname = reader["Nickname"].ToString();
-                            }
-                        }
-                        //Get Player2 Nickname
-                        using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
-                        {
-                            command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
-                            using (SqlDataReader reader = command.ExecuteReader())
-                            {
-                                reader.Read();
-                                game.Player2.Nickname = reader["Nickname"].ToString();
-                            }
-                        }
-                        //Get Player1 Word List
-                        using (SqlCommand command = new SqlCommand("select Word, Score from Words where Player = @UserID and GameID = @GameID", conn, trans))
-                        {
-                            command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
-                            command.Parameters.AddWithValue("@GameID", GameID);
-                            int result = 0;
-                            using (SqlDataReader reader = command.ExecuteReader())
-                            {
-                                while (reader.Read())
+                                command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
+                                using (SqlDataReader reader = command.ExecuteReader())
                                 {
-                                    game.Player1.WordsPlayed.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
-                                    result += (int)reader["Score"];
+                                    reader.Read();
+                                    game.Player1.Nickname = reader["Nickname"].ToString();
                                 }
                             }
-                            game.Player1.Score = result.ToString();
-                        }
-                        //Get Player2 Word List
-                        using (SqlCommand command = new SqlCommand("select Word, Score from Words where Player = @UserID and GameID = @GameID", conn, trans))
-                        {
-                            command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
-                            command.Parameters.AddWithValue("@GameID", GameID);
-                            int result = 0;
-                            using (SqlDataReader reader = command.ExecuteReader())
+                            //Get Player2 Nickname
+                            using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
                             {
-                                while (reader.Read())
+                                command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
+                                using (SqlDataReader reader = command.ExecuteReader())
                                 {
-                                    game.Player2.WordsPlayed.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
-                                    result += (int)reader["Score"];
+                                    reader.Read();
+                                    game.Player2.Nickname = reader["Nickname"].ToString();
                                 }
                             }
-                            game.Player2.Score = result.ToString();
+                            //Get Player1 Word List
+                            using (SqlCommand command = new SqlCommand("select Word, Score from Words where Player = @UserID and GameID = @GameID", conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
+                                command.Parameters.AddWithValue("@GameID", GameID);
+                                int result = 0;
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        game.Player1.WordsPlayed.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
+                                        result += (int)reader["Score"];
+                                    }
+                                }
+                                game.Player1.Score = result.ToString();
+                            }
+                            //Get Player2 Word List
+                            using (SqlCommand command = new SqlCommand("select Word, Score from Words where Player = @UserID and GameID = @GameID", conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
+                                command.Parameters.AddWithValue("@GameID", GameID);
+                                int result = 0;
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        game.Player2.WordsPlayed.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
+                                        result += (int)reader["Score"];
+                                    }
+                                }
+                                game.Player2.Score = result.ToString();
+                            }
                         }
-                    }
                     trans.Commit();
-                    return game;
-                }
-                        
-                        
+                        return game;
                     }
+                        
+                        
+                }
                 }
             
 
@@ -460,10 +465,10 @@ namespace Boggle
                             {
                                 TokenScoreGameIDReturn zeroScore = new TokenScoreGameIDReturn();
                                 while (reader.Read())
-                                {
-                                    WordScoreResult = ScoreWord(boardState, words.Word, words.UserToken, GameID);
+                            {
+                                WordScoreResult = ScoreWord(boardState, words.Word, words.UserToken, GameID);
                                     
-                                    zeroScore.Score = 0.ToString();
+                                zeroScore.Score = 0.ToString();
                                     
                                 }
                                 SetStatus(OK);
@@ -476,12 +481,12 @@ namespace Boggle
                 conn.Close();
             }
 
-            
-            
+
+
             using (SqlConnection conn = new SqlConnection(BoggleDB))
             {
                 conn.Open();
-                
+
                 int numResult = ScoreWord(boardState, words.Word, currentPlayerToken, GameID);
                 using (SqlTransaction trans = conn.BeginTransaction())
                 {

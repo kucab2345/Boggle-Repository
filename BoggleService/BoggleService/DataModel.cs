@@ -26,7 +26,8 @@ namespace Boggle
         public UserInfo Player2 { get; set; }
 
         public DateTime StartGameTime;
-       
+
+        
     }
 
     /// <summary>

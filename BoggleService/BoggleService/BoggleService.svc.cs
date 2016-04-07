@@ -465,21 +465,7 @@ namespace Boggle
                             }
                         }
                     }
-                }
-                conn.Close();
-            }
-
-
-
-            using (SqlConnection conn = new SqlConnection(BoggleDB))
-            {
-                conn.Open();
-
-                int numResult = ScoreWord(boardState, words.Word, currentPlayerToken, GameID);
-                using (SqlTransaction trans = conn.BeginTransaction())
-                {
-
-                    //Command to retrieve boardState
+                    int numResult = ScoreWord(boardState, words.Word, currentPlayerToken, GameID);
                     using (SqlCommand command = new SqlCommand("insert into Words (Word, GameID, Player, Score) values (@Word, @GameID, @Player, @Score)", conn, trans))
                     {
                         command.Parameters.AddWithValue("@Word", words.Word.ToUpper());
@@ -489,15 +475,18 @@ namespace Boggle
                         command.ExecuteNonQuery();
                         ///Updated Service database
                     }
+                    TokenScoreGameIDReturn ScoreResult = new TokenScoreGameIDReturn();
+                    ScoreResult.Score = numResult.ToString();
                     trans.Commit();
+                    return ScoreResult;
+
                 }
 
-                TokenScoreGameIDReturn result = new TokenScoreGameIDReturn();
-                result.Score = numResult.ToString();
-                return result;
-            }
 
+            }
         }
+                
+            
 
         /// <summary>
         /// Scores the word submitted, returning the approriate int value.

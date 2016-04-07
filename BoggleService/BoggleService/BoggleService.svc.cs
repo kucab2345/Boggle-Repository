@@ -1,23 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Net;
-using System.Web;
 using System.ServiceModel.Web;
 using System.Configuration;
 using static System.Net.HttpStatusCode;
-using System.Linq;
-using System.Text;
 using System.Data.SqlClient;
 
 namespace Boggle
 {
     public class BoggleService : IBoggleService
     {
-        /// <summary>
-        /// object used to sync the methods, ensuring that all happen at the right rate.
-        /// </summary>
+       
 
         private static HashSet<string> dictionaryContents = new HashSet<string>(File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\dictionary.txt"));
 

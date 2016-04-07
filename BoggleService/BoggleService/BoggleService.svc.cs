@@ -600,7 +600,7 @@ namespace Boggle
         /// <returns></returns>
         public TokenScoreGameIDReturn JoinGame(GameJoin info)
         {
-
+            int Time = 0;
             if (info.UserToken == null || info.UserToken.Trim().Length == 0)
             {
                 SetStatus(Forbidden);
@@ -667,8 +667,8 @@ namespace Boggle
                             }
                         }
                     }
-
-                    using (SqlCommand command = new SqlCommand("select Player1 from Games where Player1 is not null AND Player2 IS NULL", conn, trans))
+                    
+                    using (SqlCommand command = new SqlCommand("select Player1, TimeLimit from Games where Player1 is not null AND Player2 IS NULL", conn, trans))
                     {
                         command.Parameters.AddWithValue("@Player", info.UserToken);
 
@@ -681,13 +681,16 @@ namespace Boggle
                             if (reader.HasRows)
                             {
                                 gameExists = true;
-
+                                int.TryParse(info.TimeLimit, out Time);
+                                Time = ((int)reader["TimeLimit"] + Time)/2;
+                                
                             }
                         }
                     }
 
                     // Here we are executing an insert command, but notice the "output inserted.ItemID" portion.  
                     // We are asking the DB to send back the auto-generated ItemID.
+                    
                     if (gameExists)
                     {
                         using (SqlCommand command = new SqlCommand("Update Top (1) Games Set Player2 = @Player, TimeLimit = @Time, Board = @Board,  StartTime = @StartTime output inserted.GameID where Player2 is Null and Player1 is not null ", conn, trans))
@@ -695,8 +698,9 @@ namespace Boggle
                             ///test
                             ///This is another test
                             BoggleBoard board = new BoggleBoard();
+                            
                             command.Parameters.AddWithValue("@Player", info.UserToken);
-                            command.Parameters.AddWithValue("@Time", info.TimeLimit);
+                            command.Parameters.AddWithValue("@Time", Time);
                             command.Parameters.AddWithValue("@Board", board.ToString());
                             command.Parameters.AddWithValue("@StartTime", DateTime.Now);
                             result = new TokenScoreGameIDReturn();

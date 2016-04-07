@@ -156,7 +156,7 @@ namespace Boggle
                     {
                         command.Parameters.AddWithValue("@Game", GameID);
                         command.Parameters.AddWithValue("@Player", game.Player1.UserToken);
-
+                        int result = 0;
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             if (!reader.HasRows)
@@ -167,17 +167,20 @@ namespace Boggle
 
                             while (reader.Read())
                             {
-                                game.Player1.Score += (int)reader["Score"];
+                                result += (int)reader["Score"];
+                                
                                 
                             }
+
                         }
+                        game.Player1.Score = result.ToString();
                     }
 
                     using (SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player", conn, trans))
                     {
                         command.Parameters.AddWithValue("@Game", GameID);
                         command.Parameters.AddWithValue("@Player", game.Player2.UserToken);
-
+                        int result = 0;
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             if (!reader.HasRows)
@@ -188,10 +191,11 @@ namespace Boggle
 
                             while (reader.Read())
                             {
-                                game.Player2.Score += (int)reader["Score"];
+                                result += (int)reader["Score"];
 
                             }
                         }
+                        game.Player2.Score = result.ToString();
 
                     }
 
@@ -313,26 +317,32 @@ namespace Boggle
                             {
                                 command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
                                 command.Parameters.AddWithValue("@GameID", GameID);
+                                int result = 0;
                                 using (SqlDataReader reader = command.ExecuteReader())
                                 {
                                     while (reader.Read())
                                     {
                                         game.Player1.WordsPlayed.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
+                                        result += (int)reader["Score"];
                                     }
                                 }
+                                game.Player1.Score = result.ToString();
                             }
                             //Get Player2 Word List
                             using (SqlCommand command = new SqlCommand("select Word, Score from Words where Player = @UserID and GameID = @GameID", conn, trans))
                             {
                                 command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
                                 command.Parameters.AddWithValue("@GameID", GameID);
+                                int result = 0;
                                 using (SqlDataReader reader = command.ExecuteReader())
                                 {
                                     while (reader.Read())
                                     {
                                         game.Player2.WordsPlayed.Add(new WordScore() { Word = reader["Word"].ToString(), Score = (int)reader["Score"] });
+                                        result += (int)reader["Score"];
                                     }
                                 }
+                                game.Player2.Score = result.ToString();
                             }
                         }
                         return game;

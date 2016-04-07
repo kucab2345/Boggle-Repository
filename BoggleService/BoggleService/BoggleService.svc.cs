@@ -248,7 +248,7 @@ namespace Boggle
 
                             SetStatus(OK);
                             reader.Read();
-                            
+                            game.GameState = "active";
 
                             game.GameState = "active";
                             if (DBNull.Value.Equals(reader["Player2"]))

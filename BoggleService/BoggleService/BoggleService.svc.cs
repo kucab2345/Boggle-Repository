@@ -122,6 +122,7 @@ namespace Boggle
                             {
                                 game.GameState = "pending";
 
+
                             }
                             else {
 
@@ -712,7 +713,7 @@ namespace Boggle
                         command.Parameters.AddWithValue("@Timelimit", test);
                         result = new TokenScoreGameIDReturn();
                         result.GameID = command.ExecuteScalar().ToString();
-                        SetStatus(Created);
+                        SetStatus(Accepted);
                         trans.Commit();
                         return result;
 

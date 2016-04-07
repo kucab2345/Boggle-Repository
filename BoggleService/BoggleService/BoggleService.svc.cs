@@ -119,6 +119,10 @@ namespace Boggle
                             }
                             reader.Read();
                             game.TimeLimit = reader["TimeLimit"].ToString();
+                            int TimeRemaining;
+                            int.TryParse(game.TimeLimit, out TimeRemaining);
+
+
                             
                             game.GameState = "active";
                             if (DBNull.Value.Equals(reader["Player2"]))
@@ -129,6 +133,8 @@ namespace Boggle
                                 game.Player1 = new UserInfo();
                                 game.Player2 = new UserInfo();
                                 game.StartGameTime = (DateTime)reader["StartTime"];
+                                double result = (DateTime.Now - game.StartGameTime).TotalSeconds;
+                                int times = Convert.ToInt32(result);
                                 game.Player1.UserToken = reader["Player1"].ToString();
                                 game.Player1.UserToken = reader["Player2"].ToString();
 
@@ -149,10 +155,15 @@ namespace Boggle
                                     game.TimeLeft = "0";
                                     game.GameState = "completed";
                                 }
+
+
                             }
                         }
                     }
-                    using(SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player", conn, trans))
+
+                    if(game.GameState != "pending")
+                    {
+                        using (SqlCommand command = new SqlCommand("Select Score from Words where GameID = @Game and Player = @Player", conn, trans))
                     {
                         command.Parameters.AddWithValue("@Game", GameID);
                         command.Parameters.AddWithValue("@Player", game.Player1.UserToken);
@@ -196,6 +207,8 @@ namespace Boggle
                             }
                         }
                         game.Player2.Score = result.ToString();
+
+                    }
 
                     }
 

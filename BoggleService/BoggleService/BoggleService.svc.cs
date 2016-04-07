@@ -121,9 +121,9 @@ namespace Boggle
                             game.TimeLimit = reader["TimeLimit"].ToString();
                             int TimeRemaining;
                             int.TryParse(game.TimeLimit, out TimeRemaining);
-                            DateTime startTime = (DateTime)reader["StartTime"];
+                            game.StartGameTime =  (DateTime)reader["StartTime"];
 
-                            double result = (DateTime.Now - startTime).TotalSeconds;
+                            double result = (DateTime.Now - game.StartGameTime).TotalSeconds;
                             int times = Convert.ToInt32(result);
                             game.GameState = "active";
                             if (DBNull.Value.Equals(reader["Player2"]))

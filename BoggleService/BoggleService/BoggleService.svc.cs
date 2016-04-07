@@ -119,10 +119,6 @@ namespace Boggle
                             }
                             reader.Read();
                             game.TimeLimit = reader["TimeLimit"].ToString();
-                            int TimeRemaining;
-                            int.TryParse(game.TimeLimit, out TimeRemaining);
-
-
                             
                             game.GameState = "active";
                             if (DBNull.Value.Equals(reader["Player2"]))
@@ -136,12 +132,10 @@ namespace Boggle
                                 double result = (DateTime.Now - game.StartGameTime).TotalSeconds;
                                 int times = Convert.ToInt32(result);
                                 game.Player1.UserToken = reader["Player1"].ToString();
-                                game.Player1.UserToken = reader["Player2"].ToString();
+                                game.Player2.UserToken = reader["Player2"].ToString();
 
                                 int TimeRemaining;
                                 int.TryParse(game.TimeLimit, out TimeRemaining);
-                                double result = (DateTime.Now - game.StartGameTime).TotalSeconds;
-                                int times = Convert.ToInt32(result);
 
                                 if (game.GameState == "active" && (TimeRemaining - times > 0))
                                 {
@@ -303,8 +297,6 @@ namespace Boggle
                            
                         }
                     }
-
-
                             //Get Player1 Nickname
                             using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
                             {

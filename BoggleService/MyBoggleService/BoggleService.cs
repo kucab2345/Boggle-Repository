@@ -14,7 +14,7 @@ namespace Boggle
     {
 
 
-        private static HashSet<string> dictionaryContents = new HashSet<string>(File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\dictionary.txt"));
+        private static HashSet<string> dictionaryContents = new HashSet<string>(File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "..\\dictionary.txt"));
 
         private static string BoggleDB;
 

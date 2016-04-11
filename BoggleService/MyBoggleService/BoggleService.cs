@@ -7,11 +7,12 @@ using System.Configuration;
 using static System.Net.HttpStatusCode;
 using System.Data.SqlClient;
 
+
 namespace Boggle
 {
     public class BoggleService : IBoggleService
     {
-       
+
 
         private static HashSet<string> dictionaryContents = new HashSet<string>(File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\dictionary.txt"));
 
@@ -108,7 +109,7 @@ namespace Boggle
                             if (!reader.HasRows)
                             {
                                 SetStatus(Forbidden);
-                                
+
                                 return null;
                             }
                             reader.Read();
@@ -126,7 +127,7 @@ namespace Boggle
                             }
                             else {
 
-                                
+
                                 game.Player1 = new UserInfo();
                                 game.Player2 = new UserInfo();
                                 game.StartGameTime = (DateTime)reader["StartTime"];
@@ -141,7 +142,7 @@ namespace Boggle
 
                                 if (game.GameState == "active" && ((int)reader["TimeLimit"] - times > 0))
                                 {
-                                    
+
                                     game.TimeLeft = ((int)reader["TimeLimit"] - times).ToString();
                                     game.GameState = "active";
                                 }
@@ -321,7 +322,7 @@ namespace Boggle
                             command.Parameters.AddWithValue("@UserID", game.Player1.UserToken);
                             command.Parameters.AddWithValue("@GameID", GameID);
                             int result = 0;
-                            
+
                             using (SqlDataReader reader = command.ExecuteReader())
                             {
                                 if (game.GameState != "active")
@@ -350,7 +351,7 @@ namespace Boggle
                             command.Parameters.AddWithValue("@UserID", game.Player2.UserToken);
                             command.Parameters.AddWithValue("@GameID", GameID);
                             int result = 0;
-                            
+
                             using (SqlDataReader reader = command.ExecuteReader())
                             {
                                 if (game.GameState != "active")
@@ -436,25 +437,25 @@ namespace Boggle
                             if (!reader.HasRows)
                             {
                                 SetStatus(Forbidden);
-                                
+
                                 return null;
                             }
                             reader.Read();
                             if (DBNull.Value.Equals(reader["Board"]))
                             {
                                 SetStatus(Conflict);
-                                
+
                                 return null;
                             }
 
                             if ((string)reader["Player2"] == null)
                             {
                                 SetStatus(Conflict);
-                                
+
                                 return null;
                             }
-                            
-                            if((string)reader["Player1"] != currentPlayerToken && (string)reader["Player2"] != currentPlayerToken)
+
+                            if ((string)reader["Player1"] != currentPlayerToken && (string)reader["Player2"] != currentPlayerToken)
                             {
                                 SetStatus(Forbidden);
                                 return null;
@@ -471,7 +472,7 @@ namespace Boggle
                             if (TimeRemaining - times <= 0)
                             {
                                 SetStatus(Conflict);
-                                
+
                                 return null;
                             }
 
@@ -480,7 +481,7 @@ namespace Boggle
                         }
                     }
                     //If word being played equals current word, 
-                    
+
                     using (SqlCommand command = new SqlCommand("select Word from Words where Word = @Word and GameID = @GameID and Player = @Token", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", GameID);
@@ -497,7 +498,7 @@ namespace Boggle
 
                     if (wordExists)
                     {
-                        using(SqlCommand command = new SqlCommand("insert into Words (Word, GameID, Player, Score) values (@Word, @GameID, @Token, @Score) ", conn, trans))
+                        using (SqlCommand command = new SqlCommand("insert into Words (Word, GameID, Player, Score) values (@Word, @GameID, @Token, @Score) ", conn, trans))
                         {
                             command.Parameters.AddWithValue("@GameID", GameID);
                             command.Parameters.AddWithValue("@Token", currentPlayerToken);
@@ -531,8 +532,8 @@ namespace Boggle
 
             }
         }
-                
-            
+
+
 
         /// <summary>
         /// Scores the word submitted, returning the approriate int value.
@@ -575,7 +576,7 @@ namespace Boggle
             }
             else
             {
-                if(currentWord.ToUpper() == "Q")
+                if (currentWord.ToUpper() == "Q")
                 {
                     return 0;
                 }
@@ -615,7 +616,7 @@ namespace Boggle
                 return null;
             }
 
-            
+
             else
             {
                 TokenScoreGameIDReturn result = new TokenScoreGameIDReturn();
@@ -634,10 +635,10 @@ namespace Boggle
                             command.ExecuteNonQuery();
                             SetStatus(Created);
 
-                            
-                            
+
+
                             result.UserToken = userID;
-                            
+
                         }
                         trans.Commit();
                         return result;
@@ -694,7 +695,7 @@ namespace Boggle
                             if (!reader.HasRows)
                             {
                                 SetStatus(Forbidden);
-                                
+
                                 //trans.Commit();
                                 return null;
                             }
@@ -716,14 +717,14 @@ namespace Boggle
                             if (reader.HasRows)
                             {
                                 SetStatus(Conflict);
-                                
+
                                 //trans.Commit();
                                 return null;
 
                             }
                         }
                     }
-                    
+
                     using (SqlCommand command = new SqlCommand("select Player1, TimeLimit from Games where Player1 is not null AND Player2 IS NULL", conn, trans))
                     {
                         command.Parameters.AddWithValue("@Player", info.UserToken);
@@ -739,15 +740,15 @@ namespace Boggle
                                 gameExists = true;
                                 reader.Read();
                                 int.TryParse(info.TimeLimit, out Time);
-                                Time = ((int)reader["TimeLimit"] + Time)/2;
-                                
+                                Time = ((int)reader["TimeLimit"] + Time) / 2;
+
                             }
                         }
                     }
 
                     // Here we are executing an insert command, but notice the "output inserted.ItemID" portion.  
                     // We are asking the DB to send back the auto-generated ItemID.
-                    
+
                     if (gameExists)
                     {
                         using (SqlCommand command = new SqlCommand("Update Top (1) Games Set Player2 = @Player, TimeLimit = @Time, Board = @Board,  StartTime = @StartTime output inserted.GameID where Player2 is Null and Player1 is not null ", conn, trans))
@@ -755,7 +756,7 @@ namespace Boggle
                             ///test
                             ///This is another test
                             BoggleBoard board = new BoggleBoard();
-                            
+
                             command.Parameters.AddWithValue("@Player", info.UserToken);
                             command.Parameters.AddWithValue("@Time", Time);
                             command.Parameters.AddWithValue("@Board", board.ToString());
@@ -769,7 +770,7 @@ namespace Boggle
                     }
                     using (SqlCommand command = new SqlCommand("insert into Games (Player1, TimeLimit) output inserted.GameID values(@Player,@Timelimit)", conn, trans))
                     {
-                        
+
                         command.Parameters.AddWithValue("@Player", info.UserToken);
                         command.Parameters.AddWithValue("@Timelimit", test);
                         result = new TokenScoreGameIDReturn();

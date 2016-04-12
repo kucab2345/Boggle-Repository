@@ -53,20 +53,21 @@ namespace SimpleWebServer
         private void LineReceived(string s, Exception e, object payload)
         {
             lineCount++;
-            Console.WriteLine(s);
+            
             if (s != null)
             {
                 if (lineCount == 1)
                 {
                     Regex r = new Regex(@"^(\S+)\s+(\S+)");
                     Match m = r.Match(s);
-                    Console.WriteLine("Method: " + m.Groups[1].Value);
+                    
                     MethodType = m.Groups[1].Value; 
-                    Console.WriteLine("URL: " + m.Groups[2].Value);
+                    
                     URLAddress = m.Groups[2].Value;
                 }
                 if (MethodType.Equals("GET"))
                 {
+                    
                     ss.BeginReceive(ContentReceived, null);
                 }
                 if (s.StartsWith("Content-Length:"))
@@ -80,6 +81,7 @@ namespace SimpleWebServer
                 else
                 {
                     ss.BeginReceive(LineReceived, null);
+                    
                 }
             }
         }
@@ -165,12 +167,34 @@ namespace SimpleWebServer
 
         private void JoinGame(string s)
         {
-            throw new NotImplementedException();
+            GameJoin user = JsonConvert.DeserializeObject<GameJoin>(s);
+
+            TokenScoreGameIDReturn var = Service.JoinGame(user);
+
+            string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+            ss.BeginSend("HTTP/1.1 200 OK\n", Ignore, null);
+            ss.BeginSend("Content-Type: application/json\n", Ignore, null);
+            ss.BeginSend("Content-Length: " + result.Length + "\n", Ignore, null);
+            ss.BeginSend("\r\n", Ignore, null);
+            ss.BeginSend(result, (ex, py) => { ss.Shutdown(); }, null);
+            
         }
 
         private void CreateUser(string s)
         {
-            throw new NotImplementedException();
+            UserInfo user = JsonConvert.DeserializeObject<UserInfo>(s);
+            
+            TokenScoreGameIDReturn var = Service.RegisterUser(user);
+
+            string result = JsonConvert.SerializeObject(var,new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+            ss.BeginSend("HTTP/1.1 200 OK\n", Ignore, null);
+            ss.BeginSend("Content-Type: application/json\n", Ignore, null);
+            ss.BeginSend("Content-Length: " + result.Length + "\n", Ignore, null);
+            ss.BeginSend("\r\n", Ignore, null);
+            ss.BeginSend(result, (ex, py) => { ss.Shutdown(); }, null);
+            
         }
 
         private string methodChooser()
@@ -193,7 +217,7 @@ namespace SimpleWebServer
                 {
                     return "CancelGame";
                 }
-                if(Regex.IsMatch(URLAddress, " /BoggleService.svc/games/:GameID"))
+                if(Regex.IsMatch(URLAddress, " /BoggleService.svc/games/+d\\"))
                 {
                     return "PlayWord";
                 }

@@ -67,7 +67,7 @@ namespace SimpleWebServer
                     
                     URLAddress = m.Groups[2].Value;
                 }
-                if (MethodType.Equals("GET") && URLAddress == null)
+                if (MethodType.Equals("GET") && URLAddress == "/")
                 {
                     getAPI();
                 }
@@ -99,6 +99,7 @@ namespace SimpleWebServer
             ss.BeginSend("\r\n", Ignore, null);
             ss.BeginSend(API, (ex, py) => { ss.Shutdown(); }, null);
         }
+
         private void GetContent(string s)
         {
             Regex r = new Regex(@"^/BoggleService.svc/games/(\d+)$");

@@ -150,21 +150,7 @@ namespace SimpleWebServer
                 }
              
                 }
-                Person p = JsonConvert.DeserializeObject<Person>(s);
-                Console.WriteLine(p.Name + " " + p.Eyes);
-
-                // Call service method
-
-                string result =
-                    JsonConvert.SerializeObject(
-                            new Person { Name = "June", Eyes = "Blue" },
-                            new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-
-                ss.BeginSend("HTTP/1.1 200 OK\n", Ignore, null);
-                ss.BeginSend("Content-Type: application/json\n", Ignore, null);
-                ss.BeginSend("Content-Length: " + result.Length + "\n", Ignore, null);
-                ss.BeginSend("\r\n", Ignore, null);
-                ss.BeginSend(result, (ex, py) => { ss.Shutdown(); }, null);
+                
             }
         }
         

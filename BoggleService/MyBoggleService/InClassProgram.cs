@@ -121,9 +121,9 @@ namespace SimpleWebServer
 
             string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            ss.BeginSend("HTTP/1.1 200 OK\n", Ignore, null);
-            ss.BeginSend("Content-Type: application/json\n", Ignore, null);
-            ss.BeginSend("Content-Length: " + result.Length + "\n", Ignore, null);
+            ss.BeginSend("HTTP/1.1 200 OK\r\n", Ignore, null);
+            ss.BeginSend("Content-Type: application/json\r\n", Ignore, null);
+            ss.BeginSend("Content-Length: " + result.Length + "\r\n", Ignore, null);
             ss.BeginSend("\r\n", Ignore, null);
             ss.BeginSend(result, (ex, py) => { ss.Shutdown(); }, null);
         }
@@ -179,9 +179,9 @@ namespace SimpleWebServer
 
             string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\n", Ignore, null);
-            ss.BeginSend("Content-Type: application/json\n", Ignore, null);
-            ss.BeginSend("Content-Length: " + result.Length + "\n", Ignore, null);
+            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
+            ss.BeginSend("Content-Type: application/json\r\n", Ignore, null);
+            ss.BeginSend("Content-Length: " + result.Length + "\r\n", Ignore, null);
             ss.BeginSend("\r\n", Ignore, null);
             ss.BeginSend(result, (ex, py) => { ss.Shutdown(); }, null);
             
@@ -206,9 +206,9 @@ namespace SimpleWebServer
 
             string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\n", Ignore, null);
-            ss.BeginSend("Content-Type: application/json\n", Ignore, null);
-            ss.BeginSend("Content-Length: " + result.Length + "\n", Ignore, null);
+            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
+            ss.BeginSend("Content-Type: application/json\r\n", Ignore, null);
+            ss.BeginSend("Content-Length: " + result.Length + "\r\n", Ignore, null);
             ss.BeginSend("\r\n", Ignore, null);
             ss.BeginSend(result, (ex, py) => { ss.Shutdown(); }, null);
             
@@ -222,8 +222,8 @@ namespace SimpleWebServer
 
             string result = JsonConvert.SerializeObject(var,new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\n", Ignore, null);
-            ss.BeginSend("Content-Type: application/json\n", Ignore, null);
+            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
+            ss.BeginSend("Content-Type: application/json\r\n", Ignore, null);
             ss.BeginSend("Content-Length: " + result.Length + "\n", Ignore, null);
             ss.BeginSend("\r\n", Ignore, null);
             ss.BeginSend(result, (ex, py) => { ss.Shutdown(); }, null);

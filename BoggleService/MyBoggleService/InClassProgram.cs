@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using Boggle;
+using System.IO;
 
 namespace SimpleWebServer
 {
@@ -65,6 +66,10 @@ namespace SimpleWebServer
                     
                     URLAddress = m.Groups[2].Value;
                 }
+                if (MethodType.Equals("GET") && URLAddress == null)
+                {
+                    getAPI();
+                }
                 if (MethodType.Equals("GET"))
                 {
                     GetContent(s);
@@ -84,6 +89,15 @@ namespace SimpleWebServer
             }
         }
 
+
+        private void getAPI()
+        {
+            ss.BeginSend("HTTP/1.1 200 OK\n", Ignore, null);
+            var API = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "..\\index.html");
+            ss.BeginSend("Content-Length: text/html\n", Ignore, null);
+            ss.BeginSend("\r\n", Ignore, null);
+            ss.BeginSend(API, (ex, py) => { ss.Shutdown(); }, null);
+        }
         private void GetContent(string s)
         {
             Regex r = new Regex(@"^/BoggleService.svc/games/(\d+)$");

@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using Boggle;
 
 namespace SimpleWebServer
 {
@@ -36,9 +37,12 @@ namespace SimpleWebServer
 
     class HttpRequest
     {
+        private BoggleService Service = new BoggleService();
         private StringSocket ss;
         private int lineCount;
         private int contentLength;
+        private string MethodType;
+        private string URLAddress;
 
         public HttpRequest(StringSocket stringSocket)
         {
@@ -57,7 +61,13 @@ namespace SimpleWebServer
                     Regex r = new Regex(@"^(\S+)\s+(\S+)");
                     Match m = r.Match(s);
                     Console.WriteLine("Method: " + m.Groups[1].Value);
+                    MethodType = m.Groups[1].Value; 
                     Console.WriteLine("URL: " + m.Groups[2].Value);
+                    URLAddress = m.Groups[2].Value;
+                }
+                if (MethodType.Equals("GET"))
+                {
+                    ss.BeginReceive(ContentReceived, null);
                 }
                 if (s.StartsWith("Content-Length:"))
                 {
@@ -78,6 +88,43 @@ namespace SimpleWebServer
         {
             if (s != null)
             {
+                string method = methodChooser();
+
+
+                switch (method)
+                {
+                    case ("CreateUser"):
+                        {
+                            CreateUser(s);
+                            break;
+                        }
+
+                    case ("JoinGame"):
+                        {
+                            JoinGame(s);
+                            break;
+                        }
+                    case ("CancelGame"):
+                        {
+                            CancelGame(s);
+                            break;
+                        }
+                    case ("PlayWord"):
+                        {
+                            PlayWord(s);
+                            break;
+                        }
+                    case ("BriefStatus"):
+                        {
+                            BriefStatus(s);
+                            break;
+                        }
+                    case ("FullStatus"):
+                        {
+                            FullStatus(s);
+                            break;
+                        }
+                }
                 Person p = JsonConvert.DeserializeObject<Person>(s);
                 Console.WriteLine(p.Name + " " + p.Eyes);
 
@@ -96,6 +143,63 @@ namespace SimpleWebServer
             }
         }
 
+        private void FullStatus(string s)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BriefStatus(string s)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void PlayWord(string s)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CancelGame(string s)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void JoinGame(string s)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CreateUser(string s)
+        {
+            throw new NotImplementedException();
+        }
+
+        private string methodChooser()
+        {
+            if(MethodType == "POST")
+            {
+                if(Regex.IsMatch(URLAddress, "/BoggleService.svc/users"))
+                {
+                    return "CreateUser";
+                }
+
+                if(Regex.IsMatch(URLAddress, "/BoggleService.svc/games"))
+                {
+                    return "JoinGame";
+                }
+            }
+            else if(MethodType == "PUT")
+            {
+                if(Regex.IsMatch(URLAddress, "/BoggleService.svc/games"))
+                {
+                    return "CancelGame";
+                }
+                if(Regex.IsMatch(URLAddress, " /BoggleService.svc/games/:GameID"))
+                {
+                    return "PlayWord";
+                }
+            }
+
+        }
         private void Ignore(Exception e, object payload)
         {
         }

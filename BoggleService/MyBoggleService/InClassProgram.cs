@@ -250,10 +250,4 @@ namespace SimpleWebServer
         {
         }
     }
-
-    public class Person
-    {
-        public String Name { get; set; }
-        public String Eyes { get; set; }
-    }
 }

@@ -12,7 +12,7 @@ namespace Boggle
 {
     public class BoggleService : IBoggleService
     {
-        
+
         /// <summary>
         /// Dictionary used to store all games.  Key is relevant GameID, and key is Relevant GameStatus
         /// </summary>
@@ -39,7 +39,7 @@ namespace Boggle
         private static HashSet<string> dictionaryContents = new HashSet<string>(File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\dictionary.txt"));
 
 
-        
+
 
 
         /// <summary>
@@ -72,21 +72,27 @@ namespace Boggle
             lock (sync)
             {
                 string cancelGameID = null;
-                foreach (KeyValuePair<string, GameStatus> games in AllGames)
-                {
-                    if (games.Value.GameState == "pending" && games.Value.Player1.UserToken == endUser.UserToken)
-                    {
-                        cancelGameID = games.Key;
-                    }
-                }
-                if (cancelGameID != null)
-                {
-                    SetStatus(OK);
-                    AllGames[cancelGameID].Player1 = null;
-                }
-                else
+                if (AllGames.Count == 0)
                 {
                     SetStatus(Forbidden);
+                }
+                else {
+                    foreach (KeyValuePair<string, GameStatus> games in AllGames)
+                    {
+                        if (games.Value.Player1 != null && games.Value.Player1.UserToken == endUser.UserToken && games.Value.GameState == "pending")
+                        {
+                            cancelGameID = games.Key;
+                        }
+                    }
+                    if (cancelGameID != null)
+                    {
+                        SetStatus(OK);
+                        AllGames[cancelGameID].Player1 = null;
+                    }
+                    else
+                    {
+                        SetStatus(Forbidden);
+                    }
                 }
             }
         }
@@ -106,16 +112,17 @@ namespace Boggle
                     return null;
                 }
                 SetStatus(OK);
+                GameStatus var = new GameStatus();
                 if (AllGames[GameID].GameState != "pending")
                 {
-                    
+
                     double result = (DateTime.Now - AllGames[GameID].StartGameTime).TotalSeconds;
                     int times = Convert.ToInt32(result);
 
                     int TimeRemaining;
                     int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining);
 
-                    if (AllGames[GameID].GameState == "active" && (TimeRemaining - times > 0))
+                    if (AllGames[GameID].GameState == "active" && ((TimeRemaining - times) > 0))
                     {
                         int.TryParse(AllGames[GameID].TimeLimit, out TimeRemaining);
                         AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
@@ -135,14 +142,22 @@ namespace Boggle
 
                     }
 
-                    GameStatus var = new GameStatus();
+
                     var.GameState = AllGames[GameID].GameState;
                     var.TimeLeft = AllGames[GameID].TimeLeft;
-                    var.Player1 = AllGames[GameID].Player1;
-                    var.Player2 = AllGames[GameID].Player2;
+
+                    var.Player1 = new UserInfo();
+                    var.Player1.Score = AllGames[GameID].Player1.Score;
+                    var.Player2 = new UserInfo();
+                    var.Player2.Score = AllGames[GameID].Player2.Score;
                     return var;
                 }
-                return AllGames[GameID];
+                else
+                {
+
+                    var.GameState = AllGames[GameID].GameState;
+                }
+                return var;
             }
         }
 
@@ -161,6 +176,7 @@ namespace Boggle
                     return null;
                 }
                 SetStatus(OK);
+                GameStatus var = new GameStatus();
                 if (AllGames[GameID].GameState != "pending")
                 {
                     double result = (DateTime.Now - AllGames[GameID].StartGameTime).TotalSeconds;
@@ -169,7 +185,7 @@ namespace Boggle
                     int TimeRemaining;
                     int.TryParse(AllGames[GameID].TimeLeft, out TimeRemaining);
 
-                    if (AllGames[GameID].GameState == "active" && (TimeRemaining - times > 0))
+                    if (AllGames[GameID].GameState == "active" && ((TimeRemaining - times) > 0))
                     {
                         int.TryParse(AllGames[GameID].TimeLimit, out TimeRemaining);
                         AllGames[GameID].TimeLeft = (TimeRemaining - times).ToString();
@@ -179,6 +195,16 @@ namespace Boggle
                     else
                     {
                         AllGames[GameID].TimeLeft = "0";
+                    }
+
+                    if (AllGames[GameID].Player1.Score == null)
+                    {
+                        AllGames[GameID].Player1.Score = "0";
+                    }
+
+                    if (AllGames[GameID].Player2.Score == null)
+                    {
+                        AllGames[GameID].Player2.Score = "0";
                     }
 
                     int.TryParse(AllGames[GameID].TimeLeft, out times);
@@ -206,6 +232,12 @@ namespace Boggle
                     }
                 }
 
+                else
+                {
+                    var.GameState = "pending";
+                    return var;
+                }
+
                 return AllGames[GameID];
             }
         }
@@ -217,7 +249,8 @@ namespace Boggle
         /// <returns></returns>
         public TokenScoreGameIDReturn JoinGame(GameJoin info)
         {
-            lock(sync){
+            lock (sync)
+            {
                 if (info.UserToken == null || info.UserToken.Trim().Length == 0 || !AllPlayers.ContainsKey(info.UserToken))
                 {
                     SetStatus(Forbidden);
@@ -240,7 +273,7 @@ namespace Boggle
                 {
                     if (game.Value.GameState == "pending")
                     {
-                        if (game.Value.Player1.UserToken == info.UserToken)
+                        if (game.Value.Player1 != null && game.Value.Player1.UserToken == info.UserToken)
                         {
                             SetStatus(Conflict);
                             return null;
@@ -272,7 +305,7 @@ namespace Boggle
                     }
                 }
 
-                
+
                 gameID += 1;
                 SetStatus(Accepted);
                 AllGames.Add(gameID.ToString(), new GameStatus());
@@ -298,16 +331,16 @@ namespace Boggle
             int time2;
             int.TryParse(AllGames[gameID].TimeLimit, out time1);
             int.TryParse(timeLimit, out time2);
-            
-            if(time1 < time2)
+
+            if (time1 < time2)
             {
-                time2 = ((time2 - time1)/2);
+                time2 = ((time2 - time1) / 2);
             }
             else
             {
                 time1 = ((time1 - time2) / 2);
             }
-            
+
             AllGames[gameID].TimeLimit = (time1 + time2).ToString();
             AllGames[gameID].TimeLeft = AllGames[gameID].TimeLimit;
             AllGames[gameID].GameState = "active";
@@ -349,7 +382,12 @@ namespace Boggle
                 {
                     AllPlayers[words.UserToken].personalList = new List<WordScore>();
                 }
-            
+
+                if (AllGames[GameID].Player1.UserToken != words.UserToken && AllGames[GameID].Player2.UserToken != words.UserToken)
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
                 int userScore;
                 int.TryParse(AllPlayers[words.UserToken].Score, out userScore);
                 int WordScoreResult = ScoreWord(words.Word, words.UserToken, GameID);
@@ -375,13 +413,13 @@ namespace Boggle
         /// <returns></returns>
         private int ScoreWord(string word, string userToken, string GameID)
         {
-            bool legalWord = searchDictionary(word.Trim().ToUpper(),GameID);
+            bool legalWord = searchDictionary(word.Trim().ToUpper(), GameID);
             string currentWord = word.Trim();
 
             if (legalWord == true)
             {
-                if (currentWord.Length < 3 || (AllPlayers[userToken].WordsPlayed != null 
-                    && AllPlayers[userToken].WordsPlayed.Count > 0 && AllPlayers[userToken].WordsPlayed.Any(x => x.Word == currentWord)))
+                if (currentWord.Length < 3 || (AllPlayers[userToken].personalList != null
+                    && AllPlayers[userToken].personalList.Count > 0 && AllPlayers[userToken].personalList.Any(x => x.Word.ToUpper() == currentWord.ToUpper())))
                 {
                     return 0;
                 }
@@ -408,6 +446,10 @@ namespace Boggle
             }
             else
             {
+                if (currentWord.ToUpper() == "Q" || (AllPlayers[userToken].personalList != null && AllPlayers[userToken].personalList.Any(x => x.Word.ToUpper() == currentWord.ToUpper())))
+                {
+                    return 0;
+                }
                 return -1;
             }
         }
@@ -439,7 +481,7 @@ namespace Boggle
         {
             lock (sync)
             {
-                
+
                 if (user.Nickname == null || user.Nickname.Trim().Length == 0)
                 {
                     SetStatus(Forbidden);

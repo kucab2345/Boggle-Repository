@@ -116,6 +116,11 @@ namespace SimpleWebServer
                             PlayWord(s);
                             break;
                         }
+                    default:
+                        {
+
+                            break;
+                        }
              
                 }
                 Person p = JsonConvert.DeserializeObject<Person>(s);
@@ -135,16 +140,7 @@ namespace SimpleWebServer
                 ss.BeginSend(result, (ex, py) => { ss.Shutdown(); }, null);
             }
         }
-
-        private void FullStatus(string s)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void BriefStatus(string s)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         private void PlayWord(string s)
         {

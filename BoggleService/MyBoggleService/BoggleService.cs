@@ -16,6 +16,8 @@ namespace Boggle
 
         private static string BoggleDB;
 
+        
+
         static BoggleService()
         {
             BoggleDB = ConfigurationManager.ConnectionStrings["BoggleDB"].ConnectionString;
@@ -25,10 +27,19 @@ namespace Boggle
         /// an http response is sent.
         /// </summary>
         /// <param name="status"></param>
-        private static void SetStatus(HttpStatusCode status)
+        private  void SetStatus(HttpStatusCode status)
         {
-            WebOperationContext.Current.OutgoingResponse.StatusCode = status;
+            //WebOperationContext.Current.OutgoingResponse.StatusCode = status;
+
+            ActualStatus = status;
         }
+
+        public HttpStatusCode ActualStatus
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Returns a Stream version of index.html.
         /// </summary>

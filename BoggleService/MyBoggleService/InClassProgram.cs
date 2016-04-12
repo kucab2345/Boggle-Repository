@@ -67,8 +67,8 @@ namespace SimpleWebServer
                 }
                 if (MethodType.Equals("GET"))
                 {
-                    
-                    ss.BeginReceive(ContentReceived, null);
+
+                    getContent();
                 }
                 if (s.StartsWith("Content-Length:"))
                 {
@@ -116,16 +116,7 @@ namespace SimpleWebServer
                             PlayWord(s);
                             break;
                         }
-                    case ("BriefStatus"):
-                        {
-                            BriefStatus(s);
-                            break;
-                        }
-                    case ("FullStatus"):
-                        {
-                            FullStatus(s);
-                            break;
-                        }
+             
                 }
                 Person p = JsonConvert.DeserializeObject<Person>(s);
                 Console.WriteLine(p.Name + " " + p.Eyes);
@@ -157,12 +148,32 @@ namespace SimpleWebServer
 
         private void PlayWord(string s)
         {
-            throw new NotImplementedException();
+            UserGame user = JsonConvert.DeserializeObject<UserGame>(s);
+
+            Regex r = new Regex(@"^/BoggleService.svc/games/(\d+)$");
+            Match m  = r.Match(URLAddress);
+
+            TokenScoreGameIDReturn var = Service.playWord(user, m.Groups[1].Value);
+
+            string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\n", Ignore, null);
+            ss.BeginSend("Content-Type: application/json\n", Ignore, null);
+            ss.BeginSend("Content-Length: " + result.Length + "\n", Ignore, null);
+            ss.BeginSend("\r\n", Ignore, null);
+            ss.BeginSend(result, (ex, py) => { ss.Shutdown(); }, null);
+            
         }
 
         private void CancelGame(string s)
         {
-            throw new NotImplementedException();
+            UserGame user = JsonConvert.DeserializeObject<UserGame>(s);
+
+            Service.CancelGame(user);
+
+            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\n", (ex, py) => { ss.Shutdown(); }, null);
+            
+            
         }
 
         private void JoinGame(string s)
@@ -173,7 +184,7 @@ namespace SimpleWebServer
 
             string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            ss.BeginSend("HTTP/1.1 200 OK\n", Ignore, null);
+            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\n", Ignore, null);
             ss.BeginSend("Content-Type: application/json\n", Ignore, null);
             ss.BeginSend("Content-Length: " + result.Length + "\n", Ignore, null);
             ss.BeginSend("\r\n", Ignore, null);
@@ -189,7 +200,7 @@ namespace SimpleWebServer
 
             string result = JsonConvert.SerializeObject(var,new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            ss.BeginSend("HTTP/1.1 200 OK\n", Ignore, null);
+            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\n", Ignore, null);
             ss.BeginSend("Content-Type: application/json\n", Ignore, null);
             ss.BeginSend("Content-Length: " + result.Length + "\n", Ignore, null);
             ss.BeginSend("\r\n", Ignore, null);
@@ -222,6 +233,8 @@ namespace SimpleWebServer
                     return "PlayWord";
                 }
             }
+
+            return "Failure";
 
         }
         private void Ignore(Exception e, object payload)

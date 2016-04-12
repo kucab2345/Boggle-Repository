@@ -95,7 +95,7 @@ namespace SimpleWebServer
         {
             ss.BeginSend("HTTP/1.1 200 OK\n", Ignore, null);
             var API = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "..\\index.html");
-            ss.BeginSend("Content-Length: text/html\n", Ignore, null);
+            ss.BeginSend("Content-Length: text/html\r\n", Ignore, null);
             ss.BeginSend("\r\n", Ignore, null);
             ss.BeginSend(API, (ex, py) => { ss.Shutdown(); }, null);
         }
@@ -113,7 +113,7 @@ namespace SimpleWebServer
 
             if(!r1.IsMatch(URLAddress) && !rbrief.IsMatch(URLAddress))
             {
-                ss.BeginSend("HTTP:/1.1 404 Not Found " + "\r\n", (ex, py) => { ss.Shutdown(); }, null);
+                ss.BeginSend("HTTP:/1.1 404 Not Found\r\n", (ex, py) => { ss.Shutdown(); }, null);
                 return;
             }
 
@@ -160,7 +160,7 @@ namespace SimpleWebServer
                         }
                     default:
                         {
-                            ss.BeginSend("HTTP:/1.1 404 Not Found" + "\r\n", (ex, py) => { ss.Shutdown(); }, null);
+                            ss.BeginSend("HTTP:/1.1 404 Not Found\r\n", (ex, py) => { ss.Shutdown(); }, null);
                             break;
                          }
              
@@ -226,7 +226,7 @@ namespace SimpleWebServer
 
             ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
             ss.BeginSend("Content-Type: application/json\r\n", Ignore, null);
-            ss.BeginSend("Content-Length: " + result.Length + "\n", Ignore, null);
+            ss.BeginSend("Content-Length: " + result.Length + "\r\n", Ignore, null);
             ss.BeginSend("\r\n", Ignore, null);
             ss.BeginSend(result, (ex, py) => { ss.Shutdown(); }, null);
             

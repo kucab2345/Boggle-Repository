@@ -145,9 +145,9 @@ namespace SimpleWebServer
                         }
                     default:
                         {
-
+                            ss.BeginSend("HTTP:/1.1 404 Not Found\n", (ex, py) => { ss.Shutdown(); }, null);
                             break;
-                }
+                         }
              
                 }
                 

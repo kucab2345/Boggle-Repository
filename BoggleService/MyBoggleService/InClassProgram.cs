@@ -97,7 +97,7 @@ namespace SimpleWebServer
 
             if(!r1.IsMatch(URLAddress) && !rbrief.IsMatch(URLAddress))
             {
-                ss.BeginSend("HTTP:/1.1 404 Not Found\r\n", (ex, py) => { ss.Shutdown(); }, null);
+                ss.BeginSend("HTTP:/1.1 404 Not Found " + "\r\n", (ex, py) => { ss.Shutdown(); }, null);
                 return;
             }
 
@@ -144,7 +144,7 @@ namespace SimpleWebServer
                         }
                     default:
                         {
-                            ss.BeginSend("HTTP:/1.1 404 Not Found\r\n", (ex, py) => { ss.Shutdown(); }, null);
+                            ss.BeginSend("HTTP:/1.1 404 Not Found" + "\r\n", (ex, py) => { ss.Shutdown(); }, null);
                             break;
                          }
              

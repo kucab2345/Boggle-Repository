@@ -67,8 +67,7 @@ namespace SimpleWebServer
                 }
                 if (MethodType.Equals("GET"))
                 {
-
-                    getContent();
+                    GetContent(s);
                 }
                 if (s.StartsWith("Content-Length:"))
                 {
@@ -86,13 +85,41 @@ namespace SimpleWebServer
             }
         }
 
+        private void GetContent(string s)
+        {
+            Regex r = new Regex(@"^/BoggleService.svc/games/(\d+)$");
+            Regex r1 = new Regex(@"^/BoggleService.svc/games/\d+$");
+            Match m = r.Match(URLAddress);
+            string GameID = m.Groups[1].Value;
+
+            Regex rbrief = new Regex(@"^/BoggleService.svc/games/\d+\?brief=(.*)$");
+            Match mbrief = rbrief.Match(URLAddress);
+            string briefLine = mbrief.Groups[1].Value;
+
+            if(!r1.IsMatch(URLAddress) && !rbrief.IsMatch(URLAddress))
+            {
+                ss.BeginSend("HTTP:/1.1 404 Not Found\n", (ex, py) => { ss.Shutdown(); }, null);
+                return;
+            }
+
+            GameStatus user = JsonConvert.DeserializeObject<GameStatus>(s);
+
+            GameStatus var = Service.GetFullGameStatus(GameID);
+
+            string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+            ss.BeginSend("HTTP/1.1 200 OK\n", Ignore, null);
+            ss.BeginSend("Content-Type: application/json\n", Ignore, null);
+            ss.BeginSend("Content-Length: " + result.Length + "\n", Ignore, null);
+            ss.BeginSend("\r\n", Ignore, null);
+            ss.BeginSend(result, (ex, py) => { ss.Shutdown(); }, null);
+        }
+
         private void ContentReceived(string s, Exception e, object payload)
         {
             if (s != null)
             {
                 string method = methodChooser();
-
-
                 switch (method)
                 {
                     case ("CreateUser"):
@@ -120,7 +147,7 @@ namespace SimpleWebServer
                         {
 
                             break;
-                        }
+                }
              
                 }
                 Person p = JsonConvert.DeserializeObject<Person>(s);
@@ -224,7 +251,7 @@ namespace SimpleWebServer
                 {
                     return "CancelGame";
                 }
-                if(Regex.IsMatch(URLAddress, " /BoggleService.svc/games/+d\\"))
+                if(Regex.IsMatch(URLAddress, "/BoggleService.svc/games/+d\\"))
                 {
                     return "PlayWord";
                 }

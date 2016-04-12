@@ -80,7 +80,6 @@ namespace SimpleWebServer
                 else
                 {
                     ss.BeginReceive(LineReceived, null);
-                    
                 }
             }
         }

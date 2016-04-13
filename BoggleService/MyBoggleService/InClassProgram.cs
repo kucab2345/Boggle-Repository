@@ -73,7 +73,7 @@ namespace SimpleWebServer
                 }
                 if (MethodType.Equals("GET"))
                 {
-                    GetContent(s);
+                    GetContent();
                 }
                 if (s.StartsWith("Content-Length:"))
                 {
@@ -100,9 +100,9 @@ namespace SimpleWebServer
             ss.BeginSend(API, (ex, py) => { ss.Shutdown(); }, null);
         }
 
-        private void GetContent(string s)
+        private void GetContent()
         {
-            Regex r = new Regex(@"^/BoggleService.svc/games/([a-zA-Z0-9]*)$");
+            Regex r = new Regex(@"^/BoggleService.svc/games/(.+)");
             Regex r1 = new Regex(@"^/BoggleService.svc/games/[a-zA-Z0-9]*$");
             Match m = r.Match(URLAddress);
             string GameID = m.Groups[1].Value;
@@ -116,11 +116,16 @@ namespace SimpleWebServer
                 ss.BeginSend("HTTP:/1.1 404 Not Found\r\n", (ex, py) => { ss.Shutdown(); }, null);
                 return;
             }
-
-
+            GameStatus var;
+            if (rbrief.Equals("yes"))
+            {
+                var = Service.GetFullGameStatus(GameID);
+            }
+            else
+            {
+                var = Service.GetBriefGamestatus(GameID);
+            }
             
-
-            GameStatus var = Service.GetFullGameStatus(GameID);
 
             string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 

@@ -102,12 +102,12 @@ namespace SimpleWebServer
 
         private void GetContent(string s)
         {
-            Regex r = new Regex(@"^/BoggleService.svc/games/(\d+)$");
-            Regex r1 = new Regex(@"^/BoggleService.svc/games/\d+$");
+            Regex r = new Regex(@"^/BoggleService.svc/games/([a-zA-Z0-9]*)$");
+            Regex r1 = new Regex(@"^/BoggleService.svc/games/[a-zA-Z0-9]*$");
             Match m = r.Match(URLAddress);
             string GameID = m.Groups[1].Value;
 
-            Regex rbrief = new Regex(@"^/BoggleService.svc/games/\d+\?brief=(.*)$");
+            Regex rbrief = new Regex(@"^/BoggleService.svc/games/[a-zA-Z0-9]*\?brief=(.*)$");
             Match mbrief = rbrief.Match(URLAddress);
             string briefLine = mbrief.Groups[1].Value;
 
@@ -175,7 +175,7 @@ namespace SimpleWebServer
         {
             UserGame user = JsonConvert.DeserializeObject<UserGame>(s);
 
-            Regex r = new Regex(@"^/BoggleService.svc/games/(\d+)$");
+            Regex r = new Regex(@"^/BoggleService.svc/games/([a-zA-Z0-9]*)$");
             Match m  = r.Match(URLAddress);
 
             TokenScoreGameIDReturn var = Service.playWord(user, m.Groups[1].Value);
@@ -255,7 +255,7 @@ namespace SimpleWebServer
                 {
                     return "CancelGame";
                 }
-                if(Regex.IsMatch(URLAddress, "^/BoggleService.svc/games/\\+d$"))
+                if(Regex.IsMatch(URLAddress, @"^/BoggleService.svc/games/[a-zA-Z0-9]*$"))
                 {
                     return "PlayWord";
                 }

@@ -102,25 +102,27 @@ namespace SimpleWebServer
 
         private void GetContent(string s)
         {
-            Regex r = new Regex(@"^/BoggleService.svc/games/([a-zA-Z0-9]*)$");
-            Regex r1 = new Regex(@"^/BoggleService.svc/games/[a-zA-Z0-9]*$");
+            Regex r = new Regex(@"^/BoggleService.svc/games/(.*)?\?brief=(.*)$");
+            Regex r1 = new Regex(@"^/BoggleService.svc/games/.*$");
             Match m = r.Match(URLAddress);
             string GameID = m.Groups[1].Value;
+            string briefLine = m.Groups[2].Value;
 
-            Regex rbrief = new Regex(@"^/BoggleService.svc/games/[a-zA-Z0-9]*\?brief=(.*)$");
-            Match mbrief = rbrief.Match(URLAddress);
-            string briefLine = mbrief.Groups[1].Value;
-
-            if(!r1.IsMatch(URLAddress) && !rbrief.IsMatch(URLAddress))
+            if(!r1.IsMatch(URLAddress))
             {
                 ss.BeginSend("HTTP:/1.1 404 Not Found\r\n", (ex, py) => { ss.Shutdown(); }, null);
                 return;
             }
+            GameStatus var;
+            if(briefLine == "yes")
+            {
+                var = Service.GetBriefGamestatus(GameID);
+            }
 
-
-            
-
-            GameStatus var = Service.GetFullGameStatus(GameID);
+            else
+            {
+                var = Service.GetFullGameStatus(GameID);
+            }
 
             string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
@@ -175,10 +177,11 @@ namespace SimpleWebServer
         {
             UserGame user = JsonConvert.DeserializeObject<UserGame>(s);
 
-            Regex r = new Regex(@"^/BoggleService.svc/games/([a-zA-Z0-9]*)$");
+            Regex r = new Regex(@"^/BoggleService.svc/games/(.*)$");
             Match m  = r.Match(URLAddress);
 
             TokenScoreGameIDReturn var = Service.playWord(user, m.Groups[1].Value);
+
 
             string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
@@ -255,7 +258,7 @@ namespace SimpleWebServer
                 {
                     return "CancelGame";
                 }
-                if(Regex.IsMatch(URLAddress, @"^/BoggleService.svc/games/[a-zA-Z0-9]*$"))
+                if(Regex.IsMatch(URLAddress, @"^/BoggleService.svc/games/.*$"))
                 {
                     return "PlayWord";
                 }

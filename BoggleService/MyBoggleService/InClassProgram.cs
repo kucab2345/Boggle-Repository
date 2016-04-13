@@ -117,7 +117,7 @@ namespace SimpleWebServer
                 return;
             }
 
-            
+
             
 
             GameStatus var = Service.GetFullGameStatus(GameID);
@@ -197,7 +197,7 @@ namespace SimpleWebServer
             Service.CancelGame(user);
 
             ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + " " + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
-
+            
             ss.BeginSend("\r\n", (ex, py) => { ss.Shutdown(); }, null);
             
             

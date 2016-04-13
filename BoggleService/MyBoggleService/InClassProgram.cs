@@ -71,7 +71,7 @@ namespace SimpleWebServer
                 {
                     getAPI();
                 }
-                if (MethodType.Equals("GET"))
+                if (MethodType.Equals("GET") && URLAddress != "/")
                 {
                     GetContent();
                 }
@@ -184,7 +184,7 @@ namespace SimpleWebServer
 
 
             string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-
+            //
             ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + " " + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
             ss.BeginSend("Content-Type: application/json\r\n", Ignore, null);
             ss.BeginSend("Content-Length: " + result.Length + "\r\n", Ignore, null);

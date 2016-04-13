@@ -533,6 +533,7 @@ namespace Boggle
                     }
                     TokenScoreGameIDReturn ScoreResult = new TokenScoreGameIDReturn();
                     ScoreResult.Score = numResult.ToString();
+                    SetStatus(OK);
                     trans.Commit();
                     return ScoreResult;
 

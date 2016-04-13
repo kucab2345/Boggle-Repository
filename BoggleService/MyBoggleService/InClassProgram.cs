@@ -117,10 +117,9 @@ namespace SimpleWebServer
                 return;
             }
 
-            GameStatus user = JsonConvert.DeserializeObject<GameStatus>(s);
 
             GameStatus var = Service.GetFullGameStatus(GameID);
-
+            
             string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
             ss.BeginSend("HTTP/1.1 200 OK\r\n", Ignore, null);

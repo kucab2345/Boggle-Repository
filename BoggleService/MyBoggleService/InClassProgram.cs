@@ -181,7 +181,7 @@ namespace SimpleWebServer
 
             string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
+            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + " " + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
             ss.BeginSend("Content-Type: application/json\r\n", Ignore, null);
             ss.BeginSend("Content-Length: " + result.Length + "\r\n", Ignore, null);
             ss.BeginSend("\r\n", Ignore, null);
@@ -195,7 +195,7 @@ namespace SimpleWebServer
 
             Service.CancelGame(user);
 
-            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\r\n", (ex, py) => { ss.Shutdown(); }, null);
+            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + " " + Service.ActualStatus.ToString() + "\r\n", (ex, py) => { ss.Shutdown(); }, null);
             
             
         }
@@ -208,7 +208,7 @@ namespace SimpleWebServer
 
             string result = JsonConvert.SerializeObject(var, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
+            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + " " + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
             ss.BeginSend("Content-Type: application/json\r\n", Ignore, null);
             ss.BeginSend("Content-Length: " + result.Length + "\r\n", Ignore, null);
             ss.BeginSend("\r\n", Ignore, null);
@@ -224,7 +224,7 @@ namespace SimpleWebServer
 
             string result = JsonConvert.SerializeObject(var,new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
+            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + " " + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
             ss.BeginSend("Content-Type: application/json\r\n", Ignore, null);
             ss.BeginSend("Content-Length: " + result.Length + "\r\n", Ignore, null);
             ss.BeginSend("\r\n", Ignore, null);

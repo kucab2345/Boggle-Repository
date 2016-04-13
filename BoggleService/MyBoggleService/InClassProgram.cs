@@ -73,7 +73,7 @@ namespace SimpleWebServer
                 }
                 if (MethodType.Equals("GET"))
                 {
-                    GetContent(s);
+                    GetContent();
                 }
                 if (s.StartsWith("Content-Length:"))
                 {
@@ -100,7 +100,7 @@ namespace SimpleWebServer
             ss.BeginSend(API, (ex, py) => { ss.Shutdown(); }, null);
         }
 
-        private void GetContent(string s)
+        private void GetContent()
         {
             Regex r = new Regex(@"^/BoggleService.svc/games/(.*)?\?brief=(.*)$");
             Regex r1 = new Regex(@"^/BoggleService.svc/games/.*$");

@@ -307,9 +307,9 @@ namespace ServerGrader
             String player1 = MakeUser("Player 1", Created).Result;
             String player2 = MakeUser("Player 2", Created).Result;
             String player3 = MakeUser("Player 3", Created).Result;
-            String game1 = JoinGame(player1, 120, Accepted).Result;
+            String game1 = JoinGame(player1, 10, Accepted).Result;
             PlayWord(player1, game1, "a", Conflict).Wait();
-            String game2 = JoinGame(player2, 120, Created).Result;
+            String game2 = JoinGame(player2, 30, Created).Result;
             Assert.AreEqual(game1, game2);
 
             PlayWord(player1, game1, null, Forbidden).Wait();

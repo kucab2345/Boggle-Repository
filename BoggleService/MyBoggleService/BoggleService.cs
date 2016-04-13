@@ -516,6 +516,7 @@ namespace Boggle
 
                             TokenScoreGameIDReturn score = new TokenScoreGameIDReturn();
                             score.Score = "0";
+                            SetStatus(OK);
                             command.ExecuteNonQuery();
                             trans.Commit();
                             return score;

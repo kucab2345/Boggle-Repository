@@ -117,7 +117,8 @@ namespace SimpleWebServer
                 return;
             }
 
-            GameStatus user = JsonConvert.DeserializeObject<GameStatus>(s);
+            
+            
 
             GameStatus var = Service.GetFullGameStatus(GameID);
 
@@ -195,7 +196,9 @@ namespace SimpleWebServer
 
             Service.CancelGame(user);
 
-            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + " " + Service.ActualStatus.ToString() + "\r\n", (ex, py) => { ss.Shutdown(); }, null);
+            ss.BeginSend("HTTP/1.1 " + (int)Service.ActualStatus + " " + Service.ActualStatus.ToString() + "\r\n", Ignore, null);
+
+            ss.BeginSend("\r\n", (ex, py) => { ss.Shutdown(); }, null);
             
             
         }
@@ -236,23 +239,23 @@ namespace SimpleWebServer
         {
             if(MethodType == "POST")
             {
-                if(Regex.IsMatch(URLAddress, "/BoggleService.svc/users"))
+                if(Regex.IsMatch(URLAddress, "^/BoggleService.svc/users$"))
                 {
                     return "CreateUser";
                 }
 
-                if(Regex.IsMatch(URLAddress, "/BoggleService.svc/games"))
+                if(Regex.IsMatch(URLAddress, "^/BoggleService.svc/games$"))
                 {
                     return "JoinGame";
                 }
             }
-            else if(MethodType == "PUT")
+            if(MethodType == "PUT")
             {
-                if(Regex.IsMatch(URLAddress, "/BoggleService.svc/games"))
+                if(Regex.IsMatch(URLAddress, "^/BoggleService.svc/games$"))
                 {
                     return "CancelGame";
                 }
-                if(Regex.IsMatch(URLAddress, "/BoggleService.svc/games/+d\\"))
+                if(Regex.IsMatch(URLAddress, "^/BoggleService.svc/games/\\+d$"))
                 {
                     return "PlayWord";
                 }

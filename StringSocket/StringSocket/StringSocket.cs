@@ -118,6 +118,7 @@ namespace CustomNetworking
         /// </summary>
         public void BeginSend(String s, SendCallback callback, object payload)
         {
+            
         }
 
         /// <summary>
@@ -153,6 +154,7 @@ namespace CustomNetworking
         /// </summary>
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
+
         }
     }
 }

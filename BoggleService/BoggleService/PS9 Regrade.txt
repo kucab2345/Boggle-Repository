@@ -1,0 +1,12 @@
+﻿Ryan Steele - uid u0761973, Henry Kucab uid- u0918222
+
+PS9 Regrade request
+
+For the changes that we have done to fix the errors in PS9 were:
+
+Add a check to see if there are any games whatsoever going on when the check is going on in cancel game
+
+Checked to see if there was a player in a pending game at all
+
+Altered checks to look against actual word lists instead of incorrect list of players
+

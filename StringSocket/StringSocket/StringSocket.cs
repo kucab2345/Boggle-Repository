@@ -208,7 +208,8 @@ namespace CustomNetworking
         /// </summary>
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
-
+            socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                               SocketFlags.None, MessageReceived, null);
         }
 
         private void MessageReceived(IAsyncResult result)

@@ -67,6 +67,29 @@ namespace CustomNetworking
         // Underlying socket
         private Socket socket;
 
+        // Text that has been received from the client but not yet dealt with
+        private StringBuilder incoming;
+
+        // Text that needs to be sent to the client but which we have not yet started sending
+        private StringBuilder outgoing;
+
+        private const int BUFFER_SIZE = 1024;
+
+        // Buffers that will contain incoming bytes and characters
+        private byte[] incomingBytes = new byte[BUFFER_SIZE];
+        private char[] incomingChars = new char[BUFFER_SIZE];
+
+        // Records whether an asynchronous send attempt is ongoing
+        private bool sendIsOngoing = false;
+
+        // For synchronizing sends
+        private readonly object sendSync = new object();
+
+        // Bytes that we are actively trying to send, along with the
+        // index of the leftmost byte whose send has not yet been completed
+        private byte[] pendingBytes = new byte[0];
+        private int pendingIndex = 0;
+
         /// <summary>
         /// Creates a StringSocket from a regular Socket, which should already be connected.  
         /// The read and write methods of the regular Socket must not be called after the
@@ -118,6 +141,19 @@ namespace CustomNetworking
         /// </summary>
         public void BeginSend(String s, SendCallback callback, object payload)
         {
+            // Get exclusive access to send mechanism
+            lock (sendSync)
+            {
+                // Append the message to the outgoing lines
+                outgoing.Append(lines);
+
+                // If there's not a send ongoing, start one.
+                if (!sendIsOngoing)
+                {
+                    sendIsOngoing = true;
+                    SendBytes();
+                }
+            }
         }
 
         /// <summary>

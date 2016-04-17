@@ -92,7 +92,7 @@ namespace CustomNetworking
         // index of the leftmost byte whose send has not yet been completed
         private byte[] pendingBytes = new byte[0];
         private int pendingIndex = 0;
-        
+
         /// <summary>
         /// Creates a StringSocket from a regular Socket, which should already be connected.  
         /// The read and write methods of the regular Socket must not be called after the
@@ -204,7 +204,7 @@ namespace CustomNetworking
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
             socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                    SocketFlags.None, MessageReceived, null);
+                               SocketFlags.None, MessageReceived, null);
         }
 
         private void MessageReceived(IAsyncResult result)

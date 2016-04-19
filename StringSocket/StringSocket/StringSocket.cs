@@ -93,7 +93,13 @@ namespace CustomNetworking
         private byte[] pendingBytes = new byte[0];
         private int pendingIndex = 0;
 
-        
+        private readonly object readSync = new object();
+
+        private Queue<ReceiveObject> recQueue = new Queue<ReceiveObject>();
+
+        private Queue<SendObject> sendQueue = new Queue<SendObject>();
+
+        private Queue<string> messages;
 
         /// <summary>
         /// Creates a StringSocket from a regular Socket, which should already be connected.  
@@ -106,19 +112,12 @@ namespace CustomNetworking
             socket = s;
             incoming = new StringBuilder();
             outgoing = new StringBuilder();
-
-            
-            
-
-            // Ask the socket to call MessageReceive as soon as up to 1024 bytes arrive.
-            socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                                SocketFlags.None, MessageReceived, null);
         }
 
         /// <summary>
         /// Shuts down and closes the socket.  No need to change this.
         /// </summary>
-        public void Shutdown  ()
+        public void Shutdown()
         {
             try
             {
@@ -155,103 +154,34 @@ namespace CustomNetworking
         /// </summary>
         public void BeginSend(String s, SendCallback callback, object payload)
         {
-            SendMessage(s);
+            lock (sendSync)
+            {
+                sendQueue.Enqueue(new SendObject(s, callback, payload));
+                if (sendQueue.Count == 1)
+                {
+                    SendBytes();
+                    //SendMessage(s);
+                }
+                
+            }
+
         }
 
         private void SendMessage(string lines)
         {
             // Get exclusive access to send mechanism
-            lock (sendSync)
+
+            // Append the message to the outgoing lines
+            outgoing.Append(lines);
+
+            // If there's not a send ongoing, start one.
+            if (!sendIsOngoing)
             {
-                // Append the message to the outgoing lines
-                outgoing.Append(lines);
-
-                // If there's not a send ongoing, start one.
-                if (!sendIsOngoing)
-                {
-                    sendIsOngoing = true;
-                    SendBytes();
-                }
-            }
-        }
-
-        /// <summary>
-        /// We can read a string from the StringSocket by doing
-        /// 
-        ///     ss.BeginReceive(callback, payload)
-        ///     
-        /// where callback is a ReceiveCallback (see above) and payload is an arbitrary object.
-        /// This is non-blocking, asynchronous operation.  When the StringSocket has read a
-        /// string of text terminated by a newline character from the underlying Socket, or
-        /// failed in the attempt, it invokes the callback.  The parameters to the callback are
-        /// a (possibly null) string, a (possibly null) Exception, and the payload.  Either the
-        /// string or the Exception will be null, or possibly boh.  If the string is non-null, 
-        /// it is the requested string (with the newline removed).  If the Exception is non-null, 
-        /// it is the Exception that caused the send attempt to fail.  If both are null, this
-        /// indicates that the sending end of the remote socket has been shut down.
-        /// 
-        /// This method is non-blocking.  This means that it does not wait until a line of text
-        /// has been received before returning.  Instead, it arranges for a line to be received
-        /// and then returns.  When the line is actually received (at some time in the future), the
-        /// callback is called on another thread.
-        /// 
-        /// This method is thread safe.  This means that multiple threads can call BeginReceive
-        /// on a shared socket without worrying around synchronization.  The implementation of
-        /// BeginReceive must take care of synchronization instead.  On a given StringSocket, each
-        /// arriving line of text must be passed to callbacks in the order in which the corresponding
-        /// BeginReceive call arrived.
-        /// 
-        /// Note that it is possible for there to be incoming bytes arriving at the underlying Socket
-        /// even when there are no pending callbacks.  StringSocket implementations should refrain
-        /// from buffering an unbounded number of incoming bytes beyond what is required to service
-        /// the pending callbacks.
-        /// </summary>
-        public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
-        {
-            socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                               SocketFlags.None, MessageReceived, null);
-        }
-
-        private void MessageReceived(IAsyncResult result)
-        {
-            // Figure out how many bytes have come in
-            int bytesRead = socket.EndReceive(result);
-
-            // If no bytes were received, it means the client closed its side of the socket.
-            // Report that to the console and close our socket.
-            if (bytesRead == 0)
-            {
-                Console.WriteLine("Socket closed");
-                socket.Close();
+                sendIsOngoing = true;
+                SendBytes();
             }
 
-            // Otherwise, decode and display the incoming bytes.  Then request more bytes.
-            else
-            {
-                // Convert the bytes into characters and appending to incoming
-                int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
-                incoming.Append(incomingChars, 0, charsRead);
-                Console.WriteLine(incoming);
-
-                // Echo any complete lines, after capitalizing them
-                for (int i = incoming.Length - 1; i >= 0; i--)
-                {
-                    if (incoming[i] == '\n')
-                    {
-                        String lines = incoming.ToString(0, i + 1);
-                        incoming.Remove(0, i + 1);
-                        SendMessage(lines.ToUpper());
-                        break;
-                    }
-                }
-
-                // Ask for some more data
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                    SocketFlags.None, MessageReceived, null);
-            }
         }
-
-        
 
         private void SendBytes()
         {
@@ -305,6 +235,124 @@ namespace CustomNetworking
                     pendingIndex += bytesSent;
                     SendBytes();
                 }
+            }
+        }
+
+
+        /// <summary>
+        /// We can read a string from the StringSocket by doing
+        /// 
+        ///     ss.BeginReceive(callback, payload)
+        ///     
+        /// where callback is a ReceiveCallback (see above) and payload is an arbitrary object.
+        /// This is non-blocking, asynchronous operation.  When the StringSocket has read a
+        /// string of text terminated by a newline character from the underlying Socket, or
+        /// failed in the attempt, it invokes the callback.  The parameters to the callback are
+        /// a (possibly null) string, a (possibly null) Exception, and the payload.  Either the
+        /// string or the Exception will be null, or possibly boh.  If the string is non-null, 
+        /// it is the requested string (with the newline removed).  If the Exception is non-null, 
+        /// it is the Exception that caused the send attempt to fail.  If both are null, this
+        /// indicates that the sending end of the remote socket has been shut down.
+        /// 
+        /// This method is non-blocking.  This means that it does not wait until a line of text
+        /// has been received before returning.  Instead, it arranges for a line to be received
+        /// and then returns.  When the line is actually received (at some time in the future), the
+        /// callback is called on another thread.
+        /// 
+        /// This method is thread safe.  This means that multiple threads can call BeginReceive
+        /// on a shared socket without worrying around synchronization.  The implementation of
+        /// BeginReceive must take care of synchronization instead.  On a given StringSocket, each
+        /// arriving line of text must be passed to callbacks in the order in which the corresponding
+        /// BeginReceive call arrived.
+        /// 
+        /// Note that it is possible for there to be incoming bytes arriving at the underlying Socket
+        /// even when there are no pending callbacks.  StringSocket implementations should refrain
+        /// from buffering an unbounded number of incoming bytes beyond what is required to service
+        /// the pending callbacks.
+        /// </summary>
+        public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
+        {
+            lock (readSync)
+            {
+                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                                   SocketFlags.None, MessageReceived, null);
+                
+                
+            }
+        }
+
+
+        private void MessageReceived(IAsyncResult result)
+        {
+            // Figure out how many bytes have come in
+            int bytesRead = socket.EndReceive(result);
+
+            // If no bytes were received, it means the client closed its side of the socket.
+            // Report that to the console and close our socket.
+            if (bytesRead == 0)
+            {
+                Console.WriteLine("Socket closed");
+                socket.Close();
+            }
+
+            // Otherwise, decode and display the incoming bytes.  Then request more bytes.
+            else
+            {
+                // Convert the bytes into characters and appending to incoming
+                int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
+                incoming.Append(incomingChars, 0, charsRead);
+                Console.WriteLine(incoming);
+
+                // Echo any complete lines, after capitalizing them
+                for (int i = incoming.Length - 1; i >= 0; i--)
+                {
+                    if (incoming[i] == '\n')
+                    {
+                        String lines = incoming.ToString(0, i + 1);
+                        incoming.Remove(0, i + 1);
+                        
+                        break;
+                    }
+                }
+
+                // Ask for some more data
+                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                    SocketFlags.None, MessageReceived, null);
+            }
+        }
+
+
+
+
+
+        internal class SendObject
+        {
+            public string message;
+
+            public SendCallback sendObj;
+
+            public object sendPayload;
+
+            public SendObject(string mes, SendCallback obj, object pay)
+            {
+                message = mes;
+
+                sendObj = obj;
+
+                sendPayload = pay;
+            }
+        }
+
+        internal class ReceiveObject
+        {
+            public ReceiveCallback receiveObject;
+
+            public object RecPayload;
+
+            public ReceiveObject(ReceiveCallback recobj, object payload)
+            {
+                receiveObject = recobj;
+                RecPayload = payload;
             }
         }
     }

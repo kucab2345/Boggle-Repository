@@ -95,9 +95,9 @@ namespace CustomNetworking
 
         private readonly object readSync = new object();
 
-        private Queue<ReceiveObject> recQueue = new Queue<ReceiveObject>();
+        private Queue<ReceiveObject> recQueue;
 
-        private Queue<SendObject> sendQueue = new Queue<SendObject>();
+        private Queue<SendObject> sendQueue;
 
         private Queue<string> messages;
 
@@ -112,6 +112,8 @@ namespace CustomNetworking
             socket = s;
             incoming = new StringBuilder();
             outgoing = new StringBuilder();
+
+            recQueue = new Queue<ReceiveObject>();
         }
 
         /// <summary>

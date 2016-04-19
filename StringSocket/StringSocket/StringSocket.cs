@@ -54,7 +54,7 @@ namespace CustomNetworking
 
     public class StringSocket
     {
-        private static System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+        private static Encoding encoding;
         /// <summary>
         /// The type of delegate that is called when a send has completed.
         /// </summary>
@@ -68,13 +68,12 @@ namespace CustomNetworking
         // Underlying socket
         private Socket socket;
 
-        private Decoder decoder = encoding.GetDecoder();
+        
 
         // Text that has been received from the client but not yet dealt with
-        private StringBuilder incoming;
+        private string incoming;
 
-        // Text that needs to be sent to the client but which we have not yet started sending
-        private StringBuilder outgoing;
+
 
         // For synchronizing sends
         private readonly object sendSync = new object();
@@ -97,12 +96,15 @@ namespace CustomNetworking
         public StringSocket(Socket s, Encoding e)
         {
             socket = s;
-            incoming = new StringBuilder();
-            outgoing = new StringBuilder();
+            
+            
 
             recQueue = new Queue<ReceiveObject>();
             sendQueue = new Queue<SendObject>();
             messages = new Queue<string>();
+
+            encoding = e;
+            incoming = "";
 
         }
 
@@ -258,45 +260,91 @@ namespace CustomNetworking
             }
         }
 
-
-        private void MessageReceived(IAsyncResult result)
+      
+        private void receiveAllQueue()
         {
-            // Figure out how many bytes have come in
-            int bytesRead = socket.EndReceive(result);
-
-            // If no bytes were received, it means the client closed its side of the socket.
-            // Report that to the console and close our socket.
-            if (bytesRead == 0)
+            
+            int index;
+            while ((index = incoming.IndexOf('\n')) >= 0)
             {
-                Console.WriteLine("Socket closed");
-                socket.Close();
-            }
-
-            // Otherwise, decode and display the incoming bytes.  Then request more bytes.
-            else
-            {
-                // Convert the bytes into characters and appending to incoming
-                int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
-                incoming.Append(incomingChars, 0, charsRead);
-                Console.WriteLine(incoming);
-
-                // Echo any complete lines, after capitalizing them
-                for (int i = incoming.Length - 1; i >= 0; i--)
+                //one message segment
+                String Message = incoming.Substring(0, index);
+                if (Message.EndsWith("\r"))
                 {
-                    if (incoming[i] == '\n')
-                    {
-                        String lines = incoming.ToString(0, i + 1);
-                        incoming.Remove(0, i + 1);
-                        
-                        break;
-                    }
+                    Message = Message.Substring(0, index - 1);
                 }
-
-                // Ask for some more data
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                    SocketFlags.None, MessageReceived, null);
+                messages.Enqueue(Message);
+                incoming = incoming.Substring(index + 1);
+            }
+            while (recQueue.Count > 0 && messages.Count > 0)
+            {
+                ReceiveObject goodreceive = recQueue.Dequeue();
+                string goodmessage = messages.Dequeue();
+                ThreadPool.QueueUserWorkItem(x => goodreceive.receiveObject(goodmessage, null, goodreceive.RecPayload));
+            }
+            if (recQueue.Count > 0)
+            {
+                //bounded buffer. no DOSing
+                byte[] buffer = new byte[1024];
+                socket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceivedBytes, buffer);
             }
         }
+        
+        private void ReceivedBytes(IAsyncResult ar)
+        {
+            //the actual bytes received
+            byte[] buffer = (byte[])(ar.AsyncState);
+            //get number of bytes received so far
+            int bytesIn = socket.EndReceive(ar);
+            if (bytesIn == 0)
+            {
+                
+                socket.Close();
+            }
+            lock (readSync)
+            {
+                incoming += encoding.GetString(buffer, 0, bytesIn);
+                receiveAllQueue();
+            }
+        }
+        //private void MessageReceived(IAsyncResult result)
+        //{
+        //    // Figure out how many bytes have come in
+        //    int bytesRead = socket.EndReceive(result);
+
+        //    // If no bytes were received, it means the client closed its side of the socket.
+        //    // Report that to the console and close our socket.
+        //    if (bytesRead == 0)
+        //    {
+        //        Console.WriteLine("Socket closed");
+        //        socket.Close();
+        //    }
+
+        //    // Otherwise, decode and display the incoming bytes.  Then request more bytes.
+        //    else
+        //    {
+        //        // Convert the bytes into characters and appending to incoming
+        //        int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
+        //        incoming.Append(incomingChars, 0, charsRead);
+        //        Console.WriteLine(incoming);
+
+        //        // Echo any complete lines, after capitalizing them
+        //        for (int i = incoming.Length - 1; i >= 0; i--)
+        //        {
+        //            if (incoming[i] == '\n')
+        //            {
+        //                String lines = incoming.ToString(0, i + 1);
+        //                incoming.Remove(0, i + 1);
+
+        //                break;
+        //            }
+        //        }
+
+        //        // Ask for some more data
+        //        socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+        //            SocketFlags.None, MessageReceived, null);
+        //    }
+        //}
 
 
 

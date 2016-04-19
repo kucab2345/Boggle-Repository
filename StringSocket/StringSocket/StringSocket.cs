@@ -54,7 +54,7 @@ namespace CustomNetworking
 
     public class StringSocket
     {
-        private static System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+        private static Encoding encoding;
         /// <summary>
         /// The type of delegate that is called when a send has completed.
         /// </summary>
@@ -68,30 +68,15 @@ namespace CustomNetworking
         // Underlying socket
         private Socket socket;
 
-        private Decoder decoder = encoding.GetDecoder();
+
 
         // Text that has been received from the client but not yet dealt with
-        private StringBuilder incoming;
+        private string incoming;
 
-        // Text that needs to be sent to the client but which we have not yet started sending
-        private StringBuilder outgoing;
 
-        private const int BUFFER_SIZE = 1024;
-
-        // Buffers that will contain incoming bytes and characters
-        private byte[] incomingBytes = new byte[BUFFER_SIZE];
-        private char[] incomingChars = new char[BUFFER_SIZE];
-
-        // Records whether an asynchronous send attempt is ongoing
-        private bool sendIsOngoing = false;
 
         // For synchronizing sends
         private readonly object sendSync = new object();
-
-        // Bytes that we are actively trying to send, along with the
-        // index of the leftmost byte whose send has not yet been completed
-        private byte[] pendingBytes = new byte[0];
-        private int pendingIndex = 0;
 
         private readonly object readSync = new object();
 
@@ -100,6 +85,7 @@ namespace CustomNetworking
         private Queue<SendObject> sendQueue;
 
         private Queue<string> messages;
+        private int AllOutBytes;
 
         /// <summary>
         /// Creates a StringSocket from a regular Socket, which should already be connected.  
@@ -110,10 +96,16 @@ namespace CustomNetworking
         public StringSocket(Socket s, Encoding e)
         {
             socket = s;
-            incoming = new StringBuilder();
-            outgoing = new StringBuilder();
+            
+            
 
             recQueue = new Queue<ReceiveObject>();
+            sendQueue = new Queue<SendObject>();
+            messages = new Queue<string>();
+
+            encoding = e;
+            incoming = "";
+
         }
 
         /// <summary>
@@ -161,57 +153,21 @@ namespace CustomNetworking
                 sendQueue.Enqueue(new SendObject(s, callback, payload));
                 if (sendQueue.Count == 1)
                 {
-                    SendBytes();
-                    //SendMessage(s);
+                    sendAllQueue();
+                
                 }
                 
             }
 
         }
 
-        private void SendMessage(string lines)
-        {
-            // Get exclusive access to send mechanism
 
-            // Append the message to the outgoing lines
-            outgoing.Append(lines);
-
-            // If there's not a send ongoing, start one.
-            if (!sendIsOngoing)
+        public void sendAllQueue()
             {
-                sendIsOngoing = true;
-                SendBytes();
+            byte[] OutBytes = encoding.GetBytes(sendQueue.Peek().message);
+            socket.BeginSend(OutBytes, 0, OutBytes.Length,
+                                 SocketFlags.None, MessageSent, OutBytes);
             }
-
-        }
-
-        private void SendBytes()
-        {
-            // If we're in the middle of the process of sending out a block of bytes,
-            // keep doing that.
-            if (pendingIndex < pendingBytes.Length)
-            {
-                socket.BeginSend(pendingBytes, pendingIndex, pendingBytes.Length - pendingIndex,
-                                 SocketFlags.None, MessageSent, null);
-            }
-
-            // If we're not currently dealing with a block of bytes, make a new block of bytes
-            // out of outgoing and start sending that.
-            else if (outgoing.Length > 0)
-            {
-                pendingBytes = encoding.GetBytes(outgoing.ToString());
-                pendingIndex = 0;
-                outgoing.Clear();
-                socket.BeginSend(pendingBytes, 0, pendingBytes.Length,
-                                 SocketFlags.None, MessageSent, null);
-            }
-
-            // If there's nothing to send, shut down for the time being.
-            else
-            {
-                sendIsOngoing = false;
-            }
-        }
 
         /// <summary>
         /// Called when a message has been successfully sent
@@ -219,26 +175,44 @@ namespace CustomNetworking
         private void MessageSent(IAsyncResult result)
         {
             // Find out how many bytes were actually sent
+            byte[] OutBytes = (byte [])result.AsyncState;
             int bytesSent = socket.EndSend(result);
 
-            // Get exclusive access to send mechanism
+            if(bytesSent == 0)
+            {
+                socket.Close();
+            }
+            else
+            {
+                AllOutBytes += bytesSent;
+            }
+
+            if(AllOutBytes == OutBytes.Length)
+        {
+                SendObject sentItem = sendQueue.Dequeue();
+
+                AllOutBytes = 0;
+
+                ThreadPool.QueueUserWorkItem(x => sentItem.sendObj(null, sentItem.sendPayload));
             lock (sendSync)
             {
-                // The socket has been closed
-                if (bytesSent == 0)
+                    if (sendQueue.Count > 0)
                 {
-                    socket.Close();
-                    Console.WriteLine("Socket closed");
+                        sendAllQueue();
                 }
-
-                // Update the pendingIndex and keep trying
-                else
-                {
-                    pendingIndex += bytesSent;
-                    SendBytes();
                 }
             }
+
+                else
+                {
+                socket.BeginSend(OutBytes, bytesSent, OutBytes.Length - bytesSent, SocketFlags.None, MessageSent, OutBytes);
+            }
+
+
+
+
         }
+
 
 
         /// <summary>
@@ -276,52 +250,101 @@ namespace CustomNetworking
         {
             lock (readSync)
             {
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                                   SocketFlags.None, MessageReceived, null);
+                recQueue.Enqueue(new ReceiveObject(callback, payload));
                 
+                if(recQueue.Count == 1)
+                {
+                    receiveAllQueue();
+                }
                 
             }
         }
 
 
-        private void MessageReceived(IAsyncResult result)
+        private void receiveAllQueue()
         {
-            // Figure out how many bytes have come in
-            int bytesRead = socket.EndReceive(result);
 
-            // If no bytes were received, it means the client closed its side of the socket.
-            // Report that to the console and close our socket.
-            if (bytesRead == 0)
+            int index;
+            while ((index = incoming.IndexOf('\n')) >= 0)
             {
-                Console.WriteLine("Socket closed");
+                //one message segment
+                String Message = incoming.Substring(0, index);
+                if (Message.EndsWith("\r"))
+                {
+                    Message = Message.Substring(0, index - 1);
+                }
+                messages.Enqueue(Message);
+                incoming = incoming.Substring(index + 1);
+            }
+            while (recQueue.Count > 0 && messages.Count > 0)
+            {
+                ReceiveObject goodreceive = recQueue.Dequeue();
+                string goodmessage = messages.Dequeue();
+                ThreadPool.QueueUserWorkItem(x => goodreceive.receiveObject(goodmessage, null, goodreceive.RecPayload));
+            }
+            if (recQueue.Count > 0)
+            {
+                //bounded buffer. no DOSing
+                byte[] buffer = new byte[1024];
+                socket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceivedBytes, buffer);
+            }
+        }
+
+        private void ReceivedBytes(IAsyncResult ar)
+                {
+            //the actual bytes received
+            byte[] buffer = (byte[])(ar.AsyncState);
+            //get number of bytes received so far
+            int bytesIn = socket.EndReceive(ar);
+            if (bytesIn == 0)
+                    {
+                        
                 socket.Close();
             }
-
-            // Otherwise, decode and display the incoming bytes.  Then request more bytes.
-            else
+            lock (readSync)
             {
-                // Convert the bytes into characters and appending to incoming
-                int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
-                incoming.Append(incomingChars, 0, charsRead);
-                Console.WriteLine(incoming);
-
-                // Echo any complete lines, after capitalizing them
-                for (int i = incoming.Length - 1; i >= 0; i--)
-                {
-                    if (incoming[i] == '\n')
-                    {
-                        String lines = incoming.ToString(0, i + 1);
-                        incoming.Remove(0, i + 1);
-                        
-                        break;
+                incoming += encoding.GetString(buffer, 0, bytesIn);
+                receiveAllQueue();
                     }
                 }
+        //private void MessageReceived(IAsyncResult result)
+        //{
+        //    // Figure out how many bytes have come in
+        //    int bytesRead = socket.EndReceive(result);
 
-                // Ask for some more data
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                    SocketFlags.None, MessageReceived, null);
-            }
-        }
+        //    // If no bytes were received, it means the client closed its side of the socket.
+        //    // Report that to the console and close our socket.
+        //    if (bytesRead == 0)
+        //    {
+        //        Console.WriteLine("Socket closed");
+        //        socket.Close();
+        //    }
+
+        //    // Otherwise, decode and display the incoming bytes.  Then request more bytes.
+        //    else
+        //    {
+        //        // Convert the bytes into characters and appending to incoming
+        //        int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
+        //        incoming.Append(incomingChars, 0, charsRead);
+        //        Console.WriteLine(incoming);
+
+        //        // Echo any complete lines, after capitalizing them
+        //        for (int i = incoming.Length - 1; i >= 0; i--)
+        //        {
+        //            if (incoming[i] == '\n')
+        //            {
+        //                String lines = incoming.ToString(0, i + 1);
+        //                incoming.Remove(0, i + 1);
+
+        //                break;
+        //            }
+        //        }
+
+        //        // Ask for some more data
+        //        socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+        //            SocketFlags.None, MessageReceived, null);
+        //    }
+        //}
 
 
 

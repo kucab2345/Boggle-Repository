@@ -76,30 +76,17 @@ namespace CustomNetworking
         // Text that needs to be sent to the client but which we have not yet started sending
         private StringBuilder outgoing;
 
-        private const int BUFFER_SIZE = 1024;
-
-        // Buffers that will contain incoming bytes and characters
-        private byte[] incomingBytes = new byte[BUFFER_SIZE];
-        private char[] incomingChars = new char[BUFFER_SIZE];
-
-        // Records whether an asynchronous send attempt is ongoing
-        private bool sendIsOngoing = false;
-
         // For synchronizing sends
         private readonly object sendSync = new object();
 
-        // Bytes that we are actively trying to send, along with the
-        // index of the leftmost byte whose send has not yet been completed
-        private byte[] pendingBytes = new byte[0];
-        private int pendingIndex = 0;
-
         private readonly object readSync = new object();
 
-        private Queue<ReceiveObject> recQueue = new Queue<ReceiveObject>();
+        private Queue<ReceiveObject> recQueue;
 
-        private Queue<SendObject> sendQueue = new Queue<SendObject>();
+        private Queue<SendObject> sendQueue;
 
         private Queue<string> messages;
+        private int AllOutBytes;
 
         /// <summary>
         /// Creates a StringSocket from a regular Socket, which should already be connected.  
@@ -112,6 +99,11 @@ namespace CustomNetworking
             socket = s;
             incoming = new StringBuilder();
             outgoing = new StringBuilder();
+
+            recQueue = new Queue<ReceiveObject>();
+            sendQueue = new Queue<SendObject>();
+            messages = new Queue<string>();
+
         }
 
         /// <summary>
@@ -159,56 +151,20 @@ namespace CustomNetworking
                 sendQueue.Enqueue(new SendObject(s, callback, payload));
                 if (sendQueue.Count == 1)
                 {
-                    SendBytes();
-                    //SendMessage(s);
+                    sendAllQueue();
+                
                 }
                 
             }
 
         }
 
-        private void SendMessage(string lines)
+
+        public void sendAllQueue()
         {
-            // Get exclusive access to send mechanism
-
-            // Append the message to the outgoing lines
-            outgoing.Append(lines);
-
-            // If there's not a send ongoing, start one.
-            if (!sendIsOngoing)
-            {
-                sendIsOngoing = true;
-                SendBytes();
-            }
-
-        }
-
-        private void SendBytes()
-        {
-            // If we're in the middle of the process of sending out a block of bytes,
-            // keep doing that.
-            if (pendingIndex < pendingBytes.Length)
-            {
-                socket.BeginSend(pendingBytes, pendingIndex, pendingBytes.Length - pendingIndex,
-                                 SocketFlags.None, MessageSent, null);
-            }
-
-            // If we're not currently dealing with a block of bytes, make a new block of bytes
-            // out of outgoing and start sending that.
-            else if (outgoing.Length > 0)
-            {
-                pendingBytes = encoding.GetBytes(outgoing.ToString());
-                pendingIndex = 0;
-                outgoing.Clear();
-                socket.BeginSend(pendingBytes, 0, pendingBytes.Length,
-                                 SocketFlags.None, MessageSent, null);
-            }
-
-            // If there's nothing to send, shut down for the time being.
-            else
-            {
-                sendIsOngoing = false;
-            }
+            byte[] OutBytes = encoding.GetBytes(sendQueue.Peek().message);
+            socket.BeginSend(OutBytes, 0, OutBytes.Length,
+                                 SocketFlags.None, MessageSent, OutBytes);
         }
 
         /// <summary>
@@ -217,26 +173,44 @@ namespace CustomNetworking
         private void MessageSent(IAsyncResult result)
         {
             // Find out how many bytes were actually sent
+            byte[] OutBytes = (byte [])result.AsyncState;
             int bytesSent = socket.EndSend(result);
 
-            // Get exclusive access to send mechanism
-            lock (sendSync)
+            if(bytesSent == 0)
             {
-                // The socket has been closed
-                if (bytesSent == 0)
-                {
-                    socket.Close();
-                    Console.WriteLine("Socket closed");
-                }
+                socket.Close();
+            }
+            else
+            {
+                AllOutBytes += bytesSent;
+            }
 
-                // Update the pendingIndex and keep trying
-                else
+            if(AllOutBytes == OutBytes.Length)
+            {
+                SendObject sentItem = sendQueue.Dequeue();
+
+                AllOutBytes = 0;
+
+                ThreadPool.QueueUserWorkItem(x => sentItem.sendObj(null, sentItem.sendPayload));
+                lock (sendSync)
                 {
-                    pendingIndex += bytesSent;
-                    SendBytes();
+                    if (sendQueue.Count > 0)
+                    {
+                        sendAllQueue();
+                    }
                 }
             }
+
+            else
+            {
+                socket.BeginSend(OutBytes, bytesSent, OutBytes.Length - bytesSent, SocketFlags.None, MessageSent, OutBytes);
+            }
+
+
+
+
         }
+        
 
 
         /// <summary>
@@ -274,9 +248,12 @@ namespace CustomNetworking
         {
             lock (readSync)
             {
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                                   SocketFlags.None, MessageReceived, null);
+                recQueue.Enqueue(new ReceiveObject(callback, payload));
                 
+                if(recQueue.Count == 1)
+                {
+                    receiveAllQueue();
+                }
                 
             }
         }

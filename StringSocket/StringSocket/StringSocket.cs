@@ -188,18 +188,19 @@ namespace CustomNetworking
             }
 
             if(AllOutBytes == OutBytes.Length)
-        {
-                SendObject sentItem = sendQueue.Dequeue();
+            {
+                lock (sendSync)
+                {
+                    SendObject sentItem = sendQueue.Dequeue();
 
                 AllOutBytes = 0;
 
                 ThreadPool.QueueUserWorkItem(x => sentItem.sendObj(null, sentItem.sendPayload));
-            lock (sendSync)
-            {
+              
                     if (sendQueue.Count > 0)
-                {
+                    {
                         sendAllQueue();
-                }
+                    }
                 }
             }
 

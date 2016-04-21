@@ -96,8 +96,8 @@ namespace CustomNetworking
         public StringSocket(Socket s, Encoding e)
         {
             socket = s;
-            
-            
+
+
 
             recQueue = new Queue<ReceiveObject>();
             sendQueue = new Queue<SendObject>();
@@ -154,20 +154,20 @@ namespace CustomNetworking
                 if (sendQueue.Count == 1)
                 {
                     sendAllQueue();
-                
+
                 }
-                
+
             }
 
         }
 
 
         public void sendAllQueue()
-            {
+        {
             byte[] OutBytes = encoding.GetBytes(sendQueue.Peek().message);
             socket.BeginSend(OutBytes, 0, OutBytes.Length,
                                  SocketFlags.None, MessageSent, OutBytes);
-            }
+        }
 
         /// <summary>
         /// Called when a message has been successfully sent
@@ -175,10 +175,10 @@ namespace CustomNetworking
         private void MessageSent(IAsyncResult result)
         {
             // Find out how many bytes were actually sent
-            byte[] OutBytes = (byte [])result.AsyncState;
+            byte[] OutBytes = (byte[])result.AsyncState;
             int bytesSent = socket.EndSend(result);
 
-            if(bytesSent == 0)
+            if (bytesSent == 0)
             {
                 socket.Close();
             }
@@ -187,16 +187,16 @@ namespace CustomNetworking
                 AllOutBytes += bytesSent;
             }
 
-            if(AllOutBytes == OutBytes.Length)
+            if (AllOutBytes == OutBytes.Length)
             {
                 lock (sendSync)
                 {
                     SendObject sentItem = sendQueue.Dequeue();
 
-                AllOutBytes = 0;
+                    AllOutBytes = 0;
 
-                ThreadPool.QueueUserWorkItem(x => sentItem.sendObj(null, sentItem.sendPayload));
-              
+                    ThreadPool.QueueUserWorkItem(x => sentItem.sendObj(null, sentItem.sendPayload));
+
                     if (sendQueue.Count > 0)
                     {
                         sendAllQueue();
@@ -204,8 +204,8 @@ namespace CustomNetworking
                 }
             }
 
-                else
-                {
+            else
+            {
                 socket.BeginSend(OutBytes, bytesSent, OutBytes.Length - bytesSent, SocketFlags.None, MessageSent, OutBytes);
             }
 
@@ -252,12 +252,12 @@ namespace CustomNetworking
             lock (readSync)
             {
                 recQueue.Enqueue(new ReceiveObject(callback, payload));
-                
-                if(recQueue.Count == 1)
+
+                if (recQueue.Count == 1)
                 {
                     receiveAllQueue();
                 }
-                
+
             }
         }
 
@@ -279,9 +279,12 @@ namespace CustomNetworking
             }
             while (recQueue.Count > 0 && messages.Count > 0)
             {
-                ReceiveObject goodreceive = recQueue.Dequeue();
-                string goodmessage = messages.Dequeue();
-                ThreadPool.QueueUserWorkItem(x => goodreceive.receiveObject(goodmessage, null, goodreceive.RecPayload));
+                lock (readSync)
+                {
+                    ReceiveObject goodreceive = recQueue.Dequeue();
+                    string goodmessage = messages.Dequeue();
+                    ThreadPool.QueueUserWorkItem(x => goodreceive.receiveObject(goodmessage, null, goodreceive.RecPayload));
+                }
             }
             if (recQueue.Count > 0)
             {
@@ -292,22 +295,21 @@ namespace CustomNetworking
         }
 
         private void ReceivedBytes(IAsyncResult ar)
-                {
+        {
             //the actual bytes received
             byte[] buffer = (byte[])(ar.AsyncState);
             //get number of bytes received so far
             int bytesIn = socket.EndReceive(ar);
             if (bytesIn == 0)
-                    {
-                        
+            {
                 socket.Close();
             }
             lock (readSync)
             {
                 incoming += encoding.GetString(buffer, 0, bytesIn);
                 receiveAllQueue();
-                    }
-                }
+            }
+        }
         //private void MessageReceived(IAsyncResult result)
         //{
         //    // Figure out how many bytes have come in

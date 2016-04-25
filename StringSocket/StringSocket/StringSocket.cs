@@ -75,16 +75,34 @@ namespace CustomNetworking
 
 
 
-        // For synchronizing sends
+        /// <summary>
+        /// Object used to synchronize sends to the clients
+        /// </summary>
         private readonly object sendSync = new object();
 
+        /// <summary>
+        /// Object used to synchronize receives from the clients
+        /// </summary>
         private readonly object readSync = new object();
 
+        /// <summary>
+        /// Queue that stores all impending receives, keeping them in order that they were received
+        /// </summary>
         private Queue<ReceiveObject> recQueue;
 
+        /// <summary>
+        /// Queue that stores all pending sends, keeping them in order that they were received
+        /// </summary>
         private Queue<SendObject> sendQueue;
 
+        /// <summary>
+        /// Queue that stores all messages that have been parsed from the receives from the clients.
+        /// </summary>
         private Queue<string> messages;
+
+        /// <summary>
+        /// integer that keeps track of how many bytes have been sent so far in each send
+        /// </summary>
         private int AllOutBytes;
 
         /// <summary>
@@ -95,10 +113,8 @@ namespace CustomNetworking
         /// </summary>
         public StringSocket(Socket s, Encoding e)
         {
+            
             socket = s;
-
-
-
             recQueue = new Queue<ReceiveObject>();
             sendQueue = new Queue<SendObject>();
             messages = new Queue<string>();
@@ -161,8 +177,10 @@ namespace CustomNetworking
 
         }
 
-
-        public void sendAllQueue()
+        /// <summary>
+        /// method that is used to encode the outgoing message, and then start the send.  When the send is done, the MessageSent method is called.
+        /// </summary>
+        private void sendAllQueue()
         {
             byte[] OutBytes = encoding.GetBytes(sendQueue.Peek().message);
             socket.BeginSend(OutBytes, 0, OutBytes.Length,
@@ -255,14 +273,17 @@ namespace CustomNetworking
 
                 if (recQueue.Count == 1)
                 {
-                    receiveAllQueue();
+                    ReceiveAllQueue();
                 }
 
             }
         }
 
-
-        private void receiveAllQueue()
+        /// <summary>
+        /// Method that is used to determine when the message received is a full message, and when so, calls the callback for the message received.
+        /// if there are still receives pending, then the socket begins receives, and calls receivedBytes when the receive is done.
+        /// </summary>
+        private void ReceiveAllQueue()
         {
 
             int index;
@@ -294,6 +315,11 @@ namespace CustomNetworking
             }
         }
 
+        /// <summary>
+        /// Method that determines how many bytes have been receive, and if bytes have been received, then gets the string of the bytes received
+        /// Afterwards, calls the receiveAllQueue method.
+        /// </summary>
+        /// <param name="ar">The result from the beginreceive on the socket</param>
         private void ReceivedBytes(IAsyncResult ar)
         {
             //the actual bytes received
@@ -307,60 +333,39 @@ namespace CustomNetworking
             lock (readSync)
             {
                 incoming += encoding.GetString(buffer, 0, bytesIn);
-                receiveAllQueue();
+                ReceiveAllQueue();
             }
         }
-        //private void MessageReceived(IAsyncResult result)
-        //{
-        //    // Figure out how many bytes have come in
-        //    int bytesRead = socket.EndReceive(result);
-
-        //    // If no bytes were received, it means the client closed its side of the socket.
-        //    // Report that to the console and close our socket.
-        //    if (bytesRead == 0)
-        //    {
-        //        Console.WriteLine("Socket closed");
-        //        socket.Close();
-        //    }
-
-        //    // Otherwise, decode and display the incoming bytes.  Then request more bytes.
-        //    else
-        //    {
-        //        // Convert the bytes into characters and appending to incoming
-        //        int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
-        //        incoming.Append(incomingChars, 0, charsRead);
-        //        Console.WriteLine(incoming);
-
-        //        // Echo any complete lines, after capitalizing them
-        //        for (int i = incoming.Length - 1; i >= 0; i--)
-        //        {
-        //            if (incoming[i] == '\n')
-        //            {
-        //                String lines = incoming.ToString(0, i + 1);
-        //                incoming.Remove(0, i + 1);
-
-        //                break;
-        //            }
-        //        }
-
-        //        // Ask for some more data
-        //        socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-        //            SocketFlags.None, MessageReceived, null);
-        //    }
-        //}
+       
 
 
-
-
-
+        /// <summary>
+        /// Class that is used to keep all properties of a Send together.  
+        /// This class is used in the send queue and for setting up the callback for the sends.
+        /// </summary>
         internal class SendObject
         {
+            /// <summary>
+            /// Keeps the message that is sent to the client with the relevant send
+            /// </summary>
             public string message;
 
+            /// <summary>
+            /// The call back delegate method that is associated with the relevant send
+            /// </summary>
             public SendCallback sendObj;
 
+            /// <summary>
+            /// object that is sent as a parameter to the callback method associated with the send
+            /// </summary>
             public object sendPayload;
 
+            /// <summary>
+            /// Constructor of the sendObject that sets up the instance variables of the sendobject.
+            /// </summary>
+            /// <param name="mes">Message of the send</param>
+            /// <param name="obj">Callback method of the send</param>
+            /// <param name="pay">payload object of the relevant send</param>
             public SendObject(string mes, SendCallback obj, object pay)
             {
                 message = mes;
@@ -371,12 +376,27 @@ namespace CustomNetworking
             }
         }
 
+        /// <summary>
+        /// Class that is used to keep all the relevant parts of a Receive togther. 
+        /// This class is used in the receive queue and for getting all the relevant parts of a receive when setting up the callback
+        /// </summary>
         internal class ReceiveObject
         {
+            /// <summary>
+            /// callback method that is associated with the particular receive
+            /// </summary>
             public ReceiveCallback receiveObject;
 
+            /// <summary>
+            /// object that is used with the callback method associated with the receive
+            /// </summary>
             public object RecPayload;
 
+            /// <summary>
+            /// constructor for the class, sets up the instance variables to equal the relvant parts of the receive
+            /// </summary>
+            /// <param name="recobj">Callback method of the receive</param>
+            /// <param name="payload"> object that is passed to the callback method</param>
             public ReceiveObject(ReceiveCallback recobj, object payload)
             {
                 receiveObject = recobj;
